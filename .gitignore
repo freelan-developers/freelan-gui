@@ -3,3 +3,4 @@
 *.moc
 moc_*.cpp
 ui_*.hpp
+*.pro.user
