@@ -1,0 +1,17 @@
+*.c filter=indent_c
+*.C filter=indent_c
+*.h filter=indent_cpp
+*.H filter=indent_cpp
+*.hh filter=indent_cpp
+*.HH filter=indent_cpp
+*.hxx filter=indent_cpp
+*.HXX filter=indent_cpp
+*.hpp filter=indent_cpp
+*.HPP filter=indent_cpp
+*.cc filter=indent_cpp
+*.CC filter=indent_cpp
+*.cxx filter=indent_cpp
+*.CXX filter=indent_cpp
+*.cpp filter=indent_cpp
+*.CPP filter=indent_cpp
+*.pch filter=indent_cpp

@@ -1,0 +1,5 @@
+*.o
+*.obj
+*.moc
+moc_*.cpp
+ui_*.hpp
