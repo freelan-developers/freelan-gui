@@ -681,16 +681,63 @@ Freelan_gui::Freelan_gui(QWidget *parent) :
     QMainWindow(parent)
 {
     setupUi(this);
+
+    // Build about page
+    target_version_label->setText( QLatin1Literal( TARGET ) + QLatin1Literal( " - " ) + QLatin1Literal( VERSION ) + QLatin1Literal( " - " ) + QString::number( BUILD ) );
+    freelan_version_label->setText( QLatin1String( "Freelan - 1.0.0" ) );
+    organisation_name_label->setText( QLatin1String( ORGANISATION_NAME ) );
+
+    const QString FREELAN_LINK( QLatin1Literal( "<html><head/><body><p><a href=\"http://www." )
+                                + QLatin1Literal( ORGANISATION_DOMAIN )
+                                + QLatin1Literal( "\"><span style=\" text-decoration: underline; color:#0000ff;\">http://www." )
+                                + QLatin1Literal( ORGANISATION_DOMAIN )
+                                + QLatin1Literal( "</span></a></p></body></html>" ) );
+
+    organisation_domain_label->setTextFormat( Qt::RichText );
+    organisation_domain_label->setText( FREELAN_LINK );
 }
 
 void Freelan_gui::changeEvent(QEvent *e)
 {
     QMainWindow::changeEvent(e);
-    switch (e->type()) {
+    switch (e->type())
+    {
     case QEvent::LanguageChange:
         retranslateUi(this);
         break;
     default:
         break;
+    }
+}
+
+void Freelan_gui::on_status_pushbutton_toggled(bool checked)
+{
+    if( checked )
+    {
+        stacked_widget->setCurrentWidget( status_page );
+    }
+}
+
+void Freelan_gui::on_settings_pushbutton_toggled(bool checked)
+{
+    if( checked )
+    {
+        stacked_widget->setCurrentWidget( settings_page );
+    }
+}
+
+void Freelan_gui::on_help_pushbutton_toggled(bool checked)
+{
+    if( checked )
+    {
+        stacked_widget->setCurrentWidget( help_page );
+    }
+}
+
+void Freelan_gui::on_about_pushbutton_toggled(bool checked)
+{
+    if( checked )
+    {
+        stacked_widget->setCurrentWidget( about_page );
     }
 }

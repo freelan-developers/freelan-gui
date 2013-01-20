@@ -691,6 +691,13 @@ public:
     
 protected:
     void changeEvent(QEvent *e);
+
+private Q_SLOTS:
+    // stacked widget management
+    void on_status_pushbutton_toggled(bool checked);
+    void on_settings_pushbutton_toggled(bool checked);
+    void on_help_pushbutton_toggled(bool checked);
+    void on_about_pushbutton_toggled(bool checked);
 };
 
 #endif // FREELAN_GUI_HPP

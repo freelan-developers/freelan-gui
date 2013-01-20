@@ -4,10 +4,10 @@ greaterThan(QT_MAJOR_VERSION, 4): QT *= widgets
 TARGET = Freelan_gui
 TEMPLATE = app
 
-VERSION = 1.0.0
+VERSION = 0.0.1
 TARGET_STRING = '"\\"$${TARGET}\\""'
 VERSION_STRING = '"\\"$${VERSION}\\""'
-ORGANISATION_NAME='"\\"Freelan\\""'
+ORGANISATION_NAME='"\\"Freelan Incorporated\\""'
 ORGANISATION_DOMAIN='"\\"freelan.org\\""'
 
 DEFINES *= ORGANISATION_NAME=$${ORGANISATION_NAME}
