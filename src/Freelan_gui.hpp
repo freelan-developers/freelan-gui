@@ -680,27 +680,39 @@ Public License instead of this License.  But first, please read
 
 #pragma warning(push, 0)
 #include "ui_Freelan_gui.h"
+#include <QSettings>
 #pragma warning(pop)
 
-class Freelan_gui : public QMainWindow, private Ui::Freelan_gui
+class Freelan_gui : public QMainWindow
+	, private Ui::Freelan_gui
 {
 	Q_OBJECT
 
 public:
-	explicit Freelan_gui(QWidget *parent = 0);
+
+	explicit Freelan_gui( QWidget* parent = 0 );
 
 protected:
-	void changeEvent(QEvent *e);
+
+	void changeEvent( QEvent* e );
+
+private:
+
+	// Build about page
+	void setup_about_ui();
+
+	// QSettings is used as ini file reader/writer
+	QSettings m_Settings;
 
 private Q_SLOTS:
+
 	// stacked widget management
-	void on_status_pushbutton_toggled(bool checked);
-	void on_settings_pushbutton_toggled(bool checked);
-	void on_help_pushbutton_toggled(bool checked);
-	void on_about_pushbutton_toggled(bool checked);
+	void on_status_pushbutton_toggled( bool checked );
+	void on_settings_pushbutton_toggled( bool checked );
+	void on_help_pushbutton_toggled( bool checked );
+	void on_about_pushbutton_toggled( bool checked );
 
 	// proxy radio
 	void on_url_proxy_radiobutton_toggled( bool checked );
 };
-
 #endif // FREELAN_GUI_HPP
