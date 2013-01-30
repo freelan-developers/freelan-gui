@@ -677,24 +677,26 @@ Public License instead of this License.  But first, please read
 
 #include "Freelan_gui.hpp"
 
-Freelan_gui::Freelan_gui( QWidget *parent ) : QMainWindow( parent )
+Freelan_gui::Freelan_gui( QWidget* parent ) : QMainWindow( parent )
 	, m_Settings()
 {
-	setupUi(this);
+	setupUi( this );
 
 	// Build about page
 	setup_about_ui();
 }
 
-void Freelan_gui::changeEvent(QEvent *e)
+void Freelan_gui::changeEvent( QEvent* e )
 {
-	QMainWindow::changeEvent(e);
-	switch (e->type())
+	QMainWindow::changeEvent( e );
+
+	switch ( e->type() )
 	{
-	case QEvent::LanguageChange:
-		retranslateUi(this);
+	case QEvent::LanguageChange :
+		retranslateUi( this );
 		break;
-	default:
+
+	default :
 		break;
 	}
 }
@@ -707,10 +709,10 @@ void Freelan_gui::setup_about_ui()
 	organisation_name_label->setText( QLatin1String( ORGANISATION_NAME ) );
 
 	const QString FREELAN_LINK( QLatin1Literal( "<html><head/><body><p><a href=\"http://www." )
-															+ QLatin1Literal( ORGANISATION_DOMAIN )
-															+ QLatin1Literal( "\"><span style=\" text-decoration: underline; color:#0000ff;\">http://www." )
-															+ QLatin1Literal( ORGANISATION_DOMAIN )
-															+ QLatin1Literal( "</span></a></p></body></html>" ) );
+	                            + QLatin1Literal( ORGANISATION_DOMAIN )
+	                            + QLatin1Literal( "\"><span style=\" text-decoration: underline; color:#0000ff;\">http://www." )
+	                            + QLatin1Literal( ORGANISATION_DOMAIN )
+	                            + QLatin1Literal( "</span></a></p></body></html>" ) );
 
 	organisation_domain_label->setTextFormat( Qt::RichText );
 	organisation_domain_label->setText( FREELAN_LINK );
@@ -718,7 +720,7 @@ void Freelan_gui::setup_about_ui()
 
 void Freelan_gui::on_status_pushbutton_toggled( bool checked )
 {
-	if( checked )
+	if ( checked )
 	{
 		stacked_widget->setCurrentWidget( status_page );
 	}
@@ -726,7 +728,7 @@ void Freelan_gui::on_status_pushbutton_toggled( bool checked )
 
 void Freelan_gui::on_settings_pushbutton_toggled( bool checked )
 {
-	if( checked )
+	if ( checked )
 	{
 		stacked_widget->setCurrentWidget( settings_page );
 	}
@@ -734,7 +736,7 @@ void Freelan_gui::on_settings_pushbutton_toggled( bool checked )
 
 void Freelan_gui::on_help_pushbutton_toggled( bool checked )
 {
-	if( checked )
+	if ( checked )
 	{
 		stacked_widget->setCurrentWidget( help_page );
 	}
@@ -742,7 +744,7 @@ void Freelan_gui::on_help_pushbutton_toggled( bool checked )
 
 void Freelan_gui::on_about_pushbutton_toggled( bool checked )
 {
-	if( checked )
+	if ( checked )
 	{
 		stacked_widget->setCurrentWidget( about_page );
 	}
