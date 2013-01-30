@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>503</width>
+    <width>560</width>
     <height>380</height>
    </rect>
   </property>
@@ -132,7 +132,7 @@
     <item>
      <widget class="QStackedWidget" name="stacked_widget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="status_page">
        <layout class="QVBoxLayout">
@@ -179,6 +179,9 @@
             </property>
             <item>
              <widget class="QScrollArea" name="server_scrollarea">
+              <property name="autoFillBackground">
+               <bool>false</bool>
+              </property>
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
               </property>
@@ -192,9 +195,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>361</width>
-                 <height>1558</height>
+                 <y>-391</y>
+                 <width>418</width>
+                 <height>1497</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -349,7 +352,7 @@
                       <item row="3" column="0">
                        <layout class="QGridLayout" name="gridLayout">
                         <item row="0" column="0">
-                         <widget class="QRadioButton" name="radioButton_2">
+                         <widget class="QRadioButton" name="url_proxy_radiobutton">
                           <property name="text">
                            <string>URL:</string>
                           </property>
@@ -359,7 +362,11 @@
                          </widget>
                         </item>
                         <item row="0" column="1">
-                         <widget class="QLineEdit" name="lineEdit_4"/>
+                         <widget class="QLineEdit" name="url_proxy_lineEdit">
+                          <property name="enabled">
+                           <bool>false</bool>
+                          </property>
+                         </widget>
                         </item>
                         <item row="0" column="2">
                          <spacer name="horizontalSpacer_10">
@@ -387,7 +394,7 @@
                        </layout>
                       </item>
                       <item row="2" column="0">
-                       <widget class="QRadioButton" name="radioButton">
+                       <widget class="QRadioButton" name="system_proxy_radiobutton">
                         <property name="text">
                          <string>System</string>
                         </property>
@@ -397,7 +404,7 @@
                        </widget>
                       </item>
                       <item row="1" column="0">
-                       <widget class="QRadioButton" name="radioButton_3">
+                       <widget class="QRadioButton" name="no_proxy_radiobutton">
                         <property name="text">
                          <string>No proxy</string>
                         </property>
@@ -480,23 +487,6 @@
                       <string>The endpoints to announce to the other hosts</string>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_6">
-                      <item row="0" column="0" colspan="2">
-                       <widget class="QLabel" name="label_16">
-                        <property name="text">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Those endpoints will be send, as they are, to other hosts wanting to reach us. You may specify IP adresses or host names.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
-                        <property name="wordWrap">
-                         <bool>true</bool>
-                        </property>
-                       </widget>
-                      </item>
-                      <item row="1" column="0">
-                       <widget class="QLabel" name="label_2">
-                        <property name="text">
-                         <string>Endpoints:</string>
-                        </property>
-                       </widget>
-                      </item>
                       <item row="1" column="1" rowspan="2">
                        <widget class="QListWidget" name="listWidget">
                         <property name="maximumSize">
@@ -504,6 +494,13 @@
                           <width>16777215</width>
                           <height>100</height>
                          </size>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="label_2">
+                        <property name="text">
+                         <string>Endpoints:</string>
                         </property>
                        </widget>
                       </item>
@@ -520,7 +517,30 @@
                         </property>
                        </spacer>
                       </item>
-                      <item row="3" column="1">
+                      <item row="1" column="2">
+                       <spacer name="horizontalSpacer">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                      <item row="0" column="0" colspan="3">
+                       <widget class="QLabel" name="label_16">
+                        <property name="text">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Those endpoints will be send, as they are, to other hosts wanting to reach us. You may specify IP adresses or host names.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="wordWrap">
+                         <bool>true</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="1" colspan="2">
                        <widget class="QLabel" name="label_18">
                         <property name="text">
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;0.0.0.0 as a host part will be replaced by the server with you known public IPv4 address&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;:: as a host part will be replaced by the server with you known public IPv6 address.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -793,8 +813,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>361</width>
-                 <height>982</height>
+                 <width>418</width>
+                 <height>964</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -961,6 +981,13 @@
                    <string>The contact list</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_16">
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_32">
+                     <property name="text">
+                      <string>Contacts:</string>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="0" column="0" colspan="2">
                     <widget class="QLabel" name="label_26">
                      <property name="text">
@@ -968,13 +995,6 @@
                      </property>
                      <property name="wordWrap">
                       <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="label_32">
-                     <property name="text">
-                      <string>Contacts:</string>
                      </property>
                     </widget>
                    </item>
@@ -1001,7 +1021,20 @@
                      </property>
                     </spacer>
                    </item>
-                   <item row="3" column="1">
+                   <item row="1" column="2">
+                    <spacer name="horizontalSpacer_5">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item row="3" column="1" colspan="2">
                     <widget class="QLabel" name="label_19">
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Examples: 192.168.0.1, [fe80::1]:12000, hostname:1234, some.other.host.org:1234&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1153,6 +1186,19 @@
                      </property>
                     </spacer>
                    </item>
+                   <item row="1" column="2">
+                    <spacer name="horizontalSpacer_6">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
                   </layout>
                  </widget>
                 </item>
@@ -1204,9 +1250,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-597</y>
-                 <width>361</width>
-                 <height>910</height>
+                 <y>0</y>
+                 <width>418</width>
+                 <height>819</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1551,7 +1597,7 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>361</width>
+                 <width>418</width>
                  <height>349</height>
                 </rect>
                </property>
@@ -1684,8 +1730,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>361</width>
-                 <height>820</height>
+                 <width>418</width>
+                 <height>807</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_9">
