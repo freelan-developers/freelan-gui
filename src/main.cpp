@@ -681,11 +681,17 @@ Public License instead of this License.  But first, please read
 #include <QApplication>
 #pragma warning(pop)
 
-int main(int argc, char *argv[])
+int main( int argc, char* argv[] )
 {
-    QApplication application(argc, argv);
-    Freelan_gui freelan;
-    freelan.show();
-    
-    return application.exec();
+	QApplication application( argc, argv );
+
+	// This is mainly to use QSettings correctly
+	application.setOrganizationName( ORGANISATION_NAME );
+	application.setOrganizationDomain( ORGANISATION_DOMAIN );
+	application.setApplicationName( TARGET );
+
+	Freelan_gui freelan;
+	freelan.show();
+
+	return application.exec();
 }
