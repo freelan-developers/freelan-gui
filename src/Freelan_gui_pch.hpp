@@ -680,8 +680,7 @@ Public License instead of this License.  But first, please read
 
 #pragma warning(push, 0)
 #include <QtCore>
-#include <QtNetwork>
 #include <QtGui>
+#include <QtNetwork>
 #pragma warning(pop)
-
 #endif // FREELAN_GUI_PCH_HPP
