@@ -677,13 +677,25 @@ Public License instead of this License.  But first, please read
 
 #include "Freelan_gui.hpp"
 
-Freelan_gui::Freelan_gui( QWidget* parent ) : QMainWindow( parent )
-	, m_Settings()
+Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent ) : QMainWindow( parent )
+	, m_settings_filepath( settings_filepath )
+	, m_is_settings_modified( false )
 {
 	setupUi( this );
 
 	// Build about page
 	setup_about_ui();
+
+	// Read stored settings
+	readSettings();
+}
+
+Freelan_gui::~Freelan_gui()
+{
+	if ( m_is_settings_modified )
+	{
+		writeSettings();
+	}
 }
 
 void Freelan_gui::changeEvent( QEvent* e )
@@ -716,6 +728,16 @@ void Freelan_gui::setup_about_ui()
 
 	organisation_domain_label->setTextFormat( Qt::RichText );
 	organisation_domain_label->setText( FREELAN_LINK );
+}
+
+void Freelan_gui::readSettings()
+{
+	QSettings settings( m_settings_filepath, QSettings::IniFormat );
+}
+
+void Freelan_gui::writeSettings()
+{
+	QSettings settings( m_settings_filepath, QSettings::IniFormat );
 }
 
 void Freelan_gui::on_status_pushbutton_toggled( bool checked )

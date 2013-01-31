@@ -690,7 +690,7 @@ int main( int argc, char* argv[] )
 	application.setOrganizationDomain( ORGANISATION_DOMAIN );
 	application.setApplicationName( TARGET );
 
-	Freelan_gui freelan;
+	Freelan_gui freelan( "freelan.conf" );
 	freelan.show();
 
 	return application.exec();

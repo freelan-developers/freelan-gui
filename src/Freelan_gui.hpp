@@ -680,17 +680,21 @@ Public License instead of this License.  But first, please read
 
 #pragma warning(push, 0)
 #include "ui_Freelan_gui.h"
+#include <QMultiHash>
 #include <QSettings>
+#include <QVariant>
 #pragma warning(pop)
 
 class Freelan_gui : public QMainWindow
 	, private Ui::Freelan_gui
 {
-	Q_OBJECT
+	Q_OBJECT Q_PROPERTY( QVariant server_enabled READ server_enabled_read WRITE server_enabled_write RESET server_enabled_reset )
 
 public:
 
-	explicit Freelan_gui( QWidget* parent = 0 );
+	explicit Freelan_gui( const QString& settings_filepath, QWidget* parent = 0 );
+
+	virtual ~Freelan_gui();
 
 protected:
 
@@ -698,11 +702,65 @@ protected:
 
 private:
 
+	enum SETTINGS_KEY
+	{
+		SERVER_ENABLED
+		, SERVER_HOST
+		, SERVER_HTTPS_PROXY
+		, SERVER_USERNAME
+		, SERVER_PASSWORD
+		, SERVER_NETWORK
+		, SERVER_PUBLIC_ENDPOINT
+		, SERVER_USER_AGENT
+		, SERVER_PROTOCOL
+		, SERVER_CA_INFO_FILE
+		, SERVER_DISABLE_PEER_VERIFICATION
+		, SERVER_DISABLE_HOST_VERIFICATION
+		, FSCP_HOSTNAME_RESOLUTION_PROTOCOL
+		, FSCP_LISTEN_ON
+		, FSCP_HELLO_TIMEOUT
+		, FSCP_CONTACT
+		, FSCP_ACCEPT_CONTACT_REQUESTS
+		, FSCP_ACCEPT_CONTACTS
+		, FSCP_DYNAMIC_CONTACT_FILE
+		, FSCP_NEVER_CONTACT
+		, TAP_ADAPTER_ENABLED
+		, TAP_ADAPTER_IPV4_ADDRESS_PREFIX_LENGTH
+		, TAP_ADAPTER_IPV6_ADDRESS_PREFIX_LENGTH
+		, TAP_ADAPTER_ARP_PROXY_ENABLED
+		, TAP_ADAPTER_ARP_PROXY_FAKE_ETHERNET_ADDRESS
+		, TAP_ADAPTER_DHCP_PROXY_ENABLED
+		, TAP_ADAPTER_DHCP_SERVER_IPV4_ADDRESS_PREFIX_LENGTH
+		, TAP_ADAPTER_DHCP_SERVER_IPV6_ADDRESS_PREFIX_LENGTH
+		, TAP_ADAPTER_UP_SCRIPT
+		, TAP_ADAPTER_DOWN_SCRIPT
+		, SWITCH_ROUTING_METHOD
+		, SWITCH_RELAY_MODE_ENABLED
+		, SECURITY_SIGNATURE_CERTIFICATE_FILE
+		, SECURITY_SIGNATURE_PRIVATE_KEY_FILE
+		, SECURITY_ENCRYPTION_CERTIFICATE_FILE
+		, SECURITY_ENCRYPTION_PRIVATE_KEY_FILE
+		, SECURITY_CERTIFICATE_VALIDATION_METHOD
+		, SECURITY_CERTIFICATE_VALIDATION_SCRIPT
+		, SECURITY_AUTHORITY_CERTIFICATE_FILE
+		, SECURITY_CERTIFICATE_REVOCATION_VALIDATION_METHOD
+		, SECURITY_CERTIFICATE_REVOCATION_LIST_FILE
+	};
+
+	QString m_settings_filepath;
+	bool m_is_settings_modified : 1;
+
 	// Build about page
 	void setup_about_ui();
 
-	// QSettings is used as ini file reader/writer
-	QSettings m_Settings;
+	// Settings serialization
+	void readSettings();
+	void writeSettings();
+
+	// Property accessor
+	inline QVariant server_enabled_read() { return server_groupbox->isChecked(); }
+	inline void server_enabled_write( const QVariant& variant ) { server_groupbox->setChecked( variant.toBool() ); }
+	inline void server_enabled_reset() { server_enabled_write( false ); }
 
 private Q_SLOTS:
 
