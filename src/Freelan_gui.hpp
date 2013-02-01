@@ -689,7 +689,7 @@ class Freelan_gui
 	: public QMainWindow
 	, private Ui::Freelan_gui
 {
-	Q_OBJECT Q_PROPERTY( QVariant server_enabled READ server_enabled_read WRITE server_enabled_write )
+	Q_OBJECT
 
 public:
 
@@ -730,7 +730,6 @@ public:
 	};
 
 	QString m_settings_filepath;
-	bool m_is_settings_modified : 1;
 
 	// Hash that contains the applied value, default value, and  read, write, and reset function pointer to manipulate the GUI
 	QHash< const char*, QHash< const char*, SettingsWrapper > > m_settings_wrappers;
@@ -743,6 +742,9 @@ public:
 	void readSettingsFromFile();
 	void writeSettingsToFile() const;
 
+	// Called to set the correct state on settings buttonbox
+	void update_settings_buttonbox();
+
 	// Property accessors
 	inline QVariant server_enabled_read() const { return server_groupbox->isChecked(); }
 	inline void server_enabled_write( const QVariant& variant ) { server_groupbox->setChecked( variant.toBool() ); }
@@ -750,12 +752,15 @@ public:
 private Q_SLOTS:
 
 	// stacked widget management
-	void on_status_pushbutton_toggled( bool checked );
-	void on_settings_pushbutton_toggled( bool checked );
-	void on_help_pushbutton_toggled( bool checked );
-	void on_about_pushbutton_toggled( bool checked );
+	void on_status_pushbutton_toggled( bool toggled );
+	void on_settings_pushbutton_toggled( bool toggled );
+	void on_help_pushbutton_toggled( bool toggled );
+	void on_about_pushbutton_toggled( bool toggled );
+
+	// Server page
+	void on_server_groupbox_toggled( bool ) { update_settings_buttonbox(); }
 
 	// proxy radio
-	void on_url_proxy_radiobutton_toggled( bool checked );
+	void on_url_proxy_radiobutton_toggled( bool toggled );
 };
 #endif // FREELAN_GUI_HPP

@@ -729,7 +729,6 @@ static const char* const SETTINGS_KEY_CERTIFICATE_REVOCATION_LIST_FILE = "certif
 Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	: QMainWindow( parent )
 	, m_settings_filepath( settings_filepath )
-	, m_is_settings_modified( false )
 	, m_settings_wrappers()
 {
 	setupUi( this );
@@ -746,10 +745,6 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 
 Freelan_gui::~Freelan_gui()
 {
-	if ( m_is_settings_modified )
-	{
-		writeSettingsToFile();
-	}
 }
 
 void Freelan_gui::changeEvent( QEvent* e )
@@ -821,13 +816,17 @@ void Freelan_gui::readSettingsFromFile()
 			SettingsWrapper& settings_wrapper = grouped_settings_wrappers[ key ];
 
 			// Read the settings value from file
-			const QVariant& value = settings_file.value( key, settings_wrapper.m_default_value );
+			const QVariant& value = settings_file.value( key );
+
+			// If we read a value
+			if( !value.isNull() )
+			{
+				// Store the value so we can do "revert" when editing the setting in the GUI
+				settings_wrapper.m_applied_value = value;
+			}
 
 			// Write the value to the GUI
 			( this->*settings_wrapper.m_write )( value );
-
-			// Now that the value has been applied, store it so we can do "revert" when editing the setting in the GUI
-			settings_wrapper.m_applied_value = value;
 		}
 
 		// End the group on the settings file
@@ -840,40 +839,83 @@ void Freelan_gui::writeSettingsToFile() const
 	QSettings settings( m_settings_filepath, QSettings::IniFormat );
 }
 
-void Freelan_gui::on_status_pushbutton_toggled( bool checked )
+void Freelan_gui::update_settings_buttonbox()
 {
-	if ( checked )
+	// Reset
+	bool are_settings_modified = false;
+	bool are_settings_empty = false;
+	bool are_settings_default = true;
+
+	// For each "group"
+	const QList< const char* >& groups = m_settings_wrappers.keys();
+
+	for ( int i = groups.count() ; !are_settings_modified && !are_settings_empty && are_settings_default && --i >= 0 ; )
+	{
+		// Get the current group name
+		const char* const group = groups.at( i );
+
+		// Get the settings "hash"
+		const QHash< const char*, SettingsWrapper >& grouped_settings_wrappers = m_settings_wrappers[ group ];
+
+		// For each "key"
+		const QList< const char* >& keys = grouped_settings_wrappers.keys();
+
+		for ( int j = keys.count() ; !are_settings_modified && !are_settings_empty && are_settings_default && --j >= 0 ; )
+		{
+			// Get the current key name
+			const char* const key = keys.at( j );
+
+			// Get the settings wrapper object so we can call the "write" function
+			const SettingsWrapper& settings_wrapper = grouped_settings_wrappers[ key ];
+
+			// Read the value from the GUI
+			const QVariant& currentValue = ( this->*settings_wrapper.m_read )();
+
+			are_settings_empty = settings_wrapper.m_applied_value.isNull();
+			are_settings_modified = !are_settings_empty && currentValue != settings_wrapper.m_applied_value;
+			are_settings_default = currentValue == settings_wrapper.m_default_value;
+		}
+	}
+
+	settings_buttonbox->button( QDialogButtonBox::Save )->setEnabled( are_settings_empty || are_settings_modified );
+	settings_buttonbox->button( QDialogButtonBox::Discard )->setEnabled( are_settings_modified );
+	settings_buttonbox->button( QDialogButtonBox::RestoreDefaults )->setEnabled( !are_settings_default );
+}
+
+void Freelan_gui::on_status_pushbutton_toggled( bool toggled )
+{
+	if ( toggled )
 	{
 		stacked_widget->setCurrentWidget( status_page );
 	}
 }
 
-void Freelan_gui::on_settings_pushbutton_toggled( bool checked )
+void Freelan_gui::on_settings_pushbutton_toggled( bool toggled )
 {
-	if ( checked )
+	if ( toggled )
 	{
 		stacked_widget->setCurrentWidget( settings_page );
 	}
 }
 
-void Freelan_gui::on_help_pushbutton_toggled( bool checked )
+void Freelan_gui::on_help_pushbutton_toggled( bool toggled )
 {
-	if ( checked )
+	if ( toggled )
 	{
 		stacked_widget->setCurrentWidget( help_page );
 	}
 }
 
-void Freelan_gui::on_about_pushbutton_toggled( bool checked )
+void Freelan_gui::on_about_pushbutton_toggled( bool toggled )
 {
-	if ( checked )
+	if ( toggled )
 	{
 		stacked_widget->setCurrentWidget( about_page );
 	}
 }
 
-void Freelan_gui::on_url_proxy_radiobutton_toggled( bool checked )
+void Freelan_gui::on_url_proxy_radiobutton_toggled( bool toggled )
 {
 	// Enable url_proxy_lineEdit when url_proxy_radiobutton is checked
-	url_proxy_lineEdit->setEnabled( checked );
+	url_proxy_lineEdit->setEnabled( toggled );
 }

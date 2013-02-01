@@ -2107,9 +2107,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QDialogButtonBox" name="buttonBox">
+         <widget class="QDialogButtonBox" name="settings_buttonbox">
           <property name="standardButtons">
-           <set>QDialogButtonBox::Cancel|QDialogButtonBox::Reset|QDialogButtonBox::Save</set>
+           <set>QDialogButtonBox::Discard|QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
           </property>
          </widget>
         </item>
