@@ -677,44 +677,77 @@ Public License instead of this License.  But first, please read
 
 #include "Freelan_gui.hpp"
 
-const QHash< Freelan_gui::SETTINGS_GROUP, const char* const >& settings_group_to_char_initializer()
-{
-	static QHash< Freelan_gui::SETTINGS_GROUP, const char* const > settings_group_to_char;
+// Group string constants
+static const char* const SETTINGS_GROUP_SERVER = "server";
+static const char* const SETTINGS_GROUP_FSCP = "fscp";
+static const char* const SETTINGS_GROUP_TAP_ADAPTER = "tap_adapter";
+static const char* const SETTINGS_GROUP_SWITCH = "switch";
+static const char* const SETTINGS_GROUP_SECURITY = "security";
 
-	return settings_group_to_char;
-}
-
-const QHash< Freelan_gui::SETTINGS_GROUP, const char* const >& Freelan_gui::s_settings_group_to_char = settings_group_to_char_initializer();
-
-
-const QHash< Freelan_gui::SETTINGS_KEY, const char* const >& settings_key_to_char_initializer()
-{
-	static QHash< Freelan_gui::SETTINGS_KEY, const char* const > settings_key_to_char;
-
-	return settings_key_to_char;
-}
-
-const QHash< Freelan_gui::SETTINGS_KEY, const char* const >& Freelan_gui::s_settings_key_to_char = settings_key_to_char_initializer();
+// Key string constants
+static const char* const SETTINGS_KEY_ENABLED = "enabled";
+static const char* const SETTINGS_KEY_HOST = "host";
+static const char* const SETTINGS_KEY_PROXY = "proxy";
+static const char* const SETTINGS_KEY_USERNAME = "username";
+static const char* const SETTINGS_KEY_PASSWORD = "password";
+static const char* const SETTINGS_KEY_NETWORK = "network";
+static const char* const SETTINGS_KEY_PUBLIC_ENDPOINT = "public_endpoint";
+static const char* const SETTINGS_KEY_USER_AGENT = "user_agent";
+static const char* const SETTINGS_KEY_PROTOCOL = "protocol";
+static const char* const SETTINGS_KEY_CA_INFO_FILE = "ca_info_file";
+static const char* const SETTINGS_KEY_DISABLE_PEER_VERIFICATION = "disable_peer_verification";
+static const char* const SETTINGS_KEY_DISABLE_HOST_VERIFICATION = "disable_host_verification";
+static const char* const SETTINGS_KEY_HOSTNAME_RESOLUTION_PROTOCOL = "hostname_resolution_protocol";
+static const char* const SETTINGS_KEY_LISTEN_ON = "listen_on";
+static const char* const SETTINGS_KEY_HELLO_TIMEOUT = "hello_timeout";
+static const char* const SETTINGS_KEY_CONTACT = "contact";
+static const char* const SETTINGS_KEY_ACCEPT_CONTACT_REQUESTS = "accept_contact_requests";
+static const char* const SETTINGS_KEY_ACCEPT_CONTACTS = "accept_contacts";
+static const char* const SETTINGS_KEY_DYNAMIC_CONTACT_FILE = "dynamic_contact_file";
+static const char* const SETTINGS_KEY_NEVER_CONTACT = "never_contact";
+static const char* const SETTINGS_KEY_IPV4_ADDRESS_PREFIX_LENGTH = "ipv4_address_prefix_length";
+static const char* const SETTINGS_KEY_IPV6_ADDRESS_PREFIX_LENGTH = "ipv6_address_prefix_length";
+static const char* const SETTINGS_KEY_ARP_PROXY_ENABLED = "arp_proxy_enabled";
+static const char* const SETTINGS_KEY_ARP_PROXY_FAKE_ETHERNET_ADDRESS = "arp_proxy_fake_ethernet_address";
+static const char* const SETTINGS_KEY_DHCP_PROXY_ENABLED = "dhcp_proxy_enabled";
+static const char* const SETTINGS_KEY_DHCP_SERVER_IPV4_ADDRESS_PREFIX_LENGTH = "dhcp_server_ipv4_address_prefix_length";
+static const char* const SETTINGS_KEY_DHCP_SERVER_IPV6_ADDRESS_PREFIX_LENGTH = "dhcp_server_ipv6_address_prefix_length";
+static const char* const SETTINGS_KEY_UP_SCRIPT = "up_script";
+static const char* const SETTINGS_KEY_DOWN_SCRIPT = "down_script";
+static const char* const SETTINGS_KEY_ROUTING_METHOD = "routing_method";
+static const char* const SETTINGS_KEY_RELAY_MODE_ENABLED = "relay_mode_enabled";
+static const char* const SETTINGS_KEY_SIGNATURE_CERTIFICATE_FILE = "signature_certificate_file";
+static const char* const SETTINGS_KEY_SIGNATURE_PRIVATE_KEY_FILE = "signature_private_key_file";
+static const char* const SETTINGS_KEY_ENCRYPTION_CERTIFICATE_FILE = "encryption_certificate_file";
+static const char* const SETTINGS_KEY_ENCRYPTION_PRIVATE_KEY_FILE = "encryption_private_key_file";
+static const char* const SETTINGS_KEY_CERTIFICATE_VALIDATION_METHOD = "certificate_validation_method";
+static const char* const SETTINGS_KEY_CERTIFICATE_VALIDATION_SCRIPT = "certificate_validation_script";
+static const char* const SETTINGS_KEY_AUTHORITY_CERTIFICATE_FILE = "authority_certificate_file";
+static const char* const SETTINGS_KEY_CERTIFICATE_REVOCATION_VALIDATION_METHOD = "certificate_revocation_validation_method";
+static const char* const SETTINGS_KEY_CERTIFICATE_REVOCATION_LIST_FILE = "certificate_revocation_list_file";
 
 Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent ) : QMainWindow( parent )
 	, m_settings_filepath( settings_filepath )
 	, m_is_settings_modified( false )
-	, m_settings_cache()
+	, m_settings_wrappers()
 {
 	setupUi( this );
 
 	// Build about page
 	setup_about_ui();
 
+	// Build settings hash
+	registerSettings();
+
 	// Read stored settings
-	readSettings();
+	readSettingsFromFile();
 }
 
 Freelan_gui::~Freelan_gui()
 {
 	if ( m_is_settings_modified )
 	{
-		writeSettings();
+		writeSettingsToFile();
 	}
 }
 
@@ -750,12 +783,58 @@ void Freelan_gui::setup_about_ui()
 	organisation_domain_label->setText( FREELAN_LINK );
 }
 
-void Freelan_gui::readSettings()
+void Freelan_gui::registerSettings()
 {
-	QSettings settings( m_settings_filepath, QSettings::IniFormat );
+	// Each "registered" settings will be saved and restored by calling the given "read" and "write" function.
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_ENABLED ] = SettingsWrapper( &Freelan_gui::server_enabled_read, &Freelan_gui::server_enabled_write, false );
 }
 
-void Freelan_gui::writeSettings()
+void Freelan_gui::readSettingsFromFile()
+{
+	// Initialize the QSettings object to read "m_settings_filepath" as a ini file
+	QSettings settings_file( m_settings_filepath, QSettings::IniFormat );
+
+	// For each "group"
+	const QList< const char* >& groups = m_settings_wrappers.keys();
+
+	for ( int i = groups.count() ; --i >= 0 ; )
+	{
+		// Get the current group name
+		const char* const group = groups.at( i );
+
+		// Set the "group" marker on the settings file
+		settings_file.beginGroup( group );
+
+		// Get the settings "hash"
+		QHash< const char*, SettingsWrapper >& grouped_settings_wrappers = m_settings_wrappers[ group ];
+
+		// For each "key"
+		const QList< const char* >& keys = grouped_settings_wrappers.keys();
+
+		for ( int j = keys.count() ; --j >= 0 ; )
+		{
+			// Get the current key name
+			const char* const key = keys.at( j );
+
+			// Get the settings wrapper object so we can call the "write" function
+			SettingsWrapper& settings_wrapper = grouped_settings_wrappers[ key ];
+
+			// Read the settings value from file
+			const QVariant& value = settings_file.value( key, settings_wrapper.m_default_value );
+
+			// Write the value to the GUI
+			( this->*settings_wrapper.m_write )( value );
+
+			// Now that the value has been applied, store it so we can do "revert" when editing the setting in the GUI
+			settings_wrapper.m_applied_value = value;
+		}
+
+		// End the group on the settings file
+		settings_file.endGroup();
+	}
+} // readSettingsFromFile
+
+void Freelan_gui::writeSettingsToFile() const
 {
 	QSettings settings( m_settings_filepath, QSettings::IniFormat );
 }

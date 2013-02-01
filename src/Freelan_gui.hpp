@@ -688,63 +688,9 @@ Public License instead of this License.  But first, please read
 class Freelan_gui : public QMainWindow
 	, private Ui::Freelan_gui
 {
-	Q_OBJECT
-	Q_PROPERTY( QVariant server_enabled READ server_enabled_read WRITE server_enabled_write RESET server_enabled_reset )
+	Q_OBJECT Q_PROPERTY( QVariant server_enabled READ server_enabled_read WRITE server_enabled_write )
 
 public:
-
-	enum SETTINGS_GROUP
-	{
-		SETTINGS_GROUP_SERVER
-		, SETTINGS_GROUP_FSCP
-		, SETTINGS_GROUP_TAP_ADAPTER
-		, SETTINGS_GROUP_SWITCH
-		, SETTINGS_GROUP_SECURITY
-	};
-
-	enum SETTINGS_KEY
-	{
-		SETTINGS_KEY_ENABLED
-		, SETTINGS_KEY_HOST
-		, SETTINGS_KEY_PROXY
-		, SETTINGS_KEY_USERNAME
-		, SETTINGS_KEY_PASSWORD
-		, SETTINGS_KEY_NETWORK
-		, SETTINGS_KEY_PUBLIC_ENDPOINT
-		, SETTINGS_KEY_USER_AGENT
-		, SETTINGS_KEY_PROTOCOL
-		, SETTINGS_KEY_CA_INFO_FILE
-		, SETTINGS_KEY_DISABLE_PEER_VERIFICATION
-		, SETTINGS_KEY_DISABLE_HOST_VERIFICATION
-		, SETTINGS_KEY_HOSTNAME_RESOLUTION_PROTOCOL
-		, SETTINGS_KEY_LISTEN_ON
-		, SETTINGS_KEY_HELLO_TIMEOUT
-		, SETTINGS_KEY_CONTACT
-		, SETTINGS_KEY_ACCEPT_CONTACT_REQUESTS
-		, SETTINGS_KEY_ACCEPT_CONTACTS
-		, SETTINGS_KEY_DYNAMIC_CONTACT_FILE
-		, SETTINGS_KEY_NEVER_CONTACT
-		, SETTINGS_KEY_IPV4_ADDRESS_PREFIX_LENGTH
-		, SETTINGS_KEY_IPV6_ADDRESS_PREFIX_LENGTH
-		, SETTINGS_KEY_ARP_PROXY_ENABLED
-		, SETTINGS_KEY_ARP_PROXY_FAKE_ETHERNET_ADDRESS
-		, SETTINGS_KEY_DHCP_PROXY_ENABLED
-		, SETTINGS_KEY_DHCP_SERVER_IPV4_ADDRESS_PREFIX_LENGTH
-		, SETTINGS_KEY_DHCP_SERVER_IPV6_ADDRESS_PREFIX_LENGTH
-		, SETTINGS_KEY_UP_SCRIPT
-		, SETTINGS_KEY_DOWN_SCRIPT
-		, SETTINGS_KEY_ROUTING_METHOD
-		, SETTINGS_KEY_RELAY_MODE_ENABLED
-		, SETTINGS_KEY_SIGNATURE_CERTIFICATE_FILE
-		, SETTINGS_KEY_SIGNATURE_PRIVATE_KEY_FILE
-		, SETTINGS_KEY_ENCRYPTION_CERTIFICATE_FILE
-		, SETTINGS_KEY_ENCRYPTION_PRIVATE_KEY_FILE
-		, SETTINGS_KEY_CERTIFICATE_VALIDATION_METHOD
-		, SETTINGS_KEY_CERTIFICATE_VALIDATION_SCRIPT
-		, SETTINGS_KEY_AUTHORITY_CERTIFICATE_FILE
-		, SETTINGS_KEY_CERTIFICATE_REVOCATION_VALIDATION_METHOD
-		, SETTINGS_KEY_CERTIFICATE_REVOCATION_LIST_FILE
-	};
 
 	explicit Freelan_gui( const QString& settings_filepath, QWidget* parent = 0 );
 
@@ -756,27 +702,48 @@ protected:
 
 private:
 
+	// This class is used to hold the right function pointers for each setting
+	class SettingsWrapper
+	{
+public:
 
+		typedef QVariant ( Freelan_gui::* READ_FUNCTION_POINTER )() const;
+		typedef void ( Freelan_gui::* WRITE_FUNCTION_POINTER )( const QVariant& );
 
-	static const QHash< SETTINGS_GROUP, const char* const >& s_settings_group_to_char;
-	static const QHash< SETTINGS_KEY, const char* const >& s_settings_key_to_char;
+		SettingsWrapper( READ_FUNCTION_POINTER read = NULL
+		                 , WRITE_FUNCTION_POINTER write = NULL
+		                 , const QVariant& default_value = QVariant()
+		                 , const QVariant& applied_value = QVariant() ) : m_read( read )
+			, m_write( write )
+			, m_applied_value( applied_value )
+			, m_default_value( default_value )
+		{}
+
+		// get, set, and reset function pointers
+		READ_FUNCTION_POINTER m_read;
+		WRITE_FUNCTION_POINTER m_write;
+
+		QVariant m_applied_value;
+		QVariant m_default_value;
+	};
 
 	QString m_settings_filepath;
 	bool m_is_settings_modified : 1;
 
-	QHash< SETTINGS_GROUP, QMultiHash< SETTINGS_KEY, QVariant > > m_settings_cache;
+	// Hash that contains the applied value, default value, and  read, write, and reset function pointer to manipulate the GUI
+	QHash< const char*, QHash< const char*, SettingsWrapper > > m_settings_wrappers;
 
 	// Build about page
 	void setup_about_ui();
 
 	// Settings serialization
-	void readSettings();
-	void writeSettings();
+	void registerSettings();
+	void readSettingsFromFile();
+	void writeSettingsToFile() const;
 
-	// Property accessor
-	inline QVariant server_enabled_read() { return server_groupbox->isChecked(); }
+	// Property accessors
+	inline QVariant server_enabled_read() const { return server_groupbox->isChecked(); }
 	inline void server_enabled_write( const QVariant& variant ) { server_groupbox->setChecked( variant.toBool() ); }
-	inline void server_enabled_reset() { server_enabled_write( false ); }
 
 private Q_SLOTS:
 
