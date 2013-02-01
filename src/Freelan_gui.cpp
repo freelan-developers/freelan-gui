@@ -726,7 +726,8 @@ static const char* const SETTINGS_KEY_AUTHORITY_CERTIFICATE_FILE = "authority_ce
 static const char* const SETTINGS_KEY_CERTIFICATE_REVOCATION_VALIDATION_METHOD = "certificate_revocation_validation_method";
 static const char* const SETTINGS_KEY_CERTIFICATE_REVOCATION_LIST_FILE = "certificate_revocation_list_file";
 
-Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent ) : QMainWindow( parent )
+Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
+	: QMainWindow( parent )
 	, m_settings_filepath( settings_filepath )
 	, m_is_settings_modified( false )
 	, m_settings_wrappers()
