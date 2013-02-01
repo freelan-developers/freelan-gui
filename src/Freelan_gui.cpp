@@ -677,9 +677,29 @@ Public License instead of this License.  But first, please read
 
 #include "Freelan_gui.hpp"
 
+const QHash< Freelan_gui::SETTINGS_GROUP, const char* const >& settings_group_to_char_initializer()
+{
+	static QHash< Freelan_gui::SETTINGS_GROUP, const char* const > settings_group_to_char;
+
+	return settings_group_to_char;
+}
+
+const QHash< Freelan_gui::SETTINGS_GROUP, const char* const >& Freelan_gui::s_settings_group_to_char = settings_group_to_char_initializer();
+
+
+const QHash< Freelan_gui::SETTINGS_KEY, const char* const >& settings_key_to_char_initializer()
+{
+	static QHash< Freelan_gui::SETTINGS_KEY, const char* const > settings_key_to_char;
+
+	return settings_key_to_char;
+}
+
+const QHash< Freelan_gui::SETTINGS_KEY, const char* const >& Freelan_gui::s_settings_key_to_char = settings_key_to_char_initializer();
+
 Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent ) : QMainWindow( parent )
 	, m_settings_filepath( settings_filepath )
 	, m_is_settings_modified( false )
+	, m_settings_cache()
 {
 	setupUi( this );
 
