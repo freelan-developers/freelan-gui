@@ -685,7 +685,8 @@ Public License instead of this License.  But first, please read
 #include <QVariant>
 #pragma warning(pop)
 
-class Freelan_gui : public QMainWindow
+class Freelan_gui
+	: public QMainWindow
 	, private Ui::Freelan_gui
 {
 	Q_OBJECT Q_PROPERTY( QVariant server_enabled READ server_enabled_read WRITE server_enabled_write )
@@ -713,7 +714,8 @@ public:
 		SettingsWrapper( READ_FUNCTION_POINTER read = NULL
 		                 , WRITE_FUNCTION_POINTER write = NULL
 		                 , const QVariant& default_value = QVariant()
-		                 , const QVariant& applied_value = QVariant() ) : m_read( read )
+		                 , const QVariant& applied_value = QVariant() )
+			: m_read( read )
 			, m_write( write )
 			, m_applied_value( applied_value )
 			, m_default_value( default_value )
