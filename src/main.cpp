@@ -678,7 +678,11 @@ Public License instead of this License.  But first, please read
 #include "Freelan_gui.hpp"
 
 #pragma warning(push, 0)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wall"
+#pragma GCC diagnostic ignored "-Wextra"
 #include <QApplication>
+#pragma GCC diagnostic pop
 #pragma warning(pop)
 
 int main( int argc, char* argv[] )
