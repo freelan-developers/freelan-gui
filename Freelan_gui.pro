@@ -20,30 +20,34 @@ DEFINES *= QT_USE_FAST_OPERATOR_PLUS
 DEFINES *= QT_USE_QSTRINGBUILDER
 
 CONFIG(debug, debug|release) {
-  DEFINES *= __DEBUG__
+	DEFINES *= __DEBUG__
 }
 
-QMAKE_CFLAGS *= /W4 /WX
+win32{
+	QMAKE_CXXFLAGS *= /W4 /WX
+} else {
+	#QMAKE_CXXFLAGS *= -Wall -Wextra -Wno-pragmas -pedantic -pedantic-errors
+}
 
 PRECOMPILED_HEADER = src/Freelan_gui_pch.hpp
 
 OTHER_FILES += \
-    README.md \
-    LICENSE.md \
-    uncrustify_in.cfg \
-    uncrustify_out.cfg \
-    uncrustify.sh \
-    git-configure.sh \
-    .gitattributes \
-    .gitignore \
-    
+		README.md \
+		LICENSE.md \
+		uncrustify_in.cfg \
+		uncrustify_out.cfg \
+		uncrustify.sh \
+		git-configure.sh \
+		.gitattributes \
+		.gitignore \
+
 SOURCES += \
-    src/main.cpp \
-    src/Freelan_gui.cpp
+		src/main.cpp \
+		src/Freelan_gui.cpp
 
 HEADERS += \
-    src/Freelan_gui.hpp \
-    src/Freelan_gui_pch.hpp
-	
+		src/Freelan_gui.hpp \
+		src/Freelan_gui_pch.hpp
+
 FORMS += \
-    src/Freelan_gui.ui
+		src/Freelan_gui.ui

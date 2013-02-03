@@ -699,7 +699,8 @@ public:
 
 protected:
 
-	void changeEvent( QEvent* e );
+	void changeEvent( QEvent* event );
+	void timerEvent( QTimerEvent* event );
 
 private:
 
@@ -734,13 +735,18 @@ public:
 	// Hash that contains the applied value, default value, and  read, write, and reset function pointer to manipulate the GUI
 	QHash< const char*, QHash< const char*, SettingsWrapper > > m_settings_wrappers;
 
+	int m_update_timer_id;
+
 	// Build about page
 	void setup_about_ui();
 
 	// Settings serialization
 	void registerSettings();
 	void readSettingsFromFile();
-	void writeSettingsToFile() const;
+	void writeSettingsToFile();
+
+	// Schedule a
+	void schedule_settings_buttonbox_update();
 
 	// Called to set the correct state on settings buttonbox
 	void update_settings_buttonbox();
@@ -757,8 +763,11 @@ private Q_SLOTS:
 	void on_help_pushbutton_toggled( bool toggled );
 	void on_about_pushbutton_toggled( bool toggled );
 
+	// Settings buttonbox (reset to default, save, ...)
+	void on_settings_buttonbox_clicked( QAbstractButton* button );
+
 	// Server page
-	void on_server_groupbox_toggled( bool ) { update_settings_buttonbox(); }
+	inline void on_server_groupbox_toggled( bool ) { schedule_settings_buttonbox_update(); }
 
 	// proxy radio
 	void on_url_proxy_radiobutton_toggled( bool toggled );

@@ -730,6 +730,7 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	: QMainWindow( parent )
 	, m_settings_filepath( settings_filepath )
 	, m_settings_wrappers()
+	, m_update_timer_id()
 {
 	setupUi( this );
 
@@ -744,14 +745,13 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 }
 
 Freelan_gui::~Freelan_gui()
-{
-}
+{}
 
-void Freelan_gui::changeEvent( QEvent* e )
+void Freelan_gui::changeEvent( QEvent* event )
 {
-	QMainWindow::changeEvent( e );
+	QMainWindow::changeEvent( event );
 
-	switch ( e->type() )
+	switch ( event->type() )
 	{
 	case QEvent::LanguageChange :
 		retranslateUi( this );
@@ -759,6 +759,21 @@ void Freelan_gui::changeEvent( QEvent* e )
 
 	default :
 		break;
+	}
+}
+
+void Freelan_gui::timerEvent( QTimerEvent* event )
+{
+	if ( event->timerId() == m_update_timer_id )
+	{
+		killTimer( m_update_timer_id );
+		m_update_timer_id = 0;
+
+		update_settings_buttonbox();
+	}
+	else
+	{
+		QMainWindow::timerEvent( event );
 	}
 }
 
@@ -819,7 +834,7 @@ void Freelan_gui::readSettingsFromFile()
 			const QVariant& value = settings_file.value( key );
 
 			// If we read a value
-			if( !value.isNull() )
+			if ( !value.isNull() )
 			{
 				// Store the value so we can do "revert" when editing the setting in the GUI
 				settings_wrapper.m_applied_value = value;
@@ -834,9 +849,19 @@ void Freelan_gui::readSettingsFromFile()
 	}
 } // readSettingsFromFile
 
-void Freelan_gui::writeSettingsToFile() const
+void Freelan_gui::writeSettingsToFile()
 {
 	QSettings settings( m_settings_filepath, QSettings::IniFormat );
+}
+
+void Freelan_gui::schedule_settings_buttonbox_update()
+{
+	if ( m_update_timer_id != 0 )
+	{
+		killTimer( m_update_timer_id );
+	}
+
+	m_update_timer_id = startTimer( 0 );
 }
 
 void Freelan_gui::update_settings_buttonbox()
@@ -880,7 +905,7 @@ void Freelan_gui::update_settings_buttonbox()
 	settings_buttonbox->button( QDialogButtonBox::Save )->setEnabled( are_settings_empty || are_settings_modified );
 	settings_buttonbox->button( QDialogButtonBox::Discard )->setEnabled( are_settings_modified );
 	settings_buttonbox->button( QDialogButtonBox::RestoreDefaults )->setEnabled( !are_settings_default );
-}
+} // update_settings_buttonbox
 
 void Freelan_gui::on_status_pushbutton_toggled( bool toggled )
 {
@@ -913,6 +938,44 @@ void Freelan_gui::on_about_pushbutton_toggled( bool toggled )
 		stacked_widget->setCurrentWidget( about_page );
 	}
 }
+
+void Freelan_gui::on_settings_buttonbox_clicked( QAbstractButton* button )
+{
+	if ( button == settings_buttonbox->button( QDialogButtonBox::Save ) )
+	{
+		writeSettingsToFile();
+	}
+	else
+	{
+		const bool must_restore_defaults = button == settings_buttonbox->button( QDialogButtonBox::RestoreDefaults );
+
+		// For each "group"
+		const QList< const char* >& groups = m_settings_wrappers.keys();
+
+		for ( int i = groups.count() ; --i >= 0 ; )
+		{
+			// Get the current group name
+			const char* const group = groups.at( i );
+
+			// Get the settings "hash"
+			const QHash< const char*, SettingsWrapper >& grouped_settings_wrappers = m_settings_wrappers[ group ];
+
+			// For each "key"
+			const QList< const char* >& keys = grouped_settings_wrappers.keys();
+
+			for ( int j = keys.count() ; --j >= 0 ; )
+			{
+				// Get the current key name
+				const char* const key = keys.at( j );
+
+				// Get the settings wrapper object so we can call the "write" function
+				const SettingsWrapper& settings_wrapper = grouped_settings_wrappers[ key ];
+
+				( this->*settings_wrapper.m_write )( must_restore_defaults ? settings_wrapper.m_default_value : settings_wrapper.m_applied_value );
+			}
+		}
+	}
+} // on_settings_buttonbox_clicked
 
 void Freelan_gui::on_url_proxy_radiobutton_toggled( bool toggled )
 {
