@@ -798,6 +798,9 @@ void Freelan_gui::register_settings()
 {
 	// Each "registered" settings will be saved and restored by calling the given "read" and "write" function.
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_ENABLED ] = SettingsWrapper( &Freelan_gui::server_enabled_read, &Freelan_gui::server_enabled_write, false );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HOST ] = SettingsWrapper( &Freelan_gui::server_host_read, &Freelan_gui::server_host_write, "" );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USERNAME ] = SettingsWrapper( &Freelan_gui::server_username_read, &Freelan_gui::server_username_write, "" );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PASSWORD ] = SettingsWrapper( &Freelan_gui::server_password_read, &Freelan_gui::server_password_write, "" );
 }
 
 void Freelan_gui::read_settings_from_file()
@@ -920,7 +923,7 @@ void Freelan_gui::update_settings_buttonbox()
 	// For each "group"
 	const QList< const char* >& groups = m_settings_wrappers.keys();
 
-	for ( int i = groups.count() ; !are_settings_modified && !are_settings_empty && are_settings_default && --i >= 0 ; )
+	for ( int i = groups.count() ; ( !are_settings_modified || !are_settings_empty || are_settings_default ) && --i >= 0 ; )
 	{
 		// Get the current group name
 		const char* const group = groups.at( i );
@@ -931,7 +934,7 @@ void Freelan_gui::update_settings_buttonbox()
 		// For each "key"
 		const QList< const char* >& keys = grouped_settings_wrappers.keys();
 
-		for ( int j = keys.count() ; !are_settings_modified && !are_settings_empty && are_settings_default && --j >= 0 ; )
+		for ( int j = keys.count() ; ( !are_settings_modified || !are_settings_empty || are_settings_default ) && --j >= 0 ; )
 		{
 			// Get the current key name
 			const char* const key = keys.at( j );
@@ -942,9 +945,20 @@ void Freelan_gui::update_settings_buttonbox()
 			// Read the value from the GUI
 			const QVariant& currentValue = ( this->*settings_wrapper.m_read )();
 
-			are_settings_empty = settings_wrapper.m_applied_value.isNull();
-			are_settings_modified = !are_settings_empty && currentValue != settings_wrapper.m_applied_value;
-			are_settings_default = currentValue == settings_wrapper.m_default_value;
+			if( !are_settings_empty )
+			{
+				are_settings_empty = settings_wrapper.m_applied_value.isNull();
+			}
+
+			if( !are_settings_modified )
+			{
+				are_settings_modified = !are_settings_empty && currentValue != settings_wrapper.m_applied_value;
+			}
+
+			if( are_settings_default )
+			{
+				are_settings_default = currentValue == settings_wrapper.m_default_value;
+			}
 		}
 	}
 

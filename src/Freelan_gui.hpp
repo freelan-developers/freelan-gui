@@ -762,8 +762,18 @@ public:
 	void update_settings_buttonbox();
 
 	// Property accessors
+	// Server page
 	inline QVariant server_enabled_read() const { return server_groupbox->isChecked(); }
 	inline void server_enabled_write( const QVariant& variant ) { server_groupbox->setChecked( variant.toBool() ); }
+
+	inline QVariant server_host_read() const { return server_host_lineedit->text(); }
+	inline void server_host_write( const QVariant& variant ) { server_host_lineedit->setText( variant.toString() ); }
+
+	inline QVariant server_username_read() const { return server_username_lineedit->text(); }
+	inline void server_username_write( const QVariant& variant ) { server_username_lineedit->setText( variant.toString() ); }
+
+	inline QVariant server_password_read() const { return server_password_lineedit->text(); }
+	inline void server_password_write( const QVariant& variant ) { server_password_lineedit->setText( variant.toString() ); }
 
 private Q_SLOTS:
 
@@ -776,8 +786,12 @@ private Q_SLOTS:
 	// Settings buttonbox (reset to default, save, ...)
 	void on_settings_buttonbox_clicked( QAbstractButton* button );
 
+	// Update signals
 	// Server page
 	inline void on_server_groupbox_toggled( bool ) { schedule_settings_buttonbox_update(); }
+	inline void on_server_host_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
+	inline void on_server_username_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
+	inline void on_server_password_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
 
 	// proxy radio
 	void on_url_proxy_radiobutton_toggled( bool toggled );
