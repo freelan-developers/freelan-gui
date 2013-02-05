@@ -675,15 +675,21 @@ Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.
 **************************************************************************/
 
-#include "Freelan_gui.hpp"
-
-#pragma warning(push, 0)
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wall"
 #pragma GCC diagnostic ignored "-Wextra"
+#else
+#pragma warning(push, 0)
+#endif
 #include <QApplication>
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#else
 #pragma warning(pop)
+#endif
+
+#include "Freelan_gui.hpp"
 
 int main( int argc, char* argv[] )
 {

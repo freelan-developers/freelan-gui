@@ -678,13 +678,20 @@ Public License instead of this License.  But first, please read
 #ifndef FREELAN_GUI_PCH_HPP
 #define FREELAN_GUI_PCH_HPP
 
-#pragma warning(push, 0)
+#ifdef __GNUC__
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wall"
 #pragma GCC diagnostic ignored "-Wextra"
+#else
+#pragma warning(push, 0)
+#endif
 #include <QtCore>
 #include <QtGui>
 #include <QtNetwork>
+#ifdef __GNUC__
 #pragma GCC diagnostic pop
+#else
 #pragma warning(pop)
+#endif
+
 #endif // FREELAN_GUI_PCH_HPP
