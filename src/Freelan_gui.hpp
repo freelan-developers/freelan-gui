@@ -724,28 +724,34 @@ public:
 
 		SettingsWrapper( READ_FUNCTION_POINTER read = NULL
 		                 , WRITE_FUNCTION_POINTER write = NULL
+										 , const bool is_required = false
 		                 , const QVariant& default_value = QVariant()
 		                 , const QVariant& applied_value = QVariant() )
 			: m_read( read )
 			, m_write( write )
-			, m_applied_value( applied_value )
+			, m_is_required( is_required )
 			, m_default_value( default_value )
+			, m_applied_value( applied_value )
 		{}
 
 		// get, set, and reset function pointers
 		READ_FUNCTION_POINTER m_read;
 		WRITE_FUNCTION_POINTER m_write;
 
-		QVariant m_applied_value;
+		bool m_is_required:1;
+
 		QVariant m_default_value;
+		QVariant m_applied_value;
 	};
 
-	QString m_settings_filepath;
+	QString m_settings_filepath;	
 
 	// Hash that contains the applied value, default value, and  read, write, and reset function pointer to manipulate the GUI
 	QHash< const char*, QHash< const char*, SettingsWrapper > > m_settings_wrappers;
 
 	int m_update_timer_id;
+
+	bool m_are_required_settings_saved;
 
 	// Build about page
 	void setup_about_ui();
@@ -763,17 +769,23 @@ public:
 
 	// Property accessors
 	// Server page
-	inline QVariant server_enabled_read() const { return server_groupbox->isChecked(); }
-	inline void server_enabled_write( const QVariant& variant ) { server_groupbox->setChecked( variant.toBool() ); }
+	QVariant server_enabled_read() const { return server_groupbox->isChecked(); }
+	void server_enabled_write( const QVariant& variant ) { server_groupbox->setChecked( variant.toBool() ); }
 
-	inline QVariant server_host_read() const { return server_host_lineedit->text(); }
-	inline void server_host_write( const QVariant& variant ) { server_host_lineedit->setText( variant.toString() ); }
+	QVariant server_host_read() const { const QString& text = server_host_lineedit->text().trimmed(); return text.isEmpty() ? QVariant() : QVariant( text ); }
+	void server_host_write( const QVariant& variant ) { server_host_lineedit->setText( variant.toString() ); }
 
-	inline QVariant server_username_read() const { return server_username_lineedit->text(); }
-	inline void server_username_write( const QVariant& variant ) { server_username_lineedit->setText( variant.toString() ); }
+	QVariant server_username_read() const { const QString& text = server_username_lineedit->text().trimmed(); return text.isEmpty() ? QVariant() : QVariant( text ); }
+	void server_username_write( const QVariant& variant ) { server_username_lineedit->setText( variant.toString() ); }
 
-	inline QVariant server_password_read() const { return server_password_lineedit->text(); }
-	inline void server_password_write( const QVariant& variant ) { server_password_lineedit->setText( variant.toString() ); }
+	QVariant server_password_read() const { const QString& text = server_password_lineedit->text(); return text.isEmpty() ? QVariant() : QVariant( text ); }
+	void server_password_write( const QVariant& variant ) { server_password_lineedit->setText( variant.toString() ); }
+
+	QVariant server_https_proxy_read() const;
+	void server_https_proxy_write( const QVariant& variant );
+
+	QVariant server_network_read() const { const QString& text = server_network_lineedit->text(); return text.isEmpty() ? QVariant() : QVariant( text ); }
+	void server_network_write( const QVariant& variant ) { server_network_lineedit->setText( variant.toString() ); }
 
 private Q_SLOTS:
 
@@ -788,12 +800,14 @@ private Q_SLOTS:
 
 	// Update signals
 	// Server page
-	inline void on_server_groupbox_toggled( bool ) { schedule_settings_buttonbox_update(); }
-	inline void on_server_host_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
-	inline void on_server_username_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
-	inline void on_server_password_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
-
-	// proxy radio
-	void on_url_proxy_radiobutton_toggled( bool toggled );
+	void on_server_groupbox_toggled( bool ) { schedule_settings_buttonbox_update(); }
+	void on_server_host_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
+	void on_server_username_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
+	void on_server_password_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
+	void on_server_proxy_no_radiobutton_toggled( bool ) { schedule_settings_buttonbox_update(); }
+	void on_server_proxy_system_radiobutton_toggled( bool ) { schedule_settings_buttonbox_update(); }
+	void on_server_proxy_url_radiobutton_toggled( bool toggled );
+	void on_server_proxy_url_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
+	void on_server_network_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
 };
 #endif // FREELAN_GUI_HPP

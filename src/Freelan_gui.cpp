@@ -687,7 +687,7 @@ static const char* const SETTINGS_GROUP_SECURITY = "security";
 // Key string constants
 static const char* const SETTINGS_KEY_ENABLED = "enabled";
 static const char* const SETTINGS_KEY_HOST = "host";
-static const char* const SETTINGS_KEY_PROXY = "proxy";
+static const char* const SETTINGS_KEY_HTTPS_PROXY = "https_proxy";
 static const char* const SETTINGS_KEY_USERNAME = "username";
 static const char* const SETTINGS_KEY_PASSWORD = "password";
 static const char* const SETTINGS_KEY_NETWORK = "network";
@@ -731,6 +731,7 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	, m_settings_filepath( settings_filepath )
 	, m_settings_wrappers()
 	, m_update_timer_id()
+	, m_are_required_settings_saved( false )
 {
 	setupUi( this );
 
@@ -797,14 +798,18 @@ void Freelan_gui::setup_about_ui()
 void Freelan_gui::register_settings()
 {
 	// Each "registered" settings will be saved and restored by calling the given "read" and "write" function.
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_ENABLED ] = SettingsWrapper( &Freelan_gui::server_enabled_read, &Freelan_gui::server_enabled_write, false );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HOST ] = SettingsWrapper( &Freelan_gui::server_host_read, &Freelan_gui::server_host_write, "" );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USERNAME ] = SettingsWrapper( &Freelan_gui::server_username_read, &Freelan_gui::server_username_write, "" );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PASSWORD ] = SettingsWrapper( &Freelan_gui::server_password_read, &Freelan_gui::server_password_write, "" );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_ENABLED ] = SettingsWrapper( &Freelan_gui::server_enabled_read, &Freelan_gui::server_enabled_write, true, false );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HOST ] = SettingsWrapper( &Freelan_gui::server_host_read, &Freelan_gui::server_host_write );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USERNAME ] = SettingsWrapper( &Freelan_gui::server_username_read, &Freelan_gui::server_username_write );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PASSWORD ] = SettingsWrapper( &Freelan_gui::server_password_read, &Freelan_gui::server_password_write );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HTTPS_PROXY ] = SettingsWrapper( &Freelan_gui::server_https_proxy_read, &Freelan_gui::server_https_proxy_write );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_NETWORK ] = SettingsWrapper( &Freelan_gui::server_network_read, &Freelan_gui::server_network_write );
 }
 
 void Freelan_gui::read_settings_from_file()
 {
+	m_are_required_settings_saved = true;
+
 	// Initialize the QSettings object to read "m_settings_filepath" as a ini file
 	QSettings settings_file( m_settings_filepath, QSettings::IniFormat );
 
@@ -836,15 +841,16 @@ void Freelan_gui::read_settings_from_file()
 			// Read the settings value from file
 			const QVariant& value = settings_file.value( key );
 
-			// If we read a value
-			if ( !value.isNull() )
+			if( m_are_required_settings_saved && settings_wrapper.m_is_required && value.isNull() )
 			{
-				// Store the value so we can do "revert" when editing the setting in the GUI
-				settings_wrapper.m_applied_value = value;
+				m_are_required_settings_saved = false;
 			}
 
 			// Write the value to the GUI
 			( this->*settings_wrapper.m_write )( value );
+
+			// Store the value so we can do "revert" when editing the setting in the GUI
+			settings_wrapper.m_applied_value = value;
 		}
 
 		// End the group on the settings file
@@ -857,6 +863,9 @@ void Freelan_gui::read_settings_from_file()
 void Freelan_gui::write_settings_to_file()
 {
 	QSettings settings_file( m_settings_filepath, QSettings::IniFormat );
+
+	// We start from scratch
+	settings_file.clear();
 
 	// For each "group"
 	const QList< const char* >& groups = m_settings_wrappers.keys();
@@ -886,8 +895,12 @@ void Freelan_gui::write_settings_to_file()
 			// Read settings from gui
 			const QVariant& value = ( this->*settings_wrapper.m_read )();
 
-			// Write value to file
-			settings_file.setValue( key, value );
+			// Do not write default value or null value (not set)
+			if( settings_wrapper.m_is_required || ( settings_wrapper.m_default_value != value && !value.isNull() ) )
+			{
+				// Write value to file
+				settings_file.setValue( key, value );
+			}
 
 			// Set the applied value
 			settings_wrapper.m_applied_value = value;
@@ -896,6 +909,8 @@ void Freelan_gui::write_settings_to_file()
 		// End the group on the settings file
 		settings_file.endGroup();
 	}
+
+	m_are_required_settings_saved = true;
 
 	schedule_settings_buttonbox_update();
 } // write_settings_to_file
@@ -917,13 +932,12 @@ void Freelan_gui::update_settings_buttonbox()
 {
 	// Reset
 	bool are_settings_modified = false;
-	bool are_settings_empty = false;
-	bool are_settings_default = true;
+	bool are_settings_tainted = false;
 
 	// For each "group"
 	const QList< const char* >& groups = m_settings_wrappers.keys();
 
-	for ( int i = groups.count() ; ( !are_settings_modified || !are_settings_empty || are_settings_default ) && --i >= 0 ; )
+	for ( int i = groups.count() ; ( !are_settings_modified || !are_settings_tainted ) && --i >= 0 ; )
 	{
 		// Get the current group name
 		const char* const group = groups.at( i );
@@ -934,7 +948,7 @@ void Freelan_gui::update_settings_buttonbox()
 		// For each "key"
 		const QList< const char* >& keys = grouped_settings_wrappers.keys();
 
-		for ( int j = keys.count() ; ( !are_settings_modified || !are_settings_empty || are_settings_default ) && --j >= 0 ; )
+		for ( int j = keys.count() ; ( !are_settings_modified || !are_settings_tainted ) && --j >= 0 ; )
 		{
 			// Get the current key name
 			const char* const key = keys.at( j );
@@ -943,30 +957,52 @@ void Freelan_gui::update_settings_buttonbox()
 			const SettingsWrapper& settings_wrapper = grouped_settings_wrappers[ key ];
 
 			// Read the value from the GUI
-			const QVariant& currentValue = ( this->*settings_wrapper.m_read )();
-
-			if( !are_settings_empty )
-			{
-				are_settings_empty = settings_wrapper.m_applied_value.isNull();
-			}
+			const QVariant& value = ( this->*settings_wrapper.m_read )();
 
 			if( !are_settings_modified )
 			{
-				are_settings_modified = !are_settings_empty && currentValue != settings_wrapper.m_applied_value;
+				are_settings_modified = value != settings_wrapper.m_applied_value;
 			}
 
-			if( are_settings_default )
+			if( !are_settings_tainted )
 			{
-				are_settings_default = currentValue == settings_wrapper.m_default_value;
+				are_settings_tainted = value != settings_wrapper.m_default_value;
 			}
 		}
 	}
 
 	// Put the correct button state
-	settings_buttonbox->button( QDialogButtonBox::Save )->setEnabled( are_settings_empty || are_settings_modified );
+	settings_buttonbox->button( QDialogButtonBox::Save )->setEnabled( !m_are_required_settings_saved || are_settings_modified );
 	settings_buttonbox->button( QDialogButtonBox::Discard )->setEnabled( are_settings_modified );
-	settings_buttonbox->button( QDialogButtonBox::RestoreDefaults )->setEnabled( !are_settings_default );
+	settings_buttonbox->button( QDialogButtonBox::RestoreDefaults )->setEnabled( are_settings_tainted );
 } // update_settings_buttonbox
+
+QVariant Freelan_gui::server_https_proxy_read() const
+{
+	return server_proxy_no_radiobutton->isChecked() ? QVariant() : server_proxy_system_radiobutton->isChecked() ? QVariant( "" ) : QVariant( server_proxy_url_lineedit->text() );
+}
+
+void Freelan_gui::server_https_proxy_write( const QVariant& variant )
+{
+	if( variant.isNull() )
+	{
+		server_proxy_no_radiobutton->toggle();
+	}
+	else
+	{
+		const QString& proxy_string = variant.toString().trimmed();
+
+		if( proxy_string.isEmpty() )
+		{
+			server_proxy_system_radiobutton->toggle();
+		}
+		else
+		{
+			server_proxy_url_radiobutton->toggle();
+			server_proxy_url_lineedit->setText( proxy_string );
+		}
+	}
+}
 
 void Freelan_gui::on_status_pushbutton_toggled( bool toggled )
 {
@@ -1035,11 +1071,13 @@ void Freelan_gui::on_settings_buttonbox_clicked( QAbstractButton* button )
 				( this->*settings_wrapper.m_write )( must_restore_defaults ? settings_wrapper.m_default_value : settings_wrapper.m_applied_value );
 			}
 		}
+
+		schedule_settings_buttonbox_update();
 	}
 } // on_settings_buttonbox_clicked
 
-void Freelan_gui::on_url_proxy_radiobutton_toggled( bool toggled )
+void Freelan_gui::on_server_proxy_url_radiobutton_toggled( bool toggled )
 {
-	// Enable url_proxy_lineEdit when url_proxy_radiobutton is checked
-	url_proxy_lineEdit->setEnabled( toggled );
+	// Enable server_proxy_url_lineedit when server_proxy_url_radiobutton is checked
+	server_proxy_url_lineedit->setEnabled( toggled );
 }
