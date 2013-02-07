@@ -740,7 +740,7 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	setup_about_ui();
 
 	// Connect the row remover mapper
-	connect( &m_layout_deleter, SIGNAL(mapped(QObject*)), this, SLOT(on_m_layout_deleter_mapped(QObject*)) );
+	connect( &m_layout_deleter, SIGNAL( mapped( QObject* ) ), this, SLOT( on_m_layout_deleter_mapped( QObject* ) ) );
 
 	// Build settings hash
 	register_settings();
@@ -845,7 +845,7 @@ void Freelan_gui::read_settings_from_file()
 			// Read the settings value from file
 			const QVariant& value = settings_file.value( key );
 
-			if( m_are_required_settings_saved && settings_wrapper.m_is_required && value.isNull() )
+			if ( m_are_required_settings_saved && settings_wrapper.m_is_required && value.isNull() )
 			{
 				m_are_required_settings_saved = false;
 			}
@@ -900,7 +900,7 @@ void Freelan_gui::write_settings_to_file()
 			const QVariant& value = ( this->*settings_wrapper.m_read )();
 
 			// Do not write default value or null value (not set)
-			if( settings_wrapper.m_is_required || ( settings_wrapper.m_default_value != value && !value.isNull() ) )
+			if ( settings_wrapper.m_is_required || ( ( settings_wrapper.m_default_value != value ) && !value.isNull() ) )
 			{
 				// Write value to file
 				settings_file.setValue( key, value );
@@ -963,12 +963,12 @@ void Freelan_gui::update_settings_buttonbox()
 			// Read the value from the GUI
 			const QVariant& value = ( this->*settings_wrapper.m_read )();
 
-			if( !are_settings_modified )
+			if ( !are_settings_modified )
 			{
 				are_settings_modified = value != settings_wrapper.m_applied_value;
 			}
 
-			if( !are_settings_tainted )
+			if ( !are_settings_tainted )
 			{
 				are_settings_tainted = value != settings_wrapper.m_default_value;
 			}
@@ -988,7 +988,7 @@ QVariant Freelan_gui::server_https_proxy_read() const
 
 void Freelan_gui::server_https_proxy_write( const QVariant& variant )
 {
-	if( variant.isNull() )
+	if ( variant.isNull() )
 	{
 		server_proxy_no_radiobutton->toggle();
 	}
@@ -996,7 +996,7 @@ void Freelan_gui::server_https_proxy_write( const QVariant& variant )
 	{
 		const QString& proxy_string = variant.toString().trimmed();
 
-		if( proxy_string.isEmpty() )
+		if ( proxy_string.isEmpty() )
 		{
 			server_proxy_system_radiobutton->toggle();
 		}
@@ -1097,25 +1097,25 @@ void Freelan_gui::on_server_public_endpoints_add_toolButton_clicked()
 	// Add the widgets to the horizontal layout
 	QHBoxLayout* new_endpoints_horizontallayout = new QHBoxLayout();
 	new_endpoints_horizontallayout->addWidget( new_endpoints_lineedit );
-	new_endpoints_horizontallayout->addWidget( new_endpoints_toolbutton );	
+	new_endpoints_horizontallayout->addWidget( new_endpoints_toolbutton );
 
 	// Add the widget to the vertical layout
 	server_public_endpoints_verticallayout->addLayout( new_endpoints_horizontallayout );
 
 	// SignalMapper connection
 	m_layout_deleter.setMapping( new_endpoints_toolbutton, new_endpoints_horizontallayout );
-	connect( new_endpoints_toolbutton, SIGNAL(clicked()), &m_layout_deleter, SLOT(map()) );
+	connect( new_endpoints_toolbutton, SIGNAL( clicked() ), &m_layout_deleter, SLOT( map() ) );
 }
 
 void Freelan_gui::on_m_layout_deleter_mapped( QObject* object )
 {
 	// Use Qt kinda dynamic cast...
-	QLayout* const layout = qobject_cast<QLayout*>(object);
+	QLayout* const layout = qobject_cast< QLayout* >( object );
 
-	if( layout != NULL )
+	if ( layout != NULL )
 	{
 		// Remove all items in the layout
-		for( int i = layout->count() ; --i >= 0 ; )
+		for ( int i = layout->count() ; --i >= 0 ; )
 		{
 			QLayoutItem* const layout_item = layout->takeAt( i );
 			delete layout_item->widget();
