@@ -765,9 +765,6 @@ public:
 	void read_settings_from_file();
 	void write_settings_to_file();
 
-	// Schedule update on a timeout to avoid redondant call
-	void schedule_settings_buttonbox_update();
-
 	// Called to set the correct state on settings buttonbox
 	void update_settings_buttonbox();
 
@@ -791,7 +788,13 @@ public:
 	QVariant server_network_read() const { const QString& text = server_network_lineedit->text(); return text.isEmpty() ? QVariant() : QVariant( text ); }
 	void server_network_write( const QVariant& variant ) { server_network_lineedit->setText( variant.toString() ); }
 
+	QVariant server_public_endpoints_read() const;
+	void server_public_endpoints_write( const QVariant& variant );
+
 private Q_SLOTS:
+
+	// Schedule update on a timeout to avoid redondant call
+	void schedule_settings_buttonbox_update();
 
 	// stacked widget management
 	void on_status_pushbutton_toggled( bool toggled );
@@ -802,18 +805,8 @@ private Q_SLOTS:
 	// Settings buttonbox (reset to default, save, ...)
 	void on_settings_buttonbox_clicked( QAbstractButton* button );
 
-	// Update signals
-	// Server page
-	void on_server_groupbox_toggled( bool ) { schedule_settings_buttonbox_update(); }
-	void on_server_host_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
-	void on_server_username_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
-	void on_server_password_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
-	void on_server_proxy_no_radiobutton_toggled( bool ) { schedule_settings_buttonbox_update(); }
-	void on_server_proxy_system_radiobutton_toggled( bool ) { schedule_settings_buttonbox_update(); }
+	// Server proxy url switch
 	void on_server_proxy_url_radiobutton_toggled( bool toggled );
-
-	void on_server_proxy_url_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
-	void on_server_network_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
 
 	// Public endpoints add
 	void on_server_public_endpoints_add_toolButton_clicked();
