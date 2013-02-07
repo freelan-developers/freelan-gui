@@ -732,11 +732,15 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	, m_settings_wrappers()
 	, m_update_timer_id()
 	, m_are_required_settings_saved( false )
+	, m_layout_deleter()
 {
 	setupUi( this );
 
 	// Build about page
 	setup_about_ui();
+
+	// Connect the row remover mapper
+	connect( &m_layout_deleter, SIGNAL(mapped(QObject*)), this, SLOT(on_m_layout_deleter_mapped(QObject*)) );
 
 	// Build settings hash
 	register_settings();
@@ -1080,4 +1084,47 @@ void Freelan_gui::on_server_proxy_url_radiobutton_toggled( bool toggled )
 {
 	// Enable server_proxy_url_lineedit when server_proxy_url_radiobutton is checked
 	server_proxy_url_lineedit->setEnabled( toggled );
+}
+
+void Freelan_gui::on_server_public_endpoints_add_toolButton_clicked()
+{
+	// Create a new lineedit + toolbutton
+	QLineEdit* new_endpoints_lineedit = new QLineEdit( server_public_endpoints_groupbox );
+	QToolButton* new_endpoints_toolbutton = new QToolButton( server_public_endpoints_groupbox );
+	new_endpoints_toolbutton->setText( "-" );
+	new_endpoints_toolbutton->setMinimumSize( server_public_endpoints_add_toolButton->sizeHint() );
+
+	// Add the widgets to the horizontal layout
+	QHBoxLayout* new_endpoints_horizontallayout = new QHBoxLayout();
+	new_endpoints_horizontallayout->addWidget( new_endpoints_lineedit );
+	new_endpoints_horizontallayout->addWidget( new_endpoints_toolbutton );	
+
+	// Add the widget to the vertical layout
+	server_public_endpoints_verticallayout->addLayout( new_endpoints_horizontallayout );
+
+	// SignalMapper connection
+	m_layout_deleter.setMapping( new_endpoints_toolbutton, new_endpoints_horizontallayout );
+	connect( new_endpoints_toolbutton, SIGNAL(clicked()), &m_layout_deleter, SLOT(map()) );
+}
+
+void Freelan_gui::on_m_layout_deleter_mapped( QObject* object )
+{
+	// Use Qt kinda dynamic cast...
+	QLayout* const layout = qobject_cast<QLayout*>(object);
+
+	if( layout != NULL )
+	{
+		// Remove all items in the layout
+		for( int i = layout->count() ; --i >= 0 ; )
+		{
+			QLayoutItem* const layout_item = layout->takeAt( i );
+			delete layout_item->widget();
+			delete layout_item->layout();
+			delete layout_item->spacerItem();
+			delete layout_item;
+		}
+
+		// Delete later to be on the safe side..
+		layout->deleteLater();
+	}
 }

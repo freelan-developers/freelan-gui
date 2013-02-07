@@ -686,9 +686,11 @@ Public License instead of this License.  But first, please read
 #pragma warning(push, 0)
 #endif
 #include "ui_Freelan_gui.h"
-#include <QMultiHash>
+#include <QDebug>
+#include <QHash>
 #include <QSettings>
 #include <QVariant>
+#include <QSignalMapper>
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #else
@@ -753,6 +755,8 @@ public:
 
 	bool m_are_required_settings_saved;
 
+	QSignalMapper m_layout_deleter;
+
 	// Build about page
 	void setup_about_ui();
 
@@ -809,5 +813,11 @@ private Q_SLOTS:
 	void on_server_proxy_url_radiobutton_toggled( bool toggled );
 	void on_server_proxy_url_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
 	void on_server_network_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
+
+	// Public endpoints add
+	void on_server_public_endpoints_add_toolButton_clicked();
+
+	// Used to remove rows from layout
+	void on_m_layout_deleter_mapped( QObject* object );
 };
 #endif // FREELAN_GUI_HPP
