@@ -689,8 +689,8 @@ Public License instead of this License.  But first, please read
 #include <QDebug>
 #include <QHash>
 #include <QSettings>
-#include <QVariant>
 #include <QSignalMapper>
+#include <QVariant>
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #else
@@ -726,7 +726,7 @@ public:
 
 		SettingsWrapper( READ_FUNCTION_POINTER read = NULL
 		                 , WRITE_FUNCTION_POINTER write = NULL
-										 , const bool is_required = false
+		                 , const bool is_required = false
 		                 , const QVariant& default_value = QVariant()
 		                 , const QVariant& applied_value = QVariant() )
 			: m_read( read )
@@ -740,13 +740,13 @@ public:
 		READ_FUNCTION_POINTER m_read;
 		WRITE_FUNCTION_POINTER m_write;
 
-		bool m_is_required:1;
+		bool m_is_required : 1;
 
 		QVariant m_default_value;
 		QVariant m_applied_value;
 	};
 
-	QString m_settings_filepath;	
+	QString m_settings_filepath;
 
 	// Hash that contains the applied value, default value, and  read, write, and reset function pointer to manipulate the GUI
 	QHash< const char*, QHash< const char*, SettingsWrapper > > m_settings_wrappers;
@@ -811,6 +811,7 @@ private Q_SLOTS:
 	void on_server_proxy_no_radiobutton_toggled( bool ) { schedule_settings_buttonbox_update(); }
 	void on_server_proxy_system_radiobutton_toggled( bool ) { schedule_settings_buttonbox_update(); }
 	void on_server_proxy_url_radiobutton_toggled( bool toggled );
+
 	void on_server_proxy_url_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
 	void on_server_network_lineedit_textEdited( const QString& ) { schedule_settings_buttonbox_update(); }
 
