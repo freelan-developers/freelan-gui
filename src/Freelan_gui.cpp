@@ -1019,6 +1019,50 @@ void Freelan_gui::server_https_proxy_write( const QVariant& variant )
 	}
 }
 
+QVariant Freelan_gui::server_public_endpoints_read() const
+{
+	// First lineedit
+	QString text = server_public_endpoints_lineedit->text().trimmed();
+
+	// Loop accross all remaining lineedit
+	for ( int i = 0, end = server_public_endpoints_verticallayout->count() ; i < end ; ++i )
+	{
+		const QLayout* const child_layout = server_public_endpoints_verticallayout->itemAt( i )->layout();
+
+		if ( child_layout != NULL )
+		{
+			for ( int j = child_layout->count() ; --j >= 0 ; )
+			{
+				const QLineEdit* const lineedit = qobject_cast< QLineEdit* >( child_layout->itemAt( j )->widget() );
+
+				if ( lineedit != NULL )
+				{
+					const QString& fragment = lineedit->text().trimmed();
+
+					if ( !fragment.isEmpty() )
+					{
+						text.append( ',' );
+						text.append( fragment );
+					}
+				}
+			}
+		}
+	}
+
+	return text.isEmpty() ? QVariant() : QVariant( text );
+}
+
+void Freelan_gui::server_public_endpoints_write( const QVariant& variant )
+{
+	const QStringList& endpoints = variant.toString().split( ',' );
+
+	// First lineedit
+	server_public_endpoints_lineedit->setText( endpoints.isEmpty() ? QString::null : endpoints.first().trimmed() );
+
+	for ( int i = 1, end = endpoints.count() ; i < end ; ++i )
+	{}
+}
+
 void Freelan_gui::on_status_pushbutton_toggled( bool toggled )
 {
 	if ( toggled )
