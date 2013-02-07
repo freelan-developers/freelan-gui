@@ -808,6 +808,17 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PASSWORD ] = SettingsWrapper( &Freelan_gui::server_password_read, &Freelan_gui::server_password_write );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HTTPS_PROXY ] = SettingsWrapper( &Freelan_gui::server_https_proxy_read, &Freelan_gui::server_https_proxy_write );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_NETWORK ] = SettingsWrapper( &Freelan_gui::server_network_read, &Freelan_gui::server_network_write );
+
+	// Connect update signals
+	connect( server_groupbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_host_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_username_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_password_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_proxy_no_radiobutton, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_proxy_system_radiobutton, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_proxy_url_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_network_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_public_endpoints_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 }
 
 void Freelan_gui::read_settings_from_file()
@@ -1105,6 +1116,9 @@ void Freelan_gui::on_server_public_endpoints_add_toolButton_clicked()
 	// SignalMapper connection
 	m_layout_deleter.setMapping( new_endpoints_toolbutton, new_endpoints_horizontallayout );
 	connect( new_endpoints_toolbutton, SIGNAL( clicked() ), &m_layout_deleter, SLOT( map() ) );
+
+	// Lineedit update
+	connect( new_endpoints_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 }
 
 void Freelan_gui::on_m_layout_deleter_mapped( QObject* object )
