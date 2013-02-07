@@ -693,5 +693,4 @@ Public License instead of this License.  But first, please read
 #else
 #pragma warning(pop)
 #endif
-
 #endif // FREELAN_GUI_PCH_HPP
