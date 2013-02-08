@@ -691,7 +691,7 @@ static const char* const SETTINGS_KEY_HTTPS_PROXY = "https_proxy";
 static const char* const SETTINGS_KEY_USERNAME = "username";
 static const char* const SETTINGS_KEY_PASSWORD = "password";
 static const char* const SETTINGS_KEY_NETWORK = "network";
-static const char* const SETTINGS_KEY_PUBLIC_ENDPOINT = "public_endpoint";
+static const char* const SETTINGS_KEY_PUBLIC_ENDPOINTS = "public_endpoints";
 static const char* const SETTINGS_KEY_USER_AGENT = "user_agent";
 static const char* const SETTINGS_KEY_PROTOCOL = "protocol";
 static const char* const SETTINGS_KEY_CA_INFO_FILE = "ca_info_file";
@@ -808,6 +808,7 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PASSWORD ] = SettingsWrapper( &Freelan_gui::server_password_read, &Freelan_gui::server_password_write );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HTTPS_PROXY ] = SettingsWrapper( &Freelan_gui::server_https_proxy_read, &Freelan_gui::server_https_proxy_write );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_NETWORK ] = SettingsWrapper( &Freelan_gui::server_network_read, &Freelan_gui::server_network_write );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PUBLIC_ENDPOINTS ] = SettingsWrapper( &Freelan_gui::server_public_endpoints_read, &Freelan_gui::server_public_endpoints_write );
 
 	// Connect update signals
 	connect( server_groupbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
@@ -992,6 +993,32 @@ void Freelan_gui::update_settings_buttonbox()
 	settings_buttonbox->button( QDialogButtonBox::RestoreDefaults )->setEnabled( are_settings_tainted );
 } // update_settings_buttonbox
 
+QLineEdit* Freelan_gui::append_server_public_endpoint_lineedit()
+{
+	// Create a new lineedit + toolbutton
+	QLineEdit* new_endpoints_lineedit = new QLineEdit( server_public_endpoints_groupbox );
+	QToolButton* new_endpoints_toolbutton = new QToolButton( server_public_endpoints_groupbox );
+	new_endpoints_toolbutton->setText( "-" );
+	new_endpoints_toolbutton->setMinimumSize( server_public_endpoints_add_toolButton->sizeHint() );
+
+	// Add the widgets to the horizontal layout
+	QHBoxLayout* new_endpoints_horizontallayout = new QHBoxLayout();
+	new_endpoints_horizontallayout->addWidget( new_endpoints_lineedit );
+	new_endpoints_horizontallayout->addWidget( new_endpoints_toolbutton );
+
+	// Add the widget to the vertical layout
+	server_public_endpoints_verticallayout->addLayout( new_endpoints_horizontallayout );
+
+	// SignalMapper connection
+	m_layout_deleter.setMapping( new_endpoints_toolbutton, new_endpoints_horizontallayout );
+	connect( new_endpoints_toolbutton, SIGNAL( clicked() ), &m_layout_deleter, SLOT( map() ) );
+
+	// Lineedit update
+	connect( new_endpoints_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+
+	return new_endpoints_lineedit;
+}
+
 QVariant Freelan_gui::server_https_proxy_read() const
 {
 	return server_proxy_no_radiobutton->isChecked() ? QVariant() : server_proxy_system_radiobutton->isChecked() ? QVariant( "" ) : QVariant( server_proxy_url_lineedit->text() );
@@ -1025,13 +1052,13 @@ QVariant Freelan_gui::server_public_endpoints_read() const
 	QString text = server_public_endpoints_lineedit->text().trimmed();
 
 	// Loop accross all remaining lineedit
-	for ( int i = 0, end = server_public_endpoints_verticallayout->count() ; i < end ; ++i )
+	for ( int i = 1, end = server_public_endpoints_verticallayout->count() ; i < end ; ++i )
 	{
 		const QLayout* const child_layout = server_public_endpoints_verticallayout->itemAt( i )->layout();
 
 		if ( child_layout != NULL )
 		{
-			for ( int j = child_layout->count() ; --j >= 0 ; )
+			for ( int j = 0, end = child_layout->count() ; j < end ; ++j )
 			{
 				const QLineEdit* const lineedit = qobject_cast< QLineEdit* >( child_layout->itemAt( j )->widget() );
 
@@ -1054,14 +1081,60 @@ QVariant Freelan_gui::server_public_endpoints_read() const
 
 void Freelan_gui::server_public_endpoints_write( const QVariant& variant )
 {
-	const QStringList& endpoints = variant.toString().split( ',' );
+	const QStringList& endpoints = variant.toString().split( ',', QString::SkipEmptyParts );
 
 	// First lineedit
 	server_public_endpoints_lineedit->setText( endpoints.isEmpty() ? QString::null : endpoints.first().trimmed() );
 
-	for ( int i = 1, end = endpoints.count() ; i < end ; ++i )
-	{}
-}
+	int i = 1;
+
+	// Reuse existing endpoint lineedits
+	for ( int j = 1, end_i = endpoints.count(), end_j = server_public_endpoints_verticallayout->count() ; i < end_i && j < end_j ; ++i )
+	{
+		const QString& endpoint_string = endpoints.at( i ).trimmed();
+
+		if ( !endpoint_string.isEmpty() )
+		{
+			QLayout* const layout = server_public_endpoints_verticallayout->itemAt( j++ )->layout();
+
+			if ( layout != NULL )
+			{
+				for ( int k = 0, end_k = layout->count() ; k < end_k ; ++k )
+				{
+					QLineEdit* const lineedit = qobject_cast< QLineEdit* >( layout->itemAt( k )->widget() );
+
+					if ( lineedit != NULL )
+					{
+						lineedit->setText( endpoint_string );
+					}
+				}
+			}
+		}
+	}
+
+	// New lineedit
+	for ( int end = endpoints.count() ; i < end ; ++i )
+	{
+		const QString& endpoint_string = endpoints.at( i ).trimmed();
+
+		if ( !endpoint_string.isEmpty() )
+		{
+			// We need to create new endpoint lineedits
+			append_server_public_endpoint_lineedit()->setText( endpoint_string );
+		}
+	}
+
+	// Delete unneeded endpoint lineedits
+	for ( int j = qMax( 1, endpoints.count() ), end = server_public_endpoints_verticallayout->count() ; j < end ; ++j )
+	{
+		QLayout* const layout = server_public_endpoints_verticallayout->takeAt( j )->layout();
+
+		if ( layout != NULL )
+		{
+			on_m_layout_deleter_mapped( layout );
+		}
+	}
+} // server_public_endpoints_write
 
 void Freelan_gui::on_status_pushbutton_toggled( bool toggled )
 {
@@ -1143,26 +1216,7 @@ void Freelan_gui::on_server_proxy_url_radiobutton_toggled( bool toggled )
 
 void Freelan_gui::on_server_public_endpoints_add_toolButton_clicked()
 {
-	// Create a new lineedit + toolbutton
-	QLineEdit* new_endpoints_lineedit = new QLineEdit( server_public_endpoints_groupbox );
-	QToolButton* new_endpoints_toolbutton = new QToolButton( server_public_endpoints_groupbox );
-	new_endpoints_toolbutton->setText( "-" );
-	new_endpoints_toolbutton->setMinimumSize( server_public_endpoints_add_toolButton->sizeHint() );
-
-	// Add the widgets to the horizontal layout
-	QHBoxLayout* new_endpoints_horizontallayout = new QHBoxLayout();
-	new_endpoints_horizontallayout->addWidget( new_endpoints_lineedit );
-	new_endpoints_horizontallayout->addWidget( new_endpoints_toolbutton );
-
-	// Add the widget to the vertical layout
-	server_public_endpoints_verticallayout->addLayout( new_endpoints_horizontallayout );
-
-	// SignalMapper connection
-	m_layout_deleter.setMapping( new_endpoints_toolbutton, new_endpoints_horizontallayout );
-	connect( new_endpoints_toolbutton, SIGNAL( clicked() ), &m_layout_deleter, SLOT( map() ) );
-
-	// Lineedit update
-	connect( new_endpoints_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	append_server_public_endpoint_lineedit()->setFocus();
 }
 
 void Freelan_gui::on_m_layout_deleter_mapped( QObject* object )
@@ -1184,5 +1238,7 @@ void Freelan_gui::on_m_layout_deleter_mapped( QObject* object )
 
 		// Delete later to be on the safe side..
 		layout->deleteLater();
+
+		schedule_settings_buttonbox_update();
 	}
 }

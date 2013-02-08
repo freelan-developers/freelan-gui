@@ -768,6 +768,9 @@ public:
 	// Called to set the correct state on settings buttonbox
 	void update_settings_buttonbox();
 
+	// Create an endpoint and append it to server_public_endpoints_verticallayout
+	QLineEdit* append_server_public_endpoint_lineedit();
+
 	// Property accessors
 	// Server page
 	QVariant server_enabled_read() const { return server_groupbox->isChecked(); }
