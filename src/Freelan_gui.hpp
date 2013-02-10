@@ -806,6 +806,15 @@ public:
 	QVariant server_ca_info_files_read() const;
 	void server_ca_info_files_write( const QVariant& variant );
 
+	QVariant server_protocol_read() const { return server_protocol_combobox->currentText(); }
+	void server_protocol_write( const QVariant& variant ) { server_protocol_combobox->setCurrentText( variant.toString() ); }
+
+	QVariant server_disable_peer_verification_read() const { return server_disable_peer_verification_checkbox->isChecked(); }
+	void server_disable_peer_verification_write( const QVariant& variant ) { server_disable_peer_verification_checkbox->setChecked( variant.toBool() ); }
+
+	QVariant server_disable_host_verification_read() const { return server_disable_host_verification_checkbox->isChecked(); }
+	void server_disable_host_verification_write( const QVariant& variant ) { server_disable_host_verification_checkbox->setChecked( variant.toBool() ); }
+
 private Q_SLOTS:
 
 	// Schedule update on a timeout to avoid redondant call

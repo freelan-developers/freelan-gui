@@ -815,6 +815,9 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PUBLIC_ENDPOINTS ] = SettingsWrapper( &Freelan_gui::server_public_endpoints_read, &Freelan_gui::server_public_endpoints_write );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USER_AGENT ] = SettingsWrapper( &Freelan_gui::server_user_agent_read, &Freelan_gui::server_user_agent_write );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_CA_INFO_FILE ] = SettingsWrapper( &Freelan_gui::server_ca_info_files_read, &Freelan_gui::server_ca_info_files_write );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PROTOCOL ] = SettingsWrapper( &Freelan_gui::server_protocol_read, &Freelan_gui::server_protocol_write, false, "https" );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_PEER_VERIFICATION ] = SettingsWrapper( &Freelan_gui::server_disable_peer_verification_read, &Freelan_gui::server_disable_peer_verification_write, false, false );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_HOST_VERIFICATION ] = SettingsWrapper( &Freelan_gui::server_disable_host_verification_read, &Freelan_gui::server_disable_host_verification_write, false, false );
 
 	// Connect update signals
 	connect( server_groupbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
@@ -830,7 +833,10 @@ void Freelan_gui::register_settings()
 	connect( server_ca_info_files_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 	m_server_ca_info_files_chooser.setMapping( server_ca_info_files_choose_toolbutton, server_ca_info_files_lineedit );
 	connect( server_ca_info_files_choose_toolbutton, SIGNAL( clicked() ), &m_server_ca_info_files_chooser, SLOT( map() ) );
-}
+	connect( server_protocol_combobox, SIGNAL( currentIndexChanged( QString ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_disable_peer_verification_checkbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_disable_host_verification_checkbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+} // register_settings
 
 void Freelan_gui::read_settings_from_file()
 {

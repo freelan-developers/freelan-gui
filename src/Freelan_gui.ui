@@ -195,9 +195,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-1129</y>
+                 <y>-1284</y>
                  <width>515</width>
-                 <height>1491</height>
+                 <height>1599</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -664,21 +664,15 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QGroupBox" name="groupBox_12">
+                    <widget class="QGroupBox" name="server_protocol_groupbox">
                      <property name="title">
-                      <string>Developper settings</string>
+                      <string>The protocol to use to contact the server</string>
                      </property>
-                     <property name="checkable">
-                      <bool>true</bool>
-                     </property>
-                     <property name="checked">
-                      <bool>false</bool>
-                     </property>
-                     <layout class="QGridLayout" name="gridLayout_12">
-                      <item row="0" column="0">
+                     <layout class="QGridLayout" name="gridLayout_35">
+                      <item row="0" column="0" colspan="3">
                        <widget class="QLabel" name="label_25">
                         <property name="text">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Enabling this options makes the connection A LOT LESS SECURE.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Use this for configuration TESTING purposes only !&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#00aaff;&quot;&gt;SETTING ANOTHER VALUE THAN &amp;quot;https&amp;quot; COMPLETELY DISABLES SECURITY !&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Use this for development purposes only ! You have been warned.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="wordWrap">
                          <bool>true</bool>
@@ -686,105 +680,89 @@
                        </widget>
                       </item>
                       <item row="1" column="0">
-                       <widget class="QGroupBox" name="groupBox_13">
-                        <property name="title">
-                         <string>The protocol to use to contact the server</string>
+                       <widget class="QLabel" name="label_4">
+                        <property name="text">
+                         <string>Protocol:</string>
                         </property>
-                        <property name="flat">
-                         <bool>true</bool>
-                        </property>
-                        <layout class="QGridLayout" name="gridLayout_9">
-                         <item row="0" column="1">
-                          <widget class="QComboBox" name="comboBox">
-                           <item>
-                            <property name="text">
-                             <string>https</string>
-                            </property>
-                           </item>
-                           <item>
-                            <property name="text">
-                             <string>http</string>
-                            </property>
-                           </item>
-                          </widget>
-                         </item>
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_4">
-                           <property name="text">
-                            <string>Protocol:</string>
-                           </property>
-                          </widget>
-                         </item>
-                         <item row="0" column="2">
-                          <spacer name="horizontalSpacer_2">
-                           <property name="orientation">
-                            <enum>Qt::Horizontal</enum>
-                           </property>
-                           <property name="sizeHint" stdset="0">
-                            <size>
-                             <width>0</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                          </spacer>
-                         </item>
-                        </layout>
                        </widget>
                       </item>
-                      <item row="2" column="0">
-                       <widget class="QGroupBox" name="groupBox_14">
-                        <property name="title">
-                         <string>Disable peer verification</string>
-                        </property>
-                        <property name="flat">
-                         <bool>true</bool>
-                        </property>
-                        <property name="checkable">
-                         <bool>true</bool>
-                        </property>
-                        <property name="checked">
-                         <bool>false</bool>
-                        </property>
-                        <layout class="QGridLayout" name="gridLayout_10">
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_27">
-                           <property name="text">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;...&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                           </property>
-                           <property name="wordWrap">
-                            <bool>true</bool>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
+                      <item row="1" column="1">
+                       <widget class="QComboBox" name="server_protocol_combobox">
+                        <item>
+                         <property name="text">
+                          <string>https</string>
+                         </property>
+                        </item>
+                        <item>
+                         <property name="text">
+                          <string>http</string>
+                         </property>
+                        </item>
                        </widget>
                       </item>
-                      <item row="3" column="0">
-                       <widget class="QGroupBox" name="groupBox_15">
-                        <property name="title">
-                         <string>Disable host verification</string>
+                      <item row="1" column="2">
+                       <spacer name="horizontalSpacer_7">
+                        <property name="orientation">
+                         <enum>Qt::Horizontal</enum>
                         </property>
-                        <property name="flat">
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>40</width>
+                          <height>20</height>
+                         </size>
+                        </property>
+                       </spacer>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QGroupBox" name="server_disable_peer_verification_groupbox">
+                     <property name="title">
+                      <string>Peer verification</string>
+                     </property>
+                     <layout class="QFormLayout" name="formLayout">
+                      <item row="0" column="0" colspan="2">
+                       <widget class="QLabel" name="label_70">
+                        <property name="text">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Enabling this option disable peer verification, making the connection &lt;/span&gt;&lt;span style=&quot; font-weight:600; color:#00aaff;&quot;&gt;A LOT LESS SECURE&lt;/span&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Use this for configuration testing purposes only !&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="wordWrap">
                          <bool>true</bool>
                         </property>
-                        <property name="checkable">
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QCheckBox" name="server_disable_peer_verification_checkbox">
+                        <property name="text">
+                         <string>Disable</string>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QGroupBox" name="server_disable_host_verification_groupbox">
+                     <property name="title">
+                      <string>Host verification</string>
+                     </property>
+                     <layout class="QFormLayout" name="formLayout_2">
+                      <item row="0" column="0" colspan="2">
+                       <widget class="QLabel" name="label_71">
+                        <property name="text">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Enabling this option disable host verification, making the connection less secure.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Host verification ensures that the host specified in the server's certificate matches the host to which the request was sent in the first place. Disabling it allows trivial man-in-the-middle attacks.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Use this for configuration testing purposes only !&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
+                        <property name="wordWrap">
                          <bool>true</bool>
                         </property>
-                        <property name="checked">
-                         <bool>false</bool>
+                       </widget>
+                      </item>
+                      <item row="1" column="0">
+                       <widget class="QCheckBox" name="server_disable_host_verification_checkbox">
+                        <property name="text">
+                         <string>Disable</string>
                         </property>
-                        <layout class="QGridLayout" name="gridLayout_11">
-                         <item row="0" column="0">
-                          <widget class="QLabel" name="label_28">
-                           <property name="text">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Host verification ensures that the host specified in the server's certificate matches the host to which the request was sent in the first place.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Disabling it allows trivial man-in-the-middle attacks.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                           </property>
-                           <property name="wordWrap">
-                            <bool>true</bool>
-                           </property>
-                          </widget>
-                         </item>
-                        </layout>
                        </widget>
                       </item>
                      </layout>
