@@ -195,9 +195,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>518</width>
-                 <height>1487</height>
+                 <y>-1129</y>
+                 <width>515</width>
+                 <height>1491</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -574,7 +574,7 @@
                      </property>
                      <layout class="QGridLayout" name="gridLayout_8">
                       <item row="1" column="1">
-                       <widget class="QLineEdit" name="lineEdit_7"/>
+                       <widget class="QLineEdit" name="server_user_agent_lineedit"/>
                       </item>
                       <item row="1" column="0">
                        <widget class="QLabel" name="label">
@@ -610,12 +610,12 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QGroupBox" name="groupBox_11">
+                    <widget class="QGroupBox" name="server_ca_info_files_groupbox">
                      <property name="title">
-                      <string>The certificate authority file</string>
+                      <string>The certificate authority files</string>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_22">
-                      <item row="0" column="0" colspan="4">
+                      <item row="0" column="0" colspan="2">
                        <widget class="QLabel" name="label_24">
                         <property name="text">
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;If set, specifies a file holding one or more certificates to verify the peer certificates with.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;This option is passed as-is to libcurl (&lt;/span&gt;&lt;a href=&quot;http://curl.haxx.se/libcurl/c/curl_easy_setopt.html#CURLOPTCAINFO&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;http://curl.haxx.se/libcurl/c/curl_easy_setopt.html&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -631,19 +631,34 @@
                       <item row="1" column="0">
                        <widget class="QLabel" name="label_3">
                         <property name="text">
-                         <string>Certificate authority file:</string>
+                         <string>Certificate authority:</string>
                         </property>
                        </widget>
                       </item>
                       <item row="1" column="1">
-                       <widget class="QLineEdit" name="lineEdit_6"/>
-                      </item>
-                      <item row="1" column="2">
-                       <widget class="QToolButton" name="toolButton_3">
-                        <property name="text">
-                         <string>...</string>
-                        </property>
-                       </widget>
+                       <layout class="QVBoxLayout" name="server_ca_info_files_verticalLayout">
+                        <item>
+                         <layout class="QHBoxLayout" name="server_ca_info_files_horizontalLayout">
+                          <item>
+                           <widget class="QLineEdit" name="server_ca_info_files_lineedit"/>
+                          </item>
+                          <item>
+                           <widget class="QToolButton" name="server_ca_info_files_choose_toolbutton">
+                            <property name="text">
+                             <string>...</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item>
+                           <widget class="QToolButton" name="server_ca_info_files_add_toolButton">
+                            <property name="text">
+                             <string>+</string>
+                            </property>
+                           </widget>
+                          </item>
+                         </layout>
+                        </item>
+                       </layout>
                       </item>
                      </layout>
                     </widget>

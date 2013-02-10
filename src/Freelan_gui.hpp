@@ -687,6 +687,8 @@ Public License instead of this License.  But first, please read
 #endif
 #include "ui_Freelan_gui.h"
 #include <QDebug>
+#include <QFileDialog>
+#include <QFileInfo>
 #include <QHash>
 #include <QSettings>
 #include <QSignalMapper>
@@ -756,6 +758,7 @@ public:
 	bool m_are_required_settings_saved;
 
 	QSignalMapper m_layout_deleter;
+	QSignalMapper m_server_ca_info_files_chooser;
 
 	// Build about page
 	void setup_about_ui();
@@ -769,7 +772,10 @@ public:
 	void update_settings_buttonbox();
 
 	// Create an endpoint and append it to server_public_endpoints_verticallayout
-	QLineEdit* append_server_public_endpoint_lineedit();
+	QLineEdit* append_server_public_endpoints_lineedit();
+
+	// Create a ca_info_file and append it to server_ca_info_files_verticallayout
+	QLineEdit* append_server_ca_info_files_lineedit();
 
 	// Property accessors
 	// Server page
@@ -794,6 +800,12 @@ public:
 	QVariant server_public_endpoints_read() const;
 	void server_public_endpoints_write( const QVariant& variant );
 
+	QVariant server_user_agent_read() const { const QString& text = server_user_agent_lineedit->text(); return text.isEmpty() ? QVariant() : QVariant( text ); }
+	void server_user_agent_write( const QVariant& variant ) { server_user_agent_lineedit->setText( variant.toString() ); }
+
+	QVariant server_ca_info_files_read() const;
+	void server_ca_info_files_write( const QVariant& variant );
+
 private Q_SLOTS:
 
 	// Schedule update on a timeout to avoid redondant call
@@ -813,6 +825,12 @@ private Q_SLOTS:
 
 	// Public endpoints add
 	void on_server_public_endpoints_add_toolButton_clicked();
+
+	// ca_info_files add
+	void on_server_ca_info_files_add_toolButton_clicked();
+
+	// Used to show a file chooser dialog
+	void on_m_ca_info_file_chooser_mapped( QWidget* widget );
 
 	// Used to remove rows from layout
 	void on_m_layout_deleter_mapped( QObject* object );

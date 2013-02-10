@@ -733,11 +733,15 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	, m_update_timer_id()
 	, m_are_required_settings_saved( false )
 	, m_layout_deleter()
+	, m_server_ca_info_files_chooser()
 {
 	setupUi( this );
 
 	// Build about page
 	setup_about_ui();
+
+	// Connect the file chooser mapper
+	connect( &m_server_ca_info_files_chooser, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_ca_info_file_chooser_mapped( QWidget* ) ) );
 
 	// Connect the row remover mapper
 	connect( &m_layout_deleter, SIGNAL( mapped( QObject* ) ), this, SLOT( on_m_layout_deleter_mapped( QObject* ) ) );
@@ -809,6 +813,8 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HTTPS_PROXY ] = SettingsWrapper( &Freelan_gui::server_https_proxy_read, &Freelan_gui::server_https_proxy_write );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_NETWORK ] = SettingsWrapper( &Freelan_gui::server_network_read, &Freelan_gui::server_network_write );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PUBLIC_ENDPOINTS ] = SettingsWrapper( &Freelan_gui::server_public_endpoints_read, &Freelan_gui::server_public_endpoints_write );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USER_AGENT ] = SettingsWrapper( &Freelan_gui::server_user_agent_read, &Freelan_gui::server_user_agent_write );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_CA_INFO_FILE ] = SettingsWrapper( &Freelan_gui::server_ca_info_files_read, &Freelan_gui::server_ca_info_files_write );
 
 	// Connect update signals
 	connect( server_groupbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
@@ -820,6 +826,10 @@ void Freelan_gui::register_settings()
 	connect( server_proxy_url_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 	connect( server_network_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 	connect( server_public_endpoints_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_user_agent_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( server_ca_info_files_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	m_server_ca_info_files_chooser.setMapping( server_ca_info_files_choose_toolbutton, server_ca_info_files_lineedit );
+	connect( server_ca_info_files_choose_toolbutton, SIGNAL( clicked() ), &m_server_ca_info_files_chooser, SLOT( map() ) );
 }
 
 void Freelan_gui::read_settings_from_file()
@@ -993,30 +1003,62 @@ void Freelan_gui::update_settings_buttonbox()
 	settings_buttonbox->button( QDialogButtonBox::RestoreDefaults )->setEnabled( are_settings_tainted );
 } // update_settings_buttonbox
 
-QLineEdit* Freelan_gui::append_server_public_endpoint_lineedit()
+QLineEdit* Freelan_gui::append_server_public_endpoints_lineedit()
 {
 	// Create a new lineedit + toolbutton
 	QLineEdit* new_endpoints_lineedit = new QLineEdit( server_public_endpoints_groupbox );
-	QToolButton* new_endpoints_toolbutton = new QToolButton( server_public_endpoints_groupbox );
-	new_endpoints_toolbutton->setText( "-" );
-	new_endpoints_toolbutton->setMinimumSize( server_public_endpoints_add_toolButton->sizeHint() );
+	QToolButton* new_endpoints_remove_toolbutton = new QToolButton( server_public_endpoints_groupbox );
+	new_endpoints_remove_toolbutton->setText( "-" );
+	new_endpoints_remove_toolbutton->setMinimumSize( server_public_endpoints_add_toolButton->sizeHint() );
 
 	// Add the widgets to the horizontal layout
 	QHBoxLayout* new_endpoints_horizontallayout = new QHBoxLayout();
 	new_endpoints_horizontallayout->addWidget( new_endpoints_lineedit );
-	new_endpoints_horizontallayout->addWidget( new_endpoints_toolbutton );
+	new_endpoints_horizontallayout->addWidget( new_endpoints_remove_toolbutton );
 
 	// Add the widget to the vertical layout
 	server_public_endpoints_verticallayout->addLayout( new_endpoints_horizontallayout );
 
 	// SignalMapper connection
-	m_layout_deleter.setMapping( new_endpoints_toolbutton, new_endpoints_horizontallayout );
-	connect( new_endpoints_toolbutton, SIGNAL( clicked() ), &m_layout_deleter, SLOT( map() ) );
+	m_layout_deleter.setMapping( new_endpoints_remove_toolbutton, new_endpoints_horizontallayout );
+	connect( new_endpoints_remove_toolbutton, SIGNAL( clicked() ), &m_layout_deleter, SLOT( map() ) );
 
 	// Lineedit update
 	connect( new_endpoints_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 
 	return new_endpoints_lineedit;
+}
+
+QLineEdit* Freelan_gui::append_server_ca_info_files_lineedit()
+{
+	// Create a new lineedit + toolbutton
+	QLineEdit* new_ca_info_files_lineedit = new QLineEdit( server_ca_info_files_groupbox );
+	QToolButton* new_ca_info_files_choose_toolbutton = new QToolButton( server_ca_info_files_groupbox );
+	new_ca_info_files_choose_toolbutton->setText( "..." );
+	QToolButton* new_ca_info_files_remove_toolbutton = new QToolButton( server_ca_info_files_groupbox );
+	new_ca_info_files_remove_toolbutton->setText( "-" );
+	new_ca_info_files_remove_toolbutton->setMinimumSize( server_ca_info_files_add_toolButton->sizeHint() );
+
+	// Add the widgets to the horizontal layout
+	QHBoxLayout* new_ca_info_files_horizontallayout = new QHBoxLayout();
+	new_ca_info_files_horizontallayout->addWidget( new_ca_info_files_lineedit );
+	new_ca_info_files_horizontallayout->addWidget( new_ca_info_files_choose_toolbutton );
+	new_ca_info_files_horizontallayout->addWidget( new_ca_info_files_remove_toolbutton );
+
+	// Add the widget to the vertical layout
+	server_ca_info_files_verticalLayout->addLayout( new_ca_info_files_horizontallayout );
+
+	// SignalMapper connections
+	m_server_ca_info_files_chooser.setMapping( new_ca_info_files_choose_toolbutton, new_ca_info_files_lineedit );
+	connect( new_ca_info_files_choose_toolbutton, SIGNAL( clicked() ), &m_server_ca_info_files_chooser, SLOT( map() ) );
+
+	m_layout_deleter.setMapping( new_ca_info_files_remove_toolbutton, new_ca_info_files_horizontallayout );
+	connect( new_ca_info_files_remove_toolbutton, SIGNAL( clicked() ), &m_layout_deleter, SLOT( map() ) );
+
+	// Lineedit update
+	connect( new_ca_info_files_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+
+	return new_ca_info_files_lineedit;
 }
 
 QVariant Freelan_gui::server_https_proxy_read() const
@@ -1071,13 +1113,16 @@ QVariant Freelan_gui::server_public_endpoints_read() const
 						text.append( ',' );
 						text.append( fragment );
 					}
+
+					// Stop loop
+					j = end;
 				}
 			}
 		}
 	}
 
 	return text.isEmpty() ? QVariant() : QVariant( text );
-}
+} // server_public_endpoints_read
 
 void Freelan_gui::server_public_endpoints_write( const QVariant& variant )
 {
@@ -1106,6 +1151,9 @@ void Freelan_gui::server_public_endpoints_write( const QVariant& variant )
 					if ( lineedit != NULL )
 					{
 						lineedit->setText( endpoint_string );
+
+						// Stop loop
+						k = end_k;
 					}
 				}
 			}
@@ -1120,7 +1168,7 @@ void Freelan_gui::server_public_endpoints_write( const QVariant& variant )
 		if ( !endpoint_string.isEmpty() )
 		{
 			// We need to create new endpoint lineedits
-			append_server_public_endpoint_lineedit()->setText( endpoint_string );
+			append_server_public_endpoints_lineedit()->setText( endpoint_string );
 		}
 	}
 
@@ -1135,6 +1183,102 @@ void Freelan_gui::server_public_endpoints_write( const QVariant& variant )
 		}
 	}
 } // server_public_endpoints_write
+
+QVariant Freelan_gui::server_ca_info_files_read() const
+{
+	// First lineedit
+	QString text = server_ca_info_files_lineedit->text().trimmed();
+
+	// Loop accross all remaining lineedit
+	for ( int i = 1, end = server_ca_info_files_verticalLayout->count() ; i < end ; ++i )
+	{
+		const QLayout* const child_layout = server_ca_info_files_verticalLayout->itemAt( i )->layout();
+
+		if ( child_layout != NULL )
+		{
+			for ( int j = 0, end = child_layout->count() ; j < end ; ++j )
+			{
+				const QLineEdit* const lineedit = qobject_cast< QLineEdit* >( child_layout->itemAt( j )->widget() );
+
+				if ( lineedit != NULL )
+				{
+					const QString& fragment = lineedit->text().trimmed();
+
+					if ( !fragment.isEmpty() )
+					{
+						text.append( ',' );
+						text.append( fragment );
+					}
+
+					// Stop loop
+					j = end;
+				}
+			}
+		}
+	}
+
+	return text.isEmpty() ? QVariant() : QVariant( text );
+} // server_ca_info_files_read
+
+void Freelan_gui::server_ca_info_files_write( const QVariant& variant )
+{
+	const QStringList& ca_info_files = variant.toString().split( ',', QString::SkipEmptyParts );
+
+	// First lineedit
+	server_ca_info_files_lineedit->setText( ca_info_files.isEmpty() ? QString::null : ca_info_files.first().trimmed() );
+
+	int i = 1;
+
+	// Reuse existing endpoint lineedits
+	for ( int j = 1, end_i = ca_info_files.count(), end_j = server_ca_info_files_verticalLayout->count() ; i < end_i && j < end_j ; ++i )
+	{
+		const QString& ca_info_file_string = ca_info_files.at( i ).trimmed();
+
+		if ( !ca_info_file_string.isEmpty() )
+		{
+			QLayout* const layout = server_ca_info_files_verticalLayout->itemAt( j++ )->layout();
+
+			if ( layout != NULL )
+			{
+				for ( int k = 0, end_k = layout->count() ; k < end_k ; ++k )
+				{
+					QLineEdit* const lineedit = qobject_cast< QLineEdit* >( layout->itemAt( k )->widget() );
+
+					if ( lineedit != NULL )
+					{
+						lineedit->setText( ca_info_file_string );
+
+						// Stop loop
+						k = end_k;
+					}
+				}
+			}
+		}
+	}
+
+	// New lineedit
+	for ( int end = ca_info_files.count() ; i < end ; ++i )
+	{
+		const QString& ca_info_file_string = ca_info_files.at( i ).trimmed();
+
+		if ( !ca_info_file_string.isEmpty() )
+		{
+			// We need to create new endpoint lineedits
+			append_server_ca_info_files_lineedit()->setText( ca_info_file_string );
+		}
+	}
+
+	// Delete unneeded endpoint lineedits
+	for ( int j = qMax( 1, ca_info_files.count() ), end = server_ca_info_files_verticalLayout->count() ; j < end ; ++j )
+	{
+		QLayout* const layout = server_ca_info_files_verticalLayout->takeAt( j )->layout();
+
+		if ( layout != NULL )
+		{
+			on_m_layout_deleter_mapped( layout );
+		}
+	}
+} // server_ca_info_files_write
 
 void Freelan_gui::on_status_pushbutton_toggled( bool toggled )
 {
@@ -1216,7 +1360,34 @@ void Freelan_gui::on_server_proxy_url_radiobutton_toggled( bool toggled )
 
 void Freelan_gui::on_server_public_endpoints_add_toolButton_clicked()
 {
-	append_server_public_endpoint_lineedit()->setFocus();
+	append_server_public_endpoints_lineedit()->setFocus();
+}
+
+void Freelan_gui::on_server_ca_info_files_add_toolButton_clicked()
+{
+	append_server_ca_info_files_lineedit()->setFocus();
+}
+
+void Freelan_gui::on_m_ca_info_file_chooser_mapped( QWidget* widget )
+{
+	// Use Qt kinda dynamic cast...
+	QLineEdit* const lineedit = qobject_cast< QLineEdit* >( widget );
+
+	if ( lineedit != NULL )
+	{
+		// Get the previous dir
+		const QString& currentFileName = lineedit->text();
+		QFileInfo fileInfo( currentFileName );
+		const QDir& parentDir = fileInfo.dir();
+
+		// Open the file chooser dialog
+		const QString& fileName = QFileDialog::getOpenFileName( this, trUtf8( "Open server certificate authority list" ), parentDir.isReadable() ? parentDir.canonicalPath() : QDir::homePath(), tr( "Certificate authority list files (*.lst);;All files (*.*)" ) );
+
+		if ( !fileName.isNull() )
+		{
+			lineedit->setText( fileName );
+		}
+	}
 }
 
 void Freelan_gui::on_m_layout_deleter_mapped( QObject* object )
