@@ -815,6 +815,15 @@ public:
 	QVariant server_disable_host_verification_read() const { return server_disable_host_verification_checkbox->isChecked(); }
 	void server_disable_host_verification_write( const QVariant& variant ) { server_disable_host_verification_checkbox->setChecked( variant.toBool() ); }
 
+	QVariant fscp_hostname_resolution_protocol_read() const { return fscp_hostname_resolution_protocol_combobox->currentText(); }
+	void fscp_hostname_resolution_protocol_write( const QVariant& variant ) { fscp_hostname_resolution_protocol_combobox->setCurrentText( variant.toString() ); }
+
+	QVariant fscp_listen_on_read() const { const QString& text = fscp_listen_on_lineedit->text(); return text.isEmpty() ? QVariant() : QVariant( text ); }
+	void fscp_listen_on_write( const QVariant& variant ) { fscp_listen_on_lineedit->setText( variant.toString() ); }
+
+	QVariant fscp_hello_timeout_read() const { return fscp_hello_timeout_spinbox->value(); }
+	void fscp_hello_timeout_write( const QVariant& variant ) { fscp_hello_timeout_spinbox->setValue( variant.toInt() ); }
+
 private Q_SLOTS:
 
 	// Schedule update on a timeout to avoid redondant call

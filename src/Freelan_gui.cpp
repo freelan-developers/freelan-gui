@@ -806,6 +806,7 @@ void Freelan_gui::setup_about_ui()
 void Freelan_gui::register_settings()
 {
 	// Each "registered" settings will be saved and restored by calling the given "read" and "write" function.
+	// Server page
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_ENABLED ] = SettingsWrapper( &Freelan_gui::server_enabled_read, &Freelan_gui::server_enabled_write, true, false );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HOST ] = SettingsWrapper( &Freelan_gui::server_host_read, &Freelan_gui::server_host_write );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USERNAME ] = SettingsWrapper( &Freelan_gui::server_username_read, &Freelan_gui::server_username_write );
@@ -819,7 +820,13 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_PEER_VERIFICATION ] = SettingsWrapper( &Freelan_gui::server_disable_peer_verification_read, &Freelan_gui::server_disable_peer_verification_write, false, false );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_HOST_VERIFICATION ] = SettingsWrapper( &Freelan_gui::server_disable_host_verification_read, &Freelan_gui::server_disable_host_verification_write, false, false );
 
+	// FSCP page
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HOSTNAME_RESOLUTION_PROTOCOL ] = SettingsWrapper( &Freelan_gui::fscp_hostname_resolution_protocol_read, &Freelan_gui::fscp_hostname_resolution_protocol_write, true, "IPv4" );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_LISTEN_ON ] = SettingsWrapper( &Freelan_gui::fscp_listen_on_read, &Freelan_gui::fscp_listen_on_write, true, "0.0.0.0:12000" );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HELLO_TIMEOUT ] = SettingsWrapper( &Freelan_gui::fscp_hello_timeout_read, &Freelan_gui::fscp_hello_timeout_write, true, 3000 );
+
 	// Connect update signals
+	// Server page
 	connect( server_groupbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 	connect( server_host_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 	connect( server_username_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
@@ -836,6 +843,11 @@ void Freelan_gui::register_settings()
 	connect( server_protocol_combobox, SIGNAL( currentIndexChanged( QString ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 	connect( server_disable_peer_verification_checkbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 	connect( server_disable_host_verification_checkbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+
+	// FSCP page
+	connect( fscp_hostname_resolution_protocol_combobox, SIGNAL( currentIndexChanged( QString ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( fscp_listen_on_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( fscp_hello_timeout_spinbox, SIGNAL( valueChanged( int ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 } // register_settings
 
 void Freelan_gui::read_settings_from_file()
@@ -871,18 +883,21 @@ void Freelan_gui::read_settings_from_file()
 			SettingsWrapper& settings_wrapper = grouped_settings_wrappers[ key ];
 
 			// Read the settings value from file
-			const QVariant& value = settings_file.value( key );
+			const QVariant& value_from_file = settings_file.value( key );
 
-			if ( m_are_required_settings_saved && settings_wrapper.m_is_required && value.isNull() )
+			if ( m_are_required_settings_saved && settings_wrapper.m_is_required && value_from_file.isNull() )
 			{
 				m_are_required_settings_saved = false;
 			}
 
+			// Use default value if no value found in file
+			const QVariant& value_to_write = value_from_file.isNull() ? settings_wrapper.m_default_value : value_from_file;
+
 			// Write the value to the GUI
-			( this->*settings_wrapper.m_write )( value );
+			( this->*settings_wrapper.m_write )( value_to_write );
 
 			// Store the value so we can do "revert" when editing the setting in the GUI
-			settings_wrapper.m_applied_value = value;
+			settings_wrapper.m_applied_value = value_to_write;
 		}
 
 		// End the group on the settings file

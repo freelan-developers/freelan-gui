@@ -195,7 +195,7 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-1284</y>
+                 <y>0</y>
                  <width>515</width>
                  <height>1599</height>
                 </rect>
@@ -820,8 +820,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>306</width>
-                 <height>1145</height>
+                 <width>515</width>
+                 <height>991</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -839,7 +839,7 @@
                     </widget>
                    </item>
                    <item row="0" column="1">
-                    <widget class="QComboBox" name="comboBox_2">
+                    <widget class="QComboBox" name="fscp_hostname_resolution_protocol_combobox">
                      <item>
                       <property name="text">
                        <string>IPv4</string>
@@ -885,7 +885,7 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QLineEdit" name="lineEdit_8">
+                    <widget class="QLineEdit" name="fscp_listen_on_lineedit">
                      <property name="text">
                       <string>0.0.0.0:12000</string>
                      </property>
@@ -944,7 +944,7 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QSpinBox" name="spinBox">
+                    <widget class="QSpinBox" name="fscp_hello_timeout_spinbox">
                      <property name="accelerated">
                       <bool>true</bool>
                      </property>
