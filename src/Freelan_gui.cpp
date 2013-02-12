@@ -824,6 +824,7 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HOSTNAME_RESOLUTION_PROTOCOL ] = SettingsWrapper( &Freelan_gui::fscp_hostname_resolution_protocol_read, &Freelan_gui::fscp_hostname_resolution_protocol_write, true, "IPv4" );
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_LISTEN_ON ] = SettingsWrapper( &Freelan_gui::fscp_listen_on_read, &Freelan_gui::fscp_listen_on_write, true, "0.0.0.0:12000" );
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HELLO_TIMEOUT ] = SettingsWrapper( &Freelan_gui::fscp_hello_timeout_read, &Freelan_gui::fscp_hello_timeout_write, true, 3000 );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_CONTACT ] = SettingsWrapper( &Freelan_gui::fscp_contacts_read, &Freelan_gui::fscp_contacts_write );
 
 	// Connect update signals
 	// Server page
@@ -848,6 +849,7 @@ void Freelan_gui::register_settings()
 	connect( fscp_hostname_resolution_protocol_combobox, SIGNAL( currentIndexChanged( QString ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 	connect( fscp_listen_on_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 	connect( fscp_hello_timeout_spinbox, SIGNAL( valueChanged( int ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( fscp_contacts_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 } // register_settings
 
 void Freelan_gui::read_settings_from_file()
@@ -1030,7 +1032,7 @@ QLineEdit* Freelan_gui::append_server_public_endpoints_lineedit()
 	QLineEdit* new_endpoints_lineedit = new QLineEdit( server_public_endpoints_groupbox );
 	QToolButton* new_endpoints_remove_toolbutton = new QToolButton( server_public_endpoints_groupbox );
 	new_endpoints_remove_toolbutton->setText( "-" );
-	new_endpoints_remove_toolbutton->setMinimumSize( server_public_endpoints_add_toolButton->sizeHint() );
+	new_endpoints_remove_toolbutton->setMinimumSize( server_public_endpoints_add_toolbutton->sizeHint() );
 
 	// Add the widgets to the horizontal layout
 	QHBoxLayout* new_endpoints_horizontallayout = new QHBoxLayout();
@@ -1058,7 +1060,7 @@ QLineEdit* Freelan_gui::append_server_ca_info_files_lineedit()
 	new_ca_info_files_choose_toolbutton->setText( "..." );
 	QToolButton* new_ca_info_files_remove_toolbutton = new QToolButton( server_ca_info_files_groupbox );
 	new_ca_info_files_remove_toolbutton->setText( "-" );
-	new_ca_info_files_remove_toolbutton->setMinimumSize( server_ca_info_files_add_toolButton->sizeHint() );
+	new_ca_info_files_remove_toolbutton->setMinimumSize( server_ca_info_files_add_toolbutton->sizeHint() );
 
 	// Add the widgets to the horizontal layout
 	QHBoxLayout* new_ca_info_files_horizontallayout = new QHBoxLayout();
@@ -1067,7 +1069,7 @@ QLineEdit* Freelan_gui::append_server_ca_info_files_lineedit()
 	new_ca_info_files_horizontallayout->addWidget( new_ca_info_files_remove_toolbutton );
 
 	// Add the widget to the vertical layout
-	server_ca_info_files_verticalLayout->addLayout( new_ca_info_files_horizontallayout );
+	server_ca_info_files_verticallayout->addLayout( new_ca_info_files_horizontallayout );
 
 	// SignalMapper connections
 	m_server_ca_info_files_chooser.setMapping( new_ca_info_files_choose_toolbutton, new_ca_info_files_lineedit );
@@ -1080,6 +1082,32 @@ QLineEdit* Freelan_gui::append_server_ca_info_files_lineedit()
 	connect( new_ca_info_files_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 
 	return new_ca_info_files_lineedit;
+}
+
+QLineEdit* Freelan_gui::append_fscp_contacts_lineedit()
+{
+	// Create a new lineedit + toolbutton
+	QLineEdit* new_contacts_lineedit = new QLineEdit( fscp_contacts_groupbox );
+	QToolButton* new_contacts_remove_toolbutton = new QToolButton( fscp_contacts_groupbox );
+	new_contacts_remove_toolbutton->setText( "-" );
+	new_contacts_remove_toolbutton->setMinimumSize( fscp_contacts_add_toolbutton->sizeHint() );
+
+	// Add the widgets to the horizontal layout
+	QHBoxLayout* new_contacts_horizontallayout = new QHBoxLayout();
+	new_contacts_horizontallayout->addWidget( new_contacts_lineedit );
+	new_contacts_horizontallayout->addWidget( new_contacts_remove_toolbutton );
+
+	// Add the widget to the vertical layout
+	fscp_contacts_verticallayout->addLayout( new_contacts_horizontallayout );
+
+	// SignalMapper connection
+	m_layout_deleter.setMapping( new_contacts_remove_toolbutton, new_contacts_horizontallayout );
+	connect( new_contacts_remove_toolbutton, SIGNAL( clicked() ), &m_layout_deleter, SLOT( map() ) );
+
+	// Lineedit update
+	connect( new_contacts_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+
+	return new_contacts_lineedit;
 }
 
 QVariant Freelan_gui::server_https_proxy_read() const
@@ -1211,9 +1239,9 @@ QVariant Freelan_gui::server_ca_info_files_read() const
 	QString text = server_ca_info_files_lineedit->text().trimmed();
 
 	// Loop accross all remaining lineedit
-	for ( int i = 1, end = server_ca_info_files_verticalLayout->count() ; i < end ; ++i )
+	for ( int i = 1, end = server_ca_info_files_verticallayout->count() ; i < end ; ++i )
 	{
-		const QLayout* const child_layout = server_ca_info_files_verticalLayout->itemAt( i )->layout();
+		const QLayout* const child_layout = server_ca_info_files_verticallayout->itemAt( i )->layout();
 
 		if ( child_layout != NULL )
 		{
@@ -1251,13 +1279,13 @@ void Freelan_gui::server_ca_info_files_write( const QVariant& variant )
 	int i = 1;
 
 	// Reuse existing endpoint lineedits
-	for ( int j = 1, end_i = ca_info_files.count(), end_j = server_ca_info_files_verticalLayout->count() ; i < end_i && j < end_j ; ++i )
+	for ( int j = 1, end_i = ca_info_files.count(), end_j = server_ca_info_files_verticallayout->count() ; i < end_i && j < end_j ; ++i )
 	{
 		const QString& ca_info_file_string = ca_info_files.at( i ).trimmed();
 
 		if ( !ca_info_file_string.isEmpty() )
 		{
-			QLayout* const layout = server_ca_info_files_verticalLayout->itemAt( j++ )->layout();
+			QLayout* const layout = server_ca_info_files_verticallayout->itemAt( j++ )->layout();
 
 			if ( layout != NULL )
 			{
@@ -1290,9 +1318,9 @@ void Freelan_gui::server_ca_info_files_write( const QVariant& variant )
 	}
 
 	// Delete unneeded endpoint lineedits
-	for ( int j = qMax( 1, ca_info_files.count() ), end = server_ca_info_files_verticalLayout->count() ; j < end ; ++j )
+	for ( int j = qMax( 1, ca_info_files.count() ), end = server_ca_info_files_verticallayout->count() ; j < end ; ++j )
 	{
-		QLayout* const layout = server_ca_info_files_verticalLayout->takeAt( j )->layout();
+		QLayout* const layout = server_ca_info_files_verticallayout->takeAt( j )->layout();
 
 		if ( layout != NULL )
 		{
@@ -1300,6 +1328,102 @@ void Freelan_gui::server_ca_info_files_write( const QVariant& variant )
 		}
 	}
 } // server_ca_info_files_write
+
+QVariant Freelan_gui::fscp_contacts_read() const
+{
+	// First lineedit
+	QString text = fscp_contacts_lineedit->text().trimmed();
+
+	// Loop accross all remaining lineedit
+	for ( int i = 1, end = fscp_contacts_verticallayout->count() ; i < end ; ++i )
+	{
+		const QLayout* const child_layout = fscp_contacts_verticallayout->itemAt( i )->layout();
+
+		if ( child_layout != NULL )
+		{
+			for ( int j = 0, end = child_layout->count() ; j < end ; ++j )
+			{
+				const QLineEdit* const lineedit = qobject_cast< QLineEdit* >( child_layout->itemAt( j )->widget() );
+
+				if ( lineedit != NULL )
+				{
+					const QString& fragment = lineedit->text().trimmed();
+
+					if ( !fragment.isEmpty() )
+					{
+						text.append( ',' );
+						text.append( fragment );
+					}
+
+					// Stop loop
+					j = end;
+				}
+			}
+		}
+	}
+
+	return text.isEmpty() ? QVariant() : QVariant( text );
+} // fscp_contacts_read
+
+void Freelan_gui::fscp_contacts_write( const QVariant& variant )
+{
+	const QStringList& contacts = variant.toString().split( ',', QString::SkipEmptyParts );
+
+	// First lineedit
+	fscp_contacts_lineedit->setText( contacts.isEmpty() ? QString::null : contacts.first().trimmed() );
+
+	int i = 1;
+
+	// Reuse existing endpoint lineedits
+	for ( int j = 1, end_i = contacts.count(), end_j = fscp_contacts_verticallayout->count() ; i < end_i && j < end_j ; ++i )
+	{
+		const QString& contact_string = contacts.at( i ).trimmed();
+
+		if ( !contact_string.isEmpty() )
+		{
+			QLayout* const layout = fscp_contacts_verticallayout->itemAt( j++ )->layout();
+
+			if ( layout != NULL )
+			{
+				for ( int k = 0, end_k = layout->count() ; k < end_k ; ++k )
+				{
+					QLineEdit* const lineedit = qobject_cast< QLineEdit* >( layout->itemAt( k )->widget() );
+
+					if ( lineedit != NULL )
+					{
+						lineedit->setText( contact_string );
+
+						// Stop loop
+						k = end_k;
+					}
+				}
+			}
+		}
+	}
+
+	// New lineedit
+	for ( int end = contacts.count() ; i < end ; ++i )
+	{
+		const QString& contact_string = contacts.at( i ).trimmed();
+
+		if ( !contact_string.isEmpty() )
+		{
+			// We need to create new endpoint lineedits
+			append_fscp_contacts_lineedit()->setText( contact_string );
+		}
+	}
+
+	// Delete unneeded endpoint lineedits
+	for ( int j = qMax( 1, contacts.count() ), end = fscp_contacts_verticallayout->count() ; j < end ; ++j )
+	{
+		QLayout* const layout = fscp_contacts_verticallayout->takeAt( j )->layout();
+
+		if ( layout != NULL )
+		{
+			on_m_layout_deleter_mapped( layout );
+		}
+	}
+} // fscp_contacts_write
 
 void Freelan_gui::on_status_pushbutton_toggled( bool toggled )
 {
@@ -1379,14 +1503,19 @@ void Freelan_gui::on_server_proxy_url_radiobutton_toggled( bool toggled )
 	server_proxy_url_lineedit->setEnabled( toggled );
 }
 
-void Freelan_gui::on_server_public_endpoints_add_toolButton_clicked()
+void Freelan_gui::on_server_public_endpoints_add_toolbutton_clicked()
 {
 	append_server_public_endpoints_lineedit()->setFocus();
 }
 
-void Freelan_gui::on_server_ca_info_files_add_toolButton_clicked()
+void Freelan_gui::on_server_ca_info_files_add_toolbutton_clicked()
 {
 	append_server_ca_info_files_lineedit()->setFocus();
+}
+
+void Freelan_gui::on_fscp_contacts_add_toolbutton_clicked()
+{
+	append_fscp_contacts_lineedit()->setFocus();
 }
 
 void Freelan_gui::on_m_ca_info_file_chooser_mapped( QWidget* widget )

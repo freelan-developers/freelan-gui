@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>644</width>
-    <height>216</height>
+    <width>757</width>
+    <height>345</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
          <x>0</x>
          <y>0</y>
          <width>86</width>
-         <height>202</height>
+         <height>331</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -195,9 +195,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>515</width>
-                 <height>1599</height>
+                 <y>-909</y>
+                 <width>628</width>
+                 <height>1501</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -513,12 +513,12 @@
                       <item row="1" column="1" rowspan="2">
                        <layout class="QVBoxLayout" name="server_public_endpoints_verticallayout">
                         <item>
-                         <layout class="QHBoxLayout" name="horizontalLayout_10">
+                         <layout class="QHBoxLayout" name="server_public_endpoints_horizontallayout">
                           <item>
                            <widget class="QLineEdit" name="server_public_endpoints_lineedit"/>
                           </item>
                           <item>
-                           <widget class="QToolButton" name="server_public_endpoints_add_toolButton">
+                           <widget class="QToolButton" name="server_public_endpoints_add_toolbutton">
                             <property name="text">
                              <string>+</string>
                             </property>
@@ -614,7 +614,7 @@
                      <property name="title">
                       <string>The certificate authority files</string>
                      </property>
-                     <layout class="QGridLayout" name="gridLayout_22">
+                     <layout class="QGridLayout" name="gridLayout_11">
                       <item row="0" column="0" colspan="2">
                        <widget class="QLabel" name="label_24">
                         <property name="text">
@@ -635,10 +635,10 @@
                         </property>
                        </widget>
                       </item>
-                      <item row="1" column="1">
-                       <layout class="QVBoxLayout" name="server_ca_info_files_verticalLayout">
+                      <item row="1" column="1" rowspan="2">
+                       <layout class="QVBoxLayout" name="server_ca_info_files_verticallayout">
                         <item>
-                         <layout class="QHBoxLayout" name="server_ca_info_files_horizontalLayout">
+                         <layout class="QHBoxLayout" name="server_ca_info_files_horizontallayout">
                           <item>
                            <widget class="QLineEdit" name="server_ca_info_files_lineedit"/>
                           </item>
@@ -650,7 +650,7 @@
                            </widget>
                           </item>
                           <item>
-                           <widget class="QToolButton" name="server_ca_info_files_add_toolButton">
+                           <widget class="QToolButton" name="server_ca_info_files_add_toolbutton">
                             <property name="text">
                              <string>+</string>
                             </property>
@@ -659,6 +659,19 @@
                          </layout>
                         </item>
                        </layout>
+                      </item>
+                      <item row="2" column="0">
+                       <spacer name="verticalSpacer_11">
+                        <property name="orientation">
+                         <enum>Qt::Vertical</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>0</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                       </spacer>
                       </item>
                      </layout>
                     </widget>
@@ -819,9 +832,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>515</width>
-                 <height>991</height>
+                 <y>-502</y>
+                 <width>628</width>
+                 <height>785</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -983,19 +996,12 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QGroupBox" name="groupBox_19">
+                 <widget class="QGroupBox" name="fscp_contacts_groupbox">
                   <property name="title">
                    <string>The contact list</string>
                   </property>
-                  <layout class="QGridLayout" name="gridLayout_16">
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="label_32">
-                     <property name="text">
-                      <string>Contacts:</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0" colspan="2">
+                  <layout class="QGridLayout" name="gridLayout_9">
+                   <item row="0" column="0" colspan="4">
                     <widget class="QLabel" name="label_26">
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;The list of hosts to connect to.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1005,30 +1011,32 @@
                      </property>
                     </widget>
                    </item>
-                   <item row="1" column="1" rowspan="2">
-                    <widget class="QListWidget" name="listWidget_2">
-                     <property name="maximumSize">
-                      <size>
-                       <width>16777215</width>
-                       <height>100</height>
-                      </size>
+                   <item row="1" column="0" colspan="2">
+                    <widget class="QLabel" name="label_32">
+                     <property name="text">
+                      <string>Contacts:</string>
                      </property>
                     </widget>
                    </item>
-                   <item row="2" column="0">
-                    <spacer name="verticalSpacer_4">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>78</height>
-                      </size>
-                     </property>
-                    </spacer>
+                   <item row="1" column="2" rowspan="2">
+                    <layout class="QVBoxLayout" name="fscp_contacts_verticallayout">
+                     <item>
+                      <layout class="QHBoxLayout" name="fscp_contacts_horizontallayout">
+                       <item>
+                        <widget class="QLineEdit" name="fscp_contacts_lineedit"/>
+                       </item>
+                       <item>
+                        <widget class="QToolButton" name="fscp_contacts_add_toolbutton">
+                         <property name="text">
+                          <string>+</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
                    </item>
-                   <item row="1" column="2">
+                   <item row="1" column="3" rowspan="2">
                     <spacer name="horizontalSpacer_5">
                      <property name="orientation">
                       <enum>Qt::Horizontal</enum>
@@ -1041,7 +1049,20 @@
                      </property>
                     </spacer>
                    </item>
-                   <item row="3" column="1" colspan="2">
+                   <item row="2" column="0">
+                    <spacer name="verticalSpacer_4">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item row="3" column="2" colspan="2">
                     <widget class="QLabel" name="label_19">
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Examples: 192.168.0.1, [fe80::1]:12000, hostname:1234, some.other.host.org:1234&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1089,16 +1110,6 @@
                    <string>Whether to accept contacts</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_19">
-                   <item row="0" column="0">
-                    <widget class="QLabel" name="label_34">
-                     <property name="text">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;If checked, freelan will accept contacts sent by other hosts and will try to establish a session with those contacts, just as if there was a &amp;quot;contact=&amp;quot; option for them.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;It is recommended that this option is set to enhance connectivity.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                     </property>
-                     <property name="wordWrap">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
                    <item row="1" column="0">
                     <widget class="QGroupBox" name="groupBox_23">
                      <property name="title">
@@ -1114,13 +1125,6 @@
                       <property name="sizeConstraint">
                        <enum>QLayout::SetMinAndMaxSize</enum>
                       </property>
-                      <item row="1" column="0">
-                       <widget class="QLabel" name="label_37">
-                        <property name="text">
-                         <string>Dynamic contact file:</string>
-                        </property>
-                       </widget>
-                      </item>
                       <item row="0" column="0" colspan="4">
                        <widget class="QLabel" name="label_36">
                         <property name="text">
@@ -1131,6 +1135,9 @@
                         </property>
                        </widget>
                       </item>
+                      <item row="1" column="1">
+                       <widget class="QLineEdit" name="lineEdit_23"/>
+                      </item>
                       <item row="1" column="2">
                        <widget class="QToolButton" name="toolButton_11">
                         <property name="text">
@@ -1138,10 +1145,24 @@
                         </property>
                        </widget>
                       </item>
-                      <item row="1" column="1">
-                       <widget class="QLineEdit" name="lineEdit_23"/>
+                      <item row="1" column="0">
+                       <widget class="QLabel" name="label_37">
+                        <property name="text">
+                         <string>Dynamic contact file:</string>
+                        </property>
+                       </widget>
                       </item>
                      </layout>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="label_34">
+                     <property name="text">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;If checked, freelan will accept contacts sent by other hosts and will try to establish a session with those contacts, just as if there was a &amp;quot;contact=&amp;quot; option for them.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;It is recommended that this option is set to enhance connectivity.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
+                     <property name="wordWrap">
+                      <bool>true</bool>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -1152,8 +1173,8 @@
                   <property name="title">
                    <string>The networks that should be ignored</string>
                   </property>
-                  <layout class="QGridLayout" name="gridLayout_21">
-                   <item row="0" column="0" colspan="2">
+                  <layout class="QGridLayout" name="gridLayout_10">
+                   <item row="0" column="0" colspan="3">
                     <widget class="QLabel" name="label_38">
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;If the freelan deamon receives a contact which belongs to one of the specified networks, it will not try to establish a session with it.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1171,27 +1192,22 @@
                     </widget>
                    </item>
                    <item row="1" column="1" rowspan="2">
-                    <widget class="QListWidget" name="listWidget_4">
-                     <property name="maximumSize">
-                      <size>
-                       <width>16777215</width>
-                       <height>100</height>
-                      </size>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="2" column="0">
-                    <spacer name="verticalSpacer_5">
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="sizeHint" stdset="0">
-                      <size>
-                       <width>20</width>
-                       <height>78</height>
-                      </size>
-                     </property>
-                    </spacer>
+                    <layout class="QVBoxLayout" name="fscp_never_contact_verticallayout">
+                     <item>
+                      <layout class="QHBoxLayout" name="fscp_never_contact_horizontallayout">
+                       <item>
+                        <widget class="QLineEdit" name="fscp_never_contact_lineedit"/>
+                       </item>
+                       <item>
+                        <widget class="QToolButton" name="fscp_never_contact_add_toolbutton">
+                         <property name="text">
+                          <string>+</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
                    </item>
                    <item row="1" column="2">
                     <spacer name="horizontalSpacer_6">
@@ -1200,8 +1216,21 @@
                      </property>
                      <property name="sizeHint" stdset="0">
                       <size>
-                       <width>40</width>
-                       <height>20</height>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item row="2" column="0">
+                    <spacer name="verticalSpacer_5">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
                       </size>
                      </property>
                     </spacer>
@@ -1258,8 +1287,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>398</width>
-                 <height>1008</height>
+                 <width>628</width>
+                 <height>798</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1604,8 +1633,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>243</width>
-                 <height>496</height>
+                 <width>628</width>
+                 <height>300</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -1737,8 +1766,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>302</width>
-                 <height>957</height>
+                 <width>628</width>
+                 <height>761</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_9">

@@ -777,6 +777,9 @@ public:
 	// Create a ca_info_file and append it to server_ca_info_files_verticallayout
 	QLineEdit* append_server_ca_info_files_lineedit();
 
+	// Create a contact lineedit and append it to fscp_contacts_verticallayout
+	QLineEdit* append_fscp_contacts_lineedit();
+
 	// Property accessors
 	// Server page
 	QVariant server_enabled_read() const { return server_groupbox->isChecked(); }
@@ -824,6 +827,9 @@ public:
 	QVariant fscp_hello_timeout_read() const { return fscp_hello_timeout_spinbox->value(); }
 	void fscp_hello_timeout_write( const QVariant& variant ) { fscp_hello_timeout_spinbox->setValue( variant.toInt() ); }
 
+	QVariant fscp_contacts_read() const;
+	void fscp_contacts_write( const QVariant& variant );
+
 private Q_SLOTS:
 
 	// Schedule update on a timeout to avoid redondant call
@@ -842,10 +848,13 @@ private Q_SLOTS:
 	void on_server_proxy_url_radiobutton_toggled( bool toggled );
 
 	// Public endpoints add
-	void on_server_public_endpoints_add_toolButton_clicked();
+	void on_server_public_endpoints_add_toolbutton_clicked();
 
 	// ca_info_files add
-	void on_server_ca_info_files_add_toolButton_clicked();
+	void on_server_ca_info_files_add_toolbutton_clicked();
+
+	// contacts add
+	void on_fscp_contacts_add_toolbutton_clicked();
 
 	// Used to show a file chooser dialog
 	void on_m_ca_info_file_chooser_mapped( QWidget* widget );
