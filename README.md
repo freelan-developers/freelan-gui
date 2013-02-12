@@ -11,6 +11,8 @@ This software supports the following operating systems:
  - Linux
  - Mac OSX
 
+**This is a work in progress. Please do not ask about when the program will be released or why it doesn't compile on your platform.**
+
 Licensing
 ---------
 
