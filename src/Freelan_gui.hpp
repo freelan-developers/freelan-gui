@@ -690,6 +690,7 @@ Public License instead of this License.  But first, please read
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QHash>
+#include <QPointer>
 #include <QSettings>
 #include <QSignalMapper>
 #include <QVariant>
@@ -829,6 +830,9 @@ public:
 
 	QVariant fscp_contacts_read() const;
 	void fscp_contacts_write( const QVariant& variant );
+
+	QVariant fscp_accept_contact_requests_read() const { return fscp_accept_contact_requests_checkbox->isChecked(); }
+	void fscp_accept_contact_requests_write( const QVariant& variant ) { fscp_accept_contact_requests_checkbox->setChecked( variant.toBool() ); }
 
 private Q_SLOTS:
 

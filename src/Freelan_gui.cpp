@@ -825,6 +825,7 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_LISTEN_ON ] = SettingsWrapper( &Freelan_gui::fscp_listen_on_read, &Freelan_gui::fscp_listen_on_write, true, "0.0.0.0:12000" );
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HELLO_TIMEOUT ] = SettingsWrapper( &Freelan_gui::fscp_hello_timeout_read, &Freelan_gui::fscp_hello_timeout_write, true, 3000 );
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_CONTACT ] = SettingsWrapper( &Freelan_gui::fscp_contacts_read, &Freelan_gui::fscp_contacts_write );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_ACCEPT_CONTACT_REQUESTS ] = SettingsWrapper( &Freelan_gui::fscp_accept_contact_requests_read, &Freelan_gui::fscp_accept_contact_requests_write, true, true );
 
 	// Connect update signals
 	// Server page
@@ -850,6 +851,7 @@ void Freelan_gui::register_settings()
 	connect( fscp_listen_on_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 	connect( fscp_hello_timeout_spinbox, SIGNAL( valueChanged( int ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 	connect( fscp_contacts_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( fscp_accept_contact_requests_checkbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 } // register_settings
 
 void Freelan_gui::read_settings_from_file()
