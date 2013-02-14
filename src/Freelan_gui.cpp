@@ -703,8 +703,8 @@ static const char* const SETTINGS_KEY_HELLO_TIMEOUT = "hello_timeout";
 static const char* const SETTINGS_KEY_CONTACT = "contact";
 static const char* const SETTINGS_KEY_ACCEPT_CONTACT_REQUESTS = "accept_contact_requests";
 static const char* const SETTINGS_KEY_ACCEPT_CONTACTS = "accept_contacts";
-static const char* const SETTINGS_KEY_DYNAMIC_CONTACT_FILE = "dynamic_contact_file";
-static const char* const SETTINGS_KEY_NEVER_CONTACT = "never_contact";
+static const char* const SETTINGS_KEY_DYNAMIC_CONTACT_FILES = "dynamic_contact_files";
+static const char* const SETTINGS_KEY_NEVER_CONTACTS = "never_contacts";
 static const char* const SETTINGS_KEY_IPV4_ADDRESS_PREFIX_LENGTH = "ipv4_address_prefix_length";
 static const char* const SETTINGS_KEY_IPV6_ADDRESS_PREFIX_LENGTH = "ipv6_address_prefix_length";
 static const char* const SETTINGS_KEY_ARP_PROXY_ENABLED = "arp_proxy_enabled";
@@ -1137,17 +1137,21 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	, m_are_required_settings_saved( false )
 	, m_remove_mapper()
 	, m_choose_server_ca_info_files_mapper()
+	, m_choose_fscp_dynamic_contact_files_mapper()
 {
 	setupUi( this );
 
 	// Build about page
 	setup_about_ui();
 
+	// Connect the row remover mapper
+	connect( &m_remove_mapper, SIGNAL( mapped( QObject* ) ), this, SLOT( on_m_remove_mapper_mapped( QObject* ) ) );
+
 	// Connect the file chooser mapper
 	connect( &m_choose_server_ca_info_files_mapper, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_choose_server_ca_info_files_mapper_mapped( QWidget* ) ) );
 
-	// Connect the row remover mapper
-	connect( &m_remove_mapper, SIGNAL( mapped( QObject* ) ), this, SLOT( on_m_remove_mapper_mapped( QObject* ) ) );
+	// Connect the file chooser mapper
+	connect( &m_choose_fscp_dynamic_contact_files_mapper, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_choose_fscp_dynamic_contact_files_mapper( QWidget* ) ) );
 
 	// Build settings hash
 	register_settings();
@@ -1240,6 +1244,9 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HELLO_TIMEOUT ] = new SpinBoxWrapper( fscp_hello_timeout_spinbox, this, true, 3000 );
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_CONTACT ] = new LineEditArrayWrapper( fscp_contacts_lineedit, fscp_contacts_verticallayout, this );
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_ACCEPT_CONTACT_REQUESTS ] = new CheckBoxWrapper( fscp_accept_contact_requests_checkbox, this, true, VARIANT_YES );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_ACCEPT_CONTACTS ] = new GroupBoxWrapper( fscp_accept_contacts_groupbox, this, false, VARIANT_YES );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_DYNAMIC_CONTACT_FILES ] = new LineEditArrayWrapper( fscp_dynamic_contact_files_lineedit, fscp_dynamic_contact_files_verticallayout, this, fscp_dynamic_contact_files_choose_toolbutton, &m_choose_fscp_dynamic_contact_files_mapper );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_NEVER_CONTACTS ] = new LineEditArrayWrapper( fscp_never_contacts_lineedit, fscp_never_contacts_verticallayout, this );
 } // register_settings
 
 void Freelan_gui::read_settings_from_file()
@@ -1458,6 +1465,26 @@ QLineEdit* Freelan_gui::append_lineedit( QWidget* const parent_widget, QVBoxLayo
 	return new_lineedit;
 } // append_lineedit
 
+void Freelan_gui::show_file_choose_dialog( QWidget* const widget, const QString& title, const QString& filter )
+{
+	// Use Qt kinda dynamic cast...
+	QLineEdit* const lineedit = qobject_cast< QLineEdit* >( widget );
+
+	if ( lineedit != NULL )
+	{
+		// Get the previous dir
+		const QDir& parentDir = QFileInfo( lineedit->text() ).dir();
+
+		// Open the file chooser dialog
+		const QString& fileName = QFileDialog::getOpenFileName( lineedit, title, parentDir.isReadable() ? parentDir.canonicalPath() : QDir::homePath(), filter );
+
+		if ( !fileName.isNull() )
+		{
+			lineedit->setText( fileName );
+		}
+	}
+}
+
 void Freelan_gui::on_status_pushbutton_toggled( bool toggled )
 {
 	if ( toggled )
@@ -1529,28 +1556,6 @@ void Freelan_gui::on_settings_buttonbox_clicked( QAbstractButton* button )
 		schedule_settings_buttonbox_update();
 	}
 } // on_settings_buttonbox_clicked
-
-void Freelan_gui::on_m_choose_server_ca_info_files_mapper_mapped( QWidget* widget )
-{
-	// Use Qt kinda dynamic cast...
-	QLineEdit* const lineedit = qobject_cast< QLineEdit* >( widget );
-
-	if ( lineedit != NULL )
-	{
-		// Get the previous dir
-		const QString& currentFileName = lineedit->text();
-		QFileInfo fileInfo( currentFileName );
-		const QDir& parentDir = fileInfo.dir();
-
-		// Open the file chooser dialog
-		const QString& fileName = QFileDialog::getOpenFileName( this, trUtf8( "Open server certificate authority list" ), parentDir.isReadable() ? parentDir.canonicalPath() : QDir::homePath(), tr( "Certificate authority list files (*.lst);;All files (*.*)" ) );
-
-		if ( !fileName.isNull() )
-		{
-			lineedit->setText( fileName );
-		}
-	}
-}
 
 void Freelan_gui::on_m_remove_mapper_mapped( QObject* object )
 {

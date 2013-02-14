@@ -734,6 +734,7 @@ private:
 
 	QSignalMapper m_remove_mapper;
 	QSignalMapper m_choose_server_ca_info_files_mapper;
+	QSignalMapper m_choose_fscp_dynamic_contact_files_mapper;
 
 	// Build about page
 	void setup_about_ui();
@@ -749,13 +750,8 @@ private:
 	// Create a lineedit, a remove toolbutton, eventually a "choose" toolbutton and add them to the given parent
 	QLineEdit* append_lineedit( QWidget* const parent_widget, QVBoxLayout* const parent_layout, QSignalMapper* const chooser_mapper = NULL );
 
-	// Property accessors
-
-	QVariant fscp_contacts_read() const;
-	void fscp_contacts_write( const QVariant& variant );
-
-	QVariant fscp_accept_contact_requests_read() const { return fscp_accept_contact_requests_checkbox->isChecked(); }
-	void fscp_accept_contact_requests_write( const QVariant& variant ) { fscp_accept_contact_requests_checkbox->setChecked( variant.toBool() ); }
+	// Used to show a file chooser dialog
+	void show_file_choose_dialog( QWidget* const widget, const QString& title, const QString& filter );
 
 private Q_SLOTS:
 
@@ -780,11 +776,18 @@ private Q_SLOTS:
 	// ca_info_files add
 	void on_server_ca_info_files_add_toolbutton_clicked() { append_lineedit( server_ca_info_files_groupbox, server_ca_info_files_verticallayout, &m_choose_server_ca_info_files_mapper )->setFocus(); }
 
-	// contacts add
+	// Contacts add
 	void on_fscp_contacts_add_toolbutton_clicked() { append_lineedit( fscp_contacts_groupbox, fscp_contacts_verticallayout )->setFocus(); }
 
+	// Dynamic contact add
+	void on_fscp_dynamic_contact_files_add_toolbutton_clicked() { append_lineedit( fscp_accept_contacts_groupbox, fscp_dynamic_contact_files_verticallayout, &m_choose_fscp_dynamic_contact_files_mapper )->setFocus(); }
+
+	// Never contact add
+	void on_fscp_never_contacts_add_toolbutton_clicked() { append_lineedit( fscp_never_contacts_groupbox, fscp_never_contacts_verticallayout )->setFocus(); }
+
 	// Used to show a file chooser dialog
-	void on_m_choose_server_ca_info_files_mapper_mapped( QWidget* widget );
+	void on_m_choose_server_ca_info_files_mapper_mapped( QWidget* widget ) { show_file_choose_dialog( widget, trUtf8( "Open server certificate authority list" ), trUtf8( "Certificate authority list files (*.lst);;All files (*.*)" ) ); }
+	void on_m_choose_fscp_dynamic_contact_files_mapper( QWidget* widget ) { show_file_choose_dialog( widget, trUtf8( "Open dynamic contact list" ), trUtf8( "Dynamic contact list files (*.lst);;All files (*.*)" ) ); }
 
 	// Used to remove rows from layout
 	void on_m_remove_mapper_mapped( QObject* object );
