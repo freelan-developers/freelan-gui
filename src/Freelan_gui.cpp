@@ -726,14 +726,417 @@ static const char* const SETTINGS_KEY_AUTHORITY_CERTIFICATE_FILE = "authority_ce
 static const char* const SETTINGS_KEY_CERTIFICATE_REVOCATION_VALIDATION_METHOD = "certificate_revocation_validation_method";
 static const char* const SETTINGS_KEY_CERTIFICATE_REVOCATION_LIST_FILE = "certificate_revocation_list_file";
 
+static const QVariant VARIANT_YES( "yes" );
+static const QVariant VARIANT_NO( "no" );
+
+// This class is used to hold the right function pointers for each setting
+class AbstractSettingsWrapper
+{
+public:
+
+	AbstractSettingsWrapper( const bool is_required = false
+	                         , const QVariant& default_value = QVariant()
+	                         , const QVariant& applied_value = QVariant() )
+		: m_is_required( is_required )
+		, m_default_value( default_value )
+		, m_applied_value( applied_value )
+	{}
+
+	virtual ~AbstractSettingsWrapper() {}
+
+	bool m_is_required : 1;
+	QVariant m_default_value;
+	QVariant m_applied_value;
+
+	virtual QVariant read() const = 0;
+	virtual void write( const QVariant& ) = 0;
+};
+
+class LineEditWrapper
+	: public AbstractSettingsWrapper
+{
+public:
+
+	LineEditWrapper( QLineEdit* const lineedit
+	                 , Freelan_gui* const freelan_gui
+	                 , const bool is_required = false
+	                 , const QVariant& default_value = QVariant()
+	                 , const QVariant& applied_value = QVariant() )
+		: AbstractSettingsWrapper( is_required
+		                           , default_value
+		                           , applied_value )
+		, m_lineedit( lineedit )
+	{
+		QObject::connect( lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+	}
+
+	virtual ~LineEditWrapper() {}
+
+	virtual QVariant read() const
+	{
+		const QString& text = m_lineedit->text();
+		return text.isEmpty() ? QVariant() : QVariant( text );
+	}
+
+	virtual void write( const QVariant& value ) { m_lineedit->setText( value.toString() ); }
+
+private:
+
+	QLineEdit* const m_lineedit;
+};
+
+class CheckBoxWrapper
+	: public AbstractSettingsWrapper
+{
+public:
+
+	CheckBoxWrapper( QCheckBox* const checkbox
+	                 , Freelan_gui* const freelan_gui
+	                 , const bool is_required = false
+	                 , const QVariant& default_value = QVariant()
+	                 , const QVariant& applied_value = QVariant() )
+		: AbstractSettingsWrapper( is_required
+		                           , default_value
+		                           , applied_value )
+		, m_checkbox( checkbox )
+	{
+		QObject::connect( checkbox, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+	}
+
+	virtual ~CheckBoxWrapper() {}
+
+	virtual QVariant read() const
+	{
+		return m_checkbox->isChecked() ? VARIANT_YES : VARIANT_NO;
+	}
+
+	virtual void write( const QVariant& value )
+	{
+		m_checkbox->setChecked( value == VARIANT_YES );
+	}
+
+private:
+
+	QCheckBox* const m_checkbox;
+};
+
+class ComboBoxWrapper
+	: public AbstractSettingsWrapper
+{
+public:
+
+	ComboBoxWrapper( QComboBox* const combobox
+	                 , Freelan_gui* const freelan_gui
+	                 , const bool is_required = false
+	                 , const QVariant& default_value = QVariant()
+	                 , const QVariant& applied_value = QVariant() )
+		: AbstractSettingsWrapper( is_required
+		                           , default_value
+		                           , applied_value )
+		, m_combobox( combobox )
+	{
+		QObject::connect( combobox, SIGNAL( currentIndexChanged( int ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+	}
+
+	virtual ~ComboBoxWrapper() {}
+
+	virtual QVariant read() const
+	{
+		return m_combobox->currentText();
+	}
+
+	virtual void write( const QVariant& value )
+	{
+		m_combobox->setCurrentIndex( m_combobox->findText( value.toString() ) );
+	}
+
+private:
+
+	QComboBox* const m_combobox;
+};
+
+class SpinBoxWrapper
+	: public AbstractSettingsWrapper
+{
+public:
+
+	SpinBoxWrapper( QSpinBox* const spinbox
+	                , Freelan_gui* const freelan_gui
+	                , const bool is_required = false
+	                , const QVariant& default_value = QVariant()
+	                , const QVariant& applied_value = QVariant() )
+		: AbstractSettingsWrapper( is_required
+		                           , default_value
+		                           , applied_value )
+		, m_spinbox( spinbox )
+	{
+		QObject::connect( spinbox, SIGNAL( valueChanged( int ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+	}
+
+	virtual ~SpinBoxWrapper() {}
+
+	virtual QVariant read() const
+	{
+		return m_spinbox->value();
+	}
+
+	virtual void write( const QVariant& value )
+	{
+		m_spinbox->setValue( value.toInt() );
+	}
+
+private:
+
+	QSpinBox* const m_spinbox;
+};
+
+class GroupBoxWrapper
+	: public AbstractSettingsWrapper
+{
+public:
+
+	GroupBoxWrapper( QGroupBox* const groupbox
+	                 , Freelan_gui* const freelan_gui
+	                 , const bool is_required = false
+	                 , const QVariant& default_value = QVariant()
+	                 , const QVariant& applied_value = QVariant() )
+		: AbstractSettingsWrapper( is_required
+		                           , default_value
+		                           , applied_value )
+		, m_groupbox( groupbox )
+	{
+		QObject::connect( groupbox, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+	}
+
+	virtual ~GroupBoxWrapper() {}
+
+	virtual QVariant read() const
+	{
+		return m_groupbox->isChecked() ? VARIANT_YES : VARIANT_NO;
+	}
+
+	virtual void write( const QVariant& value )
+	{
+		m_groupbox->setChecked( value == VARIANT_YES );
+	}
+
+private:
+
+	QGroupBox* const m_groupbox;
+};
+
+class ProxyWrapper
+	: public AbstractSettingsWrapper
+{
+public:
+
+	ProxyWrapper( QRadioButton* const server_proxy_no_radiobutton
+	              , QRadioButton* const server_proxy_system_radiobutton
+	              , QRadioButton* const server_proxy_url_radiobutton
+	              , QLineEdit* const server_proxy_url_lineedit
+	              , Freelan_gui* const freelan_gui
+	              , const bool is_required = false
+	              , const QVariant& default_value = QVariant()
+	              , const QVariant& applied_value = QVariant() )
+		: AbstractSettingsWrapper( is_required
+		                           , default_value
+		                           , applied_value )
+		, m_server_proxy_no_radiobutton( server_proxy_no_radiobutton )
+		, m_server_proxy_system_radiobutton( server_proxy_system_radiobutton )
+		, m_server_proxy_url_radiobutton( server_proxy_url_radiobutton )
+		, m_server_proxy_url_lineedit( server_proxy_url_lineedit )
+	{
+		QObject::connect( m_server_proxy_no_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+		QObject::connect( m_server_proxy_system_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+		QObject::connect( m_server_proxy_url_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+		QObject::connect( m_server_proxy_url_lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+	}
+
+	virtual ~ProxyWrapper() {}
+
+	virtual QVariant read() const
+	{
+		return m_server_proxy_no_radiobutton->isChecked() ? QVariant() : m_server_proxy_system_radiobutton->isChecked() ? QVariant( "" ) : QVariant( m_server_proxy_url_radiobutton->text() );
+	}
+
+	virtual void write( const QVariant& value )
+	{
+		if ( value.isNull() )
+		{
+			m_server_proxy_no_radiobutton->toggle();
+		}
+		else
+		{
+			const QString& proxy_string = value.toString().trimmed();
+
+			if ( proxy_string.isEmpty() )
+			{
+				m_server_proxy_system_radiobutton->toggle();
+			}
+			else
+			{
+				m_server_proxy_url_radiobutton->toggle();
+				m_server_proxy_url_lineedit->setText( proxy_string );
+			}
+		}
+	}
+
+private:
+
+	QRadioButton* const m_server_proxy_no_radiobutton;
+	QRadioButton* const m_server_proxy_system_radiobutton;
+	QRadioButton* const m_server_proxy_url_radiobutton;
+	QLineEdit* const m_server_proxy_url_lineedit;
+};
+
+class LineEditArrayWrapper
+	: public AbstractSettingsWrapper
+{
+public:
+
+	LineEditArrayWrapper( QLineEdit* const lineedit
+	                      , QVBoxLayout* const vboxlayout
+	                      , Freelan_gui* const freelan_gui
+	                      , QToolButton* const choose_toolbutton = NULL
+	                      , QSignalMapper* const choose_mapper = NULL
+	                      , const bool is_required = false
+	                      , const QVariant& default_value = QVariant()
+	                      , const QVariant& applied_value = QVariant() )
+		: AbstractSettingsWrapper( is_required
+		                           , default_value
+		                           , applied_value )
+		, m_lineedit( lineedit )
+		, m_vboxlayout( vboxlayout )
+		, m_freelan_gui( freelan_gui )
+		, m_choose_mapper( choose_mapper )
+	{
+		QObject::connect( lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+
+		// Connect and map the first "choose" toolbutton
+		if ( ( choose_toolbutton != NULL ) && ( choose_mapper != NULL ) )
+		{
+			choose_mapper->setMapping( choose_toolbutton, lineedit );
+			QObject::connect( choose_toolbutton, SIGNAL( clicked() ), choose_mapper, SLOT( map() ) );
+		}
+	}
+
+	virtual ~LineEditArrayWrapper() {}
+
+	virtual QVariant read() const
+	{
+		// First lineedit
+		QString text = m_lineedit->text().trimmed();
+
+		// Loop accross all remaining lineedit
+		for ( int i = 1, end = m_vboxlayout->count() ; i < end ; ++i )
+		{
+			const QLayout* const child_layout = m_vboxlayout->itemAt( i )->layout();
+
+			if ( child_layout != NULL )
+			{
+				for ( int j = 0, end = child_layout->count() ; j < end ; ++j )
+				{
+					const QLineEdit* const lineedit = qobject_cast< QLineEdit* >( child_layout->itemAt( j )->widget() );
+
+					// If the current layout item is a lineedit..
+					if ( lineedit != NULL )
+					{
+						const QString& fragment = lineedit->text().trimmed();
+
+						if ( !fragment.isEmpty() )
+						{
+							text.append( ',' );
+							text.append( fragment );
+						}
+
+						// Stop loop
+						j = end;
+					}
+				}
+			}
+		}
+
+		return text.isEmpty() ? QVariant() : QVariant( text );
+	} // read
+
+	virtual void write( const QVariant& value )
+	{
+		const QStringList& strings = value.toString().split( ',', QString::SkipEmptyParts );
+
+		// First lineedit
+		m_lineedit->setText( strings.isEmpty() ? QString::null : strings.first().trimmed() );
+
+		int i = 1;
+
+		// Reuse existing endpoint lineedits
+		for ( int j = 1, end_i = strings.count(), end_j = m_vboxlayout->count() ; i < end_i && j < end_j ; ++i )
+		{
+			const QString& string = strings.at( i ).trimmed();
+
+			if ( !string.isEmpty() )
+			{
+				QLayout* const layout = m_vboxlayout->itemAt( j++ )->layout();
+
+				// If the current layout item is a layout..
+				if ( layout != NULL )
+				{
+					for ( int k = 0, end_k = layout->count() ; k < end_k ; ++k )
+					{
+						QLineEdit* const lineedit = qobject_cast< QLineEdit* >( layout->itemAt( k )->widget() );
+
+						// If the current layout subitem is a lineedit..
+						if ( lineedit != NULL )
+						{
+							lineedit->setText( string );
+
+							// Stop loop
+							k = end_k;
+						}
+					}
+				}
+			}
+		}
+
+		// New lineedit
+		for ( int end = strings.count() ; i < end ; ++i )
+		{
+			const QString& string = strings.at( i ).trimmed();
+
+			if ( !string.isEmpty() )
+			{
+				// We need to create new endpoint lineedits
+				m_freelan_gui->append_lineedit( m_lineedit->parentWidget(), m_vboxlayout, m_choose_mapper )->setText( string );
+			}
+		}
+
+		// Delete unneeded endpoint lineedits
+		for ( int j = qMax( 1, strings.count() ), end = m_vboxlayout->count() ; j < end ; ++j )
+		{
+			QLayout* const layout = m_vboxlayout->takeAt( j )->layout();
+
+			if ( layout != NULL )
+			{
+				m_freelan_gui->on_m_remove_mapper_mapped( layout );
+			}
+		}
+	} // write
+
+private:
+
+	QLineEdit* const m_lineedit;
+	QVBoxLayout* const m_vboxlayout;
+	Freelan_gui* const m_freelan_gui;
+	QSignalMapper* const m_choose_mapper;
+};
+
 Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	: QMainWindow( parent )
 	, m_settings_filepath( settings_filepath )
 	, m_settings_wrappers()
 	, m_update_timer_id()
 	, m_are_required_settings_saved( false )
-	, m_layout_deleter()
-	, m_server_ca_info_files_chooser()
+	, m_remove_mapper()
+	, m_choose_server_ca_info_files_mapper()
 {
 	setupUi( this );
 
@@ -741,10 +1144,10 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	setup_about_ui();
 
 	// Connect the file chooser mapper
-	connect( &m_server_ca_info_files_chooser, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_ca_info_file_chooser_mapped( QWidget* ) ) );
+	connect( &m_choose_server_ca_info_files_mapper, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_choose_server_ca_info_files_mapper_mapped( QWidget* ) ) );
 
 	// Connect the row remover mapper
-	connect( &m_layout_deleter, SIGNAL( mapped( QObject* ) ), this, SLOT( on_m_layout_deleter_mapped( QObject* ) ) );
+	connect( &m_remove_mapper, SIGNAL( mapped( QObject* ) ), this, SLOT( on_m_remove_mapper_mapped( QObject* ) ) );
 
 	// Build settings hash
 	register_settings();
@@ -754,7 +1157,18 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 }
 
 Freelan_gui::~Freelan_gui()
-{}
+{
+	// Cleanup
+	for ( QHash< const char*, QHash< const char*, AbstractSettingsWrapper* > >::const_iterator i = m_settings_wrappers.constBegin(), end_i = m_settings_wrappers.constEnd() ; i != end_i ; ++i )
+	{
+		const QHash< const char*, AbstractSettingsWrapper* >& settings_wrappers = i.value();
+
+		for ( QHash< const char*, AbstractSettingsWrapper* >::const_iterator j = settings_wrappers.constBegin(), end_j = settings_wrappers.constEnd() ; j != end_j ; ++j )
+		{
+			delete j.value();
+		}
+	}
+}
 
 void Freelan_gui::changeEvent( QEvent* event )
 {
@@ -807,51 +1221,25 @@ void Freelan_gui::register_settings()
 {
 	// Each "registered" settings will be saved and restored by calling the given "read" and "write" function.
 	// Server page
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_ENABLED ] = SettingsWrapper( &Freelan_gui::server_enabled_read, &Freelan_gui::server_enabled_write, true, false );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HOST ] = SettingsWrapper( &Freelan_gui::server_host_read, &Freelan_gui::server_host_write );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USERNAME ] = SettingsWrapper( &Freelan_gui::server_username_read, &Freelan_gui::server_username_write );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PASSWORD ] = SettingsWrapper( &Freelan_gui::server_password_read, &Freelan_gui::server_password_write );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HTTPS_PROXY ] = SettingsWrapper( &Freelan_gui::server_https_proxy_read, &Freelan_gui::server_https_proxy_write );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_NETWORK ] = SettingsWrapper( &Freelan_gui::server_network_read, &Freelan_gui::server_network_write );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PUBLIC_ENDPOINTS ] = SettingsWrapper( &Freelan_gui::server_public_endpoints_read, &Freelan_gui::server_public_endpoints_write );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USER_AGENT ] = SettingsWrapper( &Freelan_gui::server_user_agent_read, &Freelan_gui::server_user_agent_write );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_CA_INFO_FILE ] = SettingsWrapper( &Freelan_gui::server_ca_info_files_read, &Freelan_gui::server_ca_info_files_write );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PROTOCOL ] = SettingsWrapper( &Freelan_gui::server_protocol_read, &Freelan_gui::server_protocol_write, false, "https" );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_PEER_VERIFICATION ] = SettingsWrapper( &Freelan_gui::server_disable_peer_verification_read, &Freelan_gui::server_disable_peer_verification_write, false, false );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_HOST_VERIFICATION ] = SettingsWrapper( &Freelan_gui::server_disable_host_verification_read, &Freelan_gui::server_disable_host_verification_write, false, false );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_ENABLED ] = new GroupBoxWrapper( server_groupbox, this, true, VARIANT_NO );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HOST ] = new LineEditWrapper( server_host_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USERNAME ] = new LineEditWrapper( server_username_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PASSWORD ] = new LineEditWrapper( server_password_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HTTPS_PROXY ] = new ProxyWrapper( server_proxy_no_radiobutton, server_proxy_system_radiobutton, server_proxy_url_radiobutton, server_proxy_url_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_NETWORK ] = new LineEditWrapper( server_network_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PUBLIC_ENDPOINTS ] = new LineEditArrayWrapper( server_public_endpoints_lineedit, server_public_endpoints_verticallayout, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USER_AGENT ] = new LineEditWrapper( server_user_agent_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_CA_INFO_FILE ] = new LineEditArrayWrapper( server_ca_info_files_lineedit, server_ca_info_files_verticallayout, this, server_ca_info_files_choose_toolbutton, &m_choose_server_ca_info_files_mapper );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PROTOCOL ] = new ComboBoxWrapper( server_protocol_combobox, this, false, "https" );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_PEER_VERIFICATION ] = new CheckBoxWrapper( server_disable_peer_verification_checkbox, this, false, VARIANT_NO );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_HOST_VERIFICATION ] = new CheckBoxWrapper( server_disable_host_verification_checkbox, this, false, VARIANT_NO );
 
 	// FSCP page
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HOSTNAME_RESOLUTION_PROTOCOL ] = SettingsWrapper( &Freelan_gui::fscp_hostname_resolution_protocol_read, &Freelan_gui::fscp_hostname_resolution_protocol_write, true, "IPv4" );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_LISTEN_ON ] = SettingsWrapper( &Freelan_gui::fscp_listen_on_read, &Freelan_gui::fscp_listen_on_write, true, "0.0.0.0:12000" );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HELLO_TIMEOUT ] = SettingsWrapper( &Freelan_gui::fscp_hello_timeout_read, &Freelan_gui::fscp_hello_timeout_write, true, 3000 );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_CONTACT ] = SettingsWrapper( &Freelan_gui::fscp_contacts_read, &Freelan_gui::fscp_contacts_write );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_ACCEPT_CONTACT_REQUESTS ] = SettingsWrapper( &Freelan_gui::fscp_accept_contact_requests_read, &Freelan_gui::fscp_accept_contact_requests_write, true, true );
-
-	// Connect update signals
-	// Server page
-	connect( server_groupbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_host_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_username_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_password_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_proxy_no_radiobutton, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_proxy_system_radiobutton, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_proxy_url_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_network_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_public_endpoints_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_user_agent_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_ca_info_files_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	m_server_ca_info_files_chooser.setMapping( server_ca_info_files_choose_toolbutton, server_ca_info_files_lineedit );
-	connect( server_ca_info_files_choose_toolbutton, SIGNAL( clicked() ), &m_server_ca_info_files_chooser, SLOT( map() ) );
-	connect( server_protocol_combobox, SIGNAL( currentIndexChanged( QString ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_disable_peer_verification_checkbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( server_disable_host_verification_checkbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-
-	// FSCP page
-	connect( fscp_hostname_resolution_protocol_combobox, SIGNAL( currentIndexChanged( QString ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( fscp_listen_on_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( fscp_hello_timeout_spinbox, SIGNAL( valueChanged( int ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( fscp_contacts_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-	connect( fscp_accept_contact_requests_checkbox, SIGNAL( toggled( bool ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HOSTNAME_RESOLUTION_PROTOCOL ] = new ComboBoxWrapper( fscp_hostname_resolution_protocol_combobox, this, true, "IPv4" );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_LISTEN_ON ] = new LineEditWrapper( fscp_listen_on_lineedit, this, true, "0.0.0.0:12000" );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HELLO_TIMEOUT ] = new SpinBoxWrapper( fscp_hello_timeout_spinbox, this, true, 3000 );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_CONTACT ] = new LineEditArrayWrapper( fscp_contacts_lineedit, fscp_contacts_verticallayout, this );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_ACCEPT_CONTACT_REQUESTS ] = new CheckBoxWrapper( fscp_accept_contact_requests_checkbox, this, true, VARIANT_YES );
 } // register_settings
 
 void Freelan_gui::read_settings_from_file()
@@ -873,7 +1261,7 @@ void Freelan_gui::read_settings_from_file()
 		settings_file.beginGroup( group );
 
 		// Get the settings "hash"
-		QHash< const char*, SettingsWrapper >& grouped_settings_wrappers = m_settings_wrappers[ group ];
+		QHash< const char*, AbstractSettingsWrapper* >& grouped_settings_wrappers = m_settings_wrappers[ group ];
 
 		// For each "key"
 		const QList< const char* >& keys = grouped_settings_wrappers.keys();
@@ -884,24 +1272,24 @@ void Freelan_gui::read_settings_from_file()
 			const char* const key = keys.at( j );
 
 			// Get the settings wrapper object so we can call the "write" function
-			SettingsWrapper& settings_wrapper = grouped_settings_wrappers[ key ];
+			AbstractSettingsWrapper* const settings_wrapper = grouped_settings_wrappers[ key ];
 
 			// Read the settings value from file
 			const QVariant& value_from_file = settings_file.value( key );
 
-			if ( m_are_required_settings_saved && settings_wrapper.m_is_required && value_from_file.isNull() )
+			if ( m_are_required_settings_saved && settings_wrapper->m_is_required && value_from_file.isNull() )
 			{
 				m_are_required_settings_saved = false;
 			}
 
 			// Use default value if no value found in file
-			const QVariant& value_to_write = value_from_file.isNull() ? settings_wrapper.m_default_value : value_from_file;
+			const QVariant& value_to_write = value_from_file.isNull() ? settings_wrapper->m_default_value : value_from_file;
 
 			// Write the value to the GUI
-			( this->*settings_wrapper.m_write )( value_to_write );
+			settings_wrapper->write( value_to_write );
 
 			// Store the value so we can do "revert" when editing the setting in the GUI
-			settings_wrapper.m_applied_value = value_to_write;
+			settings_wrapper->m_applied_value = value_to_write;
 		}
 
 		// End the group on the settings file
@@ -930,7 +1318,7 @@ void Freelan_gui::write_settings_to_file()
 		settings_file.beginGroup( group );
 
 		// Get the settings "hash"
-		QHash< const char*, SettingsWrapper >& grouped_settings_wrappers = m_settings_wrappers[ group ];
+		QHash< const char*, AbstractSettingsWrapper* >& grouped_settings_wrappers = m_settings_wrappers[ group ];
 
 		// For each "key"
 		const QList< const char* >& keys = grouped_settings_wrappers.keys();
@@ -941,20 +1329,20 @@ void Freelan_gui::write_settings_to_file()
 			const char* const key = keys.at( j );
 
 			// Get the settings wrapper object so we can call the "write" function
-			SettingsWrapper& settings_wrapper = grouped_settings_wrappers[ key ];
+			AbstractSettingsWrapper* const settings_wrapper = grouped_settings_wrappers[ key ];
 
 			// Read settings from gui
-			const QVariant& value = ( this->*settings_wrapper.m_read )();
+			const QVariant& value = settings_wrapper->read();
 
 			// Do not write default value or null value (not set)
-			if ( settings_wrapper.m_is_required || ( ( settings_wrapper.m_default_value != value ) && !value.isNull() ) )
+			if ( settings_wrapper->m_is_required || ( ( settings_wrapper->m_default_value != value ) && !value.isNull() ) )
 			{
 				// Write value to file
 				settings_file.setValue( key, value );
 			}
 
 			// Set the applied value
-			settings_wrapper.m_applied_value = value;
+			settings_wrapper->m_applied_value = value;
 		}
 
 		// End the group on the settings file
@@ -994,7 +1382,7 @@ void Freelan_gui::update_settings_buttonbox()
 		const char* const group = groups.at( i );
 
 		// Get the settings "hash"
-		const QHash< const char*, SettingsWrapper >& grouped_settings_wrappers = m_settings_wrappers[ group ];
+		const QHash< const char*, AbstractSettingsWrapper* >& grouped_settings_wrappers = m_settings_wrappers[ group ];
 
 		// For each "key"
 		const QList< const char* >& keys = grouped_settings_wrappers.keys();
@@ -1005,19 +1393,19 @@ void Freelan_gui::update_settings_buttonbox()
 			const char* const key = keys.at( j );
 
 			// Get the settings wrapper object so we can call the "write" function
-			const SettingsWrapper& settings_wrapper = grouped_settings_wrappers[ key ];
+			const AbstractSettingsWrapper* const settings_wrapper = grouped_settings_wrappers[ key ];
 
 			// Read the value from the GUI
-			const QVariant& value = ( this->*settings_wrapper.m_read )();
+			const QVariant& value = settings_wrapper->read();
 
 			if ( !are_settings_modified )
 			{
-				are_settings_modified = value != settings_wrapper.m_applied_value;
+				are_settings_modified = value != settings_wrapper->m_applied_value;
 			}
 
 			if ( !are_settings_tainted )
 			{
-				are_settings_tainted = value != settings_wrapper.m_default_value;
+				are_settings_tainted = value != settings_wrapper->m_default_value;
 			}
 		}
 	}
@@ -1028,404 +1416,47 @@ void Freelan_gui::update_settings_buttonbox()
 	settings_buttonbox->button( QDialogButtonBox::RestoreDefaults )->setEnabled( are_settings_tainted );
 } // update_settings_buttonbox
 
-QLineEdit* Freelan_gui::append_server_public_endpoints_lineedit()
+QLineEdit* Freelan_gui::append_lineedit( QWidget* const parent_widget, QVBoxLayout* const parent_layout, QSignalMapper* const chooser_mapper )
 {
-	// Create a new lineedit + toolbutton
-	QLineEdit* new_endpoints_lineedit = new QLineEdit( server_public_endpoints_groupbox );
-	QToolButton* new_endpoints_remove_toolbutton = new QToolButton( server_public_endpoints_groupbox );
-	new_endpoints_remove_toolbutton->setText( "-" );
-	new_endpoints_remove_toolbutton->setMinimumSize( server_public_endpoints_add_toolbutton->sizeHint() );
+	// Create a new lineedit
+	QLineEdit* new_lineedit = new QLineEdit( parent_widget );
 
-	// Add the widgets to the horizontal layout
-	QHBoxLayout* new_endpoints_horizontallayout = new QHBoxLayout();
-	new_endpoints_horizontallayout->addWidget( new_endpoints_lineedit );
-	new_endpoints_horizontallayout->addWidget( new_endpoints_remove_toolbutton );
+	// Create a new "remove" toolbutton
+	QToolButton* new_remove_toolbutton = new QToolButton( parent_widget );
+	new_remove_toolbutton->setText( "-" );
 
-	// Add the widget to the vertical layout
-	server_public_endpoints_verticallayout->addLayout( new_endpoints_horizontallayout );
+	// Add the lineedit to the horizontal layout
+	QHBoxLayout* new_hboxlayout = new QHBoxLayout();
+	new_hboxlayout->addWidget( new_lineedit );
 
-	// SignalMapper connection
-	m_layout_deleter.setMapping( new_endpoints_remove_toolbutton, new_endpoints_horizontallayout );
-	connect( new_endpoints_remove_toolbutton, SIGNAL( clicked() ), &m_layout_deleter, SLOT( map() ) );
+	// Create the choose toolbutton if needed
+	if ( chooser_mapper != NULL )
+	{
+		// Create a new "choose" toolbutton
+		QToolButton* new_choose_toolbutton = new QToolButton( parent_widget );
+		new_choose_toolbutton->setText( "..." );
+		new_hboxlayout->addWidget( new_choose_toolbutton );
+
+		// Choose SignalMapper connection
+		chooser_mapper->setMapping( new_choose_toolbutton, new_lineedit );
+		connect( new_choose_toolbutton, SIGNAL( clicked() ), chooser_mapper, SLOT( map() ) );
+	}
+
+	// Finally add the remove toolbutton
+	new_hboxlayout->addWidget( new_remove_toolbutton );
+
+	// Add the horizontal layout to the vertical layout
+	parent_layout->addLayout( new_hboxlayout );
+
+	// Remove SignalMapper connection
+	m_remove_mapper.setMapping( new_remove_toolbutton, new_hboxlayout );
+	connect( new_remove_toolbutton, SIGNAL( clicked() ), &m_remove_mapper, SLOT( map() ) );
 
 	// Lineedit update
-	connect( new_endpoints_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( new_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
 
-	return new_endpoints_lineedit;
-}
-
-QLineEdit* Freelan_gui::append_server_ca_info_files_lineedit()
-{
-	// Create a new lineedit + toolbutton
-	QLineEdit* new_ca_info_files_lineedit = new QLineEdit( server_ca_info_files_groupbox );
-	QToolButton* new_ca_info_files_choose_toolbutton = new QToolButton( server_ca_info_files_groupbox );
-	new_ca_info_files_choose_toolbutton->setText( "..." );
-	QToolButton* new_ca_info_files_remove_toolbutton = new QToolButton( server_ca_info_files_groupbox );
-	new_ca_info_files_remove_toolbutton->setText( "-" );
-	new_ca_info_files_remove_toolbutton->setMinimumSize( server_ca_info_files_add_toolbutton->sizeHint() );
-
-	// Add the widgets to the horizontal layout
-	QHBoxLayout* new_ca_info_files_horizontallayout = new QHBoxLayout();
-	new_ca_info_files_horizontallayout->addWidget( new_ca_info_files_lineedit );
-	new_ca_info_files_horizontallayout->addWidget( new_ca_info_files_choose_toolbutton );
-	new_ca_info_files_horizontallayout->addWidget( new_ca_info_files_remove_toolbutton );
-
-	// Add the widget to the vertical layout
-	server_ca_info_files_verticallayout->addLayout( new_ca_info_files_horizontallayout );
-
-	// SignalMapper connections
-	m_server_ca_info_files_chooser.setMapping( new_ca_info_files_choose_toolbutton, new_ca_info_files_lineedit );
-	connect( new_ca_info_files_choose_toolbutton, SIGNAL( clicked() ), &m_server_ca_info_files_chooser, SLOT( map() ) );
-
-	m_layout_deleter.setMapping( new_ca_info_files_remove_toolbutton, new_ca_info_files_horizontallayout );
-	connect( new_ca_info_files_remove_toolbutton, SIGNAL( clicked() ), &m_layout_deleter, SLOT( map() ) );
-
-	// Lineedit update
-	connect( new_ca_info_files_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-
-	return new_ca_info_files_lineedit;
-}
-
-QLineEdit* Freelan_gui::append_fscp_contacts_lineedit()
-{
-	// Create a new lineedit + toolbutton
-	QLineEdit* new_contacts_lineedit = new QLineEdit( fscp_contacts_groupbox );
-	QToolButton* new_contacts_remove_toolbutton = new QToolButton( fscp_contacts_groupbox );
-	new_contacts_remove_toolbutton->setText( "-" );
-	new_contacts_remove_toolbutton->setMinimumSize( fscp_contacts_add_toolbutton->sizeHint() );
-
-	// Add the widgets to the horizontal layout
-	QHBoxLayout* new_contacts_horizontallayout = new QHBoxLayout();
-	new_contacts_horizontallayout->addWidget( new_contacts_lineedit );
-	new_contacts_horizontallayout->addWidget( new_contacts_remove_toolbutton );
-
-	// Add the widget to the vertical layout
-	fscp_contacts_verticallayout->addLayout( new_contacts_horizontallayout );
-
-	// SignalMapper connection
-	m_layout_deleter.setMapping( new_contacts_remove_toolbutton, new_contacts_horizontallayout );
-	connect( new_contacts_remove_toolbutton, SIGNAL( clicked() ), &m_layout_deleter, SLOT( map() ) );
-
-	// Lineedit update
-	connect( new_contacts_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
-
-	return new_contacts_lineedit;
-}
-
-QVariant Freelan_gui::server_https_proxy_read() const
-{
-	return server_proxy_no_radiobutton->isChecked() ? QVariant() : server_proxy_system_radiobutton->isChecked() ? QVariant( "" ) : QVariant( server_proxy_url_lineedit->text() );
-}
-
-void Freelan_gui::server_https_proxy_write( const QVariant& variant )
-{
-	if ( variant.isNull() )
-	{
-		server_proxy_no_radiobutton->toggle();
-	}
-	else
-	{
-		const QString& proxy_string = variant.toString().trimmed();
-
-		if ( proxy_string.isEmpty() )
-		{
-			server_proxy_system_radiobutton->toggle();
-		}
-		else
-		{
-			server_proxy_url_radiobutton->toggle();
-			server_proxy_url_lineedit->setText( proxy_string );
-		}
-	}
-}
-
-QVariant Freelan_gui::server_public_endpoints_read() const
-{
-	// First lineedit
-	QString text = server_public_endpoints_lineedit->text().trimmed();
-
-	// Loop accross all remaining lineedit
-	for ( int i = 1, end = server_public_endpoints_verticallayout->count() ; i < end ; ++i )
-	{
-		const QLayout* const child_layout = server_public_endpoints_verticallayout->itemAt( i )->layout();
-
-		if ( child_layout != NULL )
-		{
-			for ( int j = 0, end = child_layout->count() ; j < end ; ++j )
-			{
-				const QLineEdit* const lineedit = qobject_cast< QLineEdit* >( child_layout->itemAt( j )->widget() );
-
-				if ( lineedit != NULL )
-				{
-					const QString& fragment = lineedit->text().trimmed();
-
-					if ( !fragment.isEmpty() )
-					{
-						text.append( ',' );
-						text.append( fragment );
-					}
-
-					// Stop loop
-					j = end;
-				}
-			}
-		}
-	}
-
-	return text.isEmpty() ? QVariant() : QVariant( text );
-} // server_public_endpoints_read
-
-void Freelan_gui::server_public_endpoints_write( const QVariant& variant )
-{
-	const QStringList& endpoints = variant.toString().split( ',', QString::SkipEmptyParts );
-
-	// First lineedit
-	server_public_endpoints_lineedit->setText( endpoints.isEmpty() ? QString::null : endpoints.first().trimmed() );
-
-	int i = 1;
-
-	// Reuse existing endpoint lineedits
-	for ( int j = 1, end_i = endpoints.count(), end_j = server_public_endpoints_verticallayout->count() ; i < end_i && j < end_j ; ++i )
-	{
-		const QString& endpoint_string = endpoints.at( i ).trimmed();
-
-		if ( !endpoint_string.isEmpty() )
-		{
-			QLayout* const layout = server_public_endpoints_verticallayout->itemAt( j++ )->layout();
-
-			if ( layout != NULL )
-			{
-				for ( int k = 0, end_k = layout->count() ; k < end_k ; ++k )
-				{
-					QLineEdit* const lineedit = qobject_cast< QLineEdit* >( layout->itemAt( k )->widget() );
-
-					if ( lineedit != NULL )
-					{
-						lineedit->setText( endpoint_string );
-
-						// Stop loop
-						k = end_k;
-					}
-				}
-			}
-		}
-	}
-
-	// New lineedit
-	for ( int end = endpoints.count() ; i < end ; ++i )
-	{
-		const QString& endpoint_string = endpoints.at( i ).trimmed();
-
-		if ( !endpoint_string.isEmpty() )
-		{
-			// We need to create new endpoint lineedits
-			append_server_public_endpoints_lineedit()->setText( endpoint_string );
-		}
-	}
-
-	// Delete unneeded endpoint lineedits
-	for ( int j = qMax( 1, endpoints.count() ), end = server_public_endpoints_verticallayout->count() ; j < end ; ++j )
-	{
-		QLayout* const layout = server_public_endpoints_verticallayout->takeAt( j )->layout();
-
-		if ( layout != NULL )
-		{
-			on_m_layout_deleter_mapped( layout );
-		}
-	}
-} // server_public_endpoints_write
-
-QVariant Freelan_gui::server_ca_info_files_read() const
-{
-	// First lineedit
-	QString text = server_ca_info_files_lineedit->text().trimmed();
-
-	// Loop accross all remaining lineedit
-	for ( int i = 1, end = server_ca_info_files_verticallayout->count() ; i < end ; ++i )
-	{
-		const QLayout* const child_layout = server_ca_info_files_verticallayout->itemAt( i )->layout();
-
-		if ( child_layout != NULL )
-		{
-			for ( int j = 0, end = child_layout->count() ; j < end ; ++j )
-			{
-				const QLineEdit* const lineedit = qobject_cast< QLineEdit* >( child_layout->itemAt( j )->widget() );
-
-				if ( lineedit != NULL )
-				{
-					const QString& fragment = lineedit->text().trimmed();
-
-					if ( !fragment.isEmpty() )
-					{
-						text.append( ',' );
-						text.append( fragment );
-					}
-
-					// Stop loop
-					j = end;
-				}
-			}
-		}
-	}
-
-	return text.isEmpty() ? QVariant() : QVariant( text );
-} // server_ca_info_files_read
-
-void Freelan_gui::server_ca_info_files_write( const QVariant& variant )
-{
-	const QStringList& ca_info_files = variant.toString().split( ',', QString::SkipEmptyParts );
-
-	// First lineedit
-	server_ca_info_files_lineedit->setText( ca_info_files.isEmpty() ? QString::null : ca_info_files.first().trimmed() );
-
-	int i = 1;
-
-	// Reuse existing endpoint lineedits
-	for ( int j = 1, end_i = ca_info_files.count(), end_j = server_ca_info_files_verticallayout->count() ; i < end_i && j < end_j ; ++i )
-	{
-		const QString& ca_info_file_string = ca_info_files.at( i ).trimmed();
-
-		if ( !ca_info_file_string.isEmpty() )
-		{
-			QLayout* const layout = server_ca_info_files_verticallayout->itemAt( j++ )->layout();
-
-			if ( layout != NULL )
-			{
-				for ( int k = 0, end_k = layout->count() ; k < end_k ; ++k )
-				{
-					QLineEdit* const lineedit = qobject_cast< QLineEdit* >( layout->itemAt( k )->widget() );
-
-					if ( lineedit != NULL )
-					{
-						lineedit->setText( ca_info_file_string );
-
-						// Stop loop
-						k = end_k;
-					}
-				}
-			}
-		}
-	}
-
-	// New lineedit
-	for ( int end = ca_info_files.count() ; i < end ; ++i )
-	{
-		const QString& ca_info_file_string = ca_info_files.at( i ).trimmed();
-
-		if ( !ca_info_file_string.isEmpty() )
-		{
-			// We need to create new endpoint lineedits
-			append_server_ca_info_files_lineedit()->setText( ca_info_file_string );
-		}
-	}
-
-	// Delete unneeded endpoint lineedits
-	for ( int j = qMax( 1, ca_info_files.count() ), end = server_ca_info_files_verticallayout->count() ; j < end ; ++j )
-	{
-		QLayout* const layout = server_ca_info_files_verticallayout->takeAt( j )->layout();
-
-		if ( layout != NULL )
-		{
-			on_m_layout_deleter_mapped( layout );
-		}
-	}
-} // server_ca_info_files_write
-
-QVariant Freelan_gui::fscp_contacts_read() const
-{
-	// First lineedit
-	QString text = fscp_contacts_lineedit->text().trimmed();
-
-	// Loop accross all remaining lineedit
-	for ( int i = 1, end = fscp_contacts_verticallayout->count() ; i < end ; ++i )
-	{
-		const QLayout* const child_layout = fscp_contacts_verticallayout->itemAt( i )->layout();
-
-		if ( child_layout != NULL )
-		{
-			for ( int j = 0, end = child_layout->count() ; j < end ; ++j )
-			{
-				const QLineEdit* const lineedit = qobject_cast< QLineEdit* >( child_layout->itemAt( j )->widget() );
-
-				if ( lineedit != NULL )
-				{
-					const QString& fragment = lineedit->text().trimmed();
-
-					if ( !fragment.isEmpty() )
-					{
-						text.append( ',' );
-						text.append( fragment );
-					}
-
-					// Stop loop
-					j = end;
-				}
-			}
-		}
-	}
-
-	return text.isEmpty() ? QVariant() : QVariant( text );
-} // fscp_contacts_read
-
-void Freelan_gui::fscp_contacts_write( const QVariant& variant )
-{
-	const QStringList& contacts = variant.toString().split( ',', QString::SkipEmptyParts );
-
-	// First lineedit
-	fscp_contacts_lineedit->setText( contacts.isEmpty() ? QString::null : contacts.first().trimmed() );
-
-	int i = 1;
-
-	// Reuse existing endpoint lineedits
-	for ( int j = 1, end_i = contacts.count(), end_j = fscp_contacts_verticallayout->count() ; i < end_i && j < end_j ; ++i )
-	{
-		const QString& contact_string = contacts.at( i ).trimmed();
-
-		if ( !contact_string.isEmpty() )
-		{
-			QLayout* const layout = fscp_contacts_verticallayout->itemAt( j++ )->layout();
-
-			if ( layout != NULL )
-			{
-				for ( int k = 0, end_k = layout->count() ; k < end_k ; ++k )
-				{
-					QLineEdit* const lineedit = qobject_cast< QLineEdit* >( layout->itemAt( k )->widget() );
-
-					if ( lineedit != NULL )
-					{
-						lineedit->setText( contact_string );
-
-						// Stop loop
-						k = end_k;
-					}
-				}
-			}
-		}
-	}
-
-	// New lineedit
-	for ( int end = contacts.count() ; i < end ; ++i )
-	{
-		const QString& contact_string = contacts.at( i ).trimmed();
-
-		if ( !contact_string.isEmpty() )
-		{
-			// We need to create new endpoint lineedits
-			append_fscp_contacts_lineedit()->setText( contact_string );
-		}
-	}
-
-	// Delete unneeded endpoint lineedits
-	for ( int j = qMax( 1, contacts.count() ), end = fscp_contacts_verticallayout->count() ; j < end ; ++j )
-	{
-		QLayout* const layout = fscp_contacts_verticallayout->takeAt( j )->layout();
-
-		if ( layout != NULL )
-		{
-			on_m_layout_deleter_mapped( layout );
-		}
-	}
-} // fscp_contacts_write
+	return new_lineedit;
+} // append_lineedit
 
 void Freelan_gui::on_status_pushbutton_toggled( bool toggled )
 {
@@ -1478,7 +1509,7 @@ void Freelan_gui::on_settings_buttonbox_clicked( QAbstractButton* button )
 			const char* const group = groups.at( i );
 
 			// Get the settings "hash"
-			const QHash< const char*, SettingsWrapper >& grouped_settings_wrappers = m_settings_wrappers[ group ];
+			QHash< const char*, AbstractSettingsWrapper* >& grouped_settings_wrappers = m_settings_wrappers[ group ];
 
 			// For each "key"
 			const QList< const char* >& keys = grouped_settings_wrappers.keys();
@@ -1489,9 +1520,9 @@ void Freelan_gui::on_settings_buttonbox_clicked( QAbstractButton* button )
 				const char* const key = keys.at( j );
 
 				// Get the settings wrapper object so we can call the "write" function
-				const SettingsWrapper& settings_wrapper = grouped_settings_wrappers[ key ];
+				AbstractSettingsWrapper* const settings_wrapper = grouped_settings_wrappers[ key ];
 
-				( this->*settings_wrapper.m_write )( must_restore_defaults ? settings_wrapper.m_default_value : settings_wrapper.m_applied_value );
+				settings_wrapper->write( must_restore_defaults ? settings_wrapper->m_default_value : settings_wrapper->m_applied_value );
 			}
 		}
 
@@ -1499,28 +1530,7 @@ void Freelan_gui::on_settings_buttonbox_clicked( QAbstractButton* button )
 	}
 } // on_settings_buttonbox_clicked
 
-void Freelan_gui::on_server_proxy_url_radiobutton_toggled( bool toggled )
-{
-	// Enable server_proxy_url_lineedit when server_proxy_url_radiobutton is checked
-	server_proxy_url_lineedit->setEnabled( toggled );
-}
-
-void Freelan_gui::on_server_public_endpoints_add_toolbutton_clicked()
-{
-	append_server_public_endpoints_lineedit()->setFocus();
-}
-
-void Freelan_gui::on_server_ca_info_files_add_toolbutton_clicked()
-{
-	append_server_ca_info_files_lineedit()->setFocus();
-}
-
-void Freelan_gui::on_fscp_contacts_add_toolbutton_clicked()
-{
-	append_fscp_contacts_lineedit()->setFocus();
-}
-
-void Freelan_gui::on_m_ca_info_file_chooser_mapped( QWidget* widget )
+void Freelan_gui::on_m_choose_server_ca_info_files_mapper_mapped( QWidget* widget )
 {
 	// Use Qt kinda dynamic cast...
 	QLineEdit* const lineedit = qobject_cast< QLineEdit* >( widget );
@@ -1542,7 +1552,7 @@ void Freelan_gui::on_m_ca_info_file_chooser_mapped( QWidget* widget )
 	}
 }
 
-void Freelan_gui::on_m_layout_deleter_mapped( QObject* object )
+void Freelan_gui::on_m_remove_mapper_mapped( QObject* object )
 {
 	// Use Qt kinda dynamic cast...
 	QLayout* const layout = qobject_cast< QLayout* >( object );

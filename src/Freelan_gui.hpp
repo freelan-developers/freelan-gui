@@ -700,6 +700,8 @@ Public License instead of this License.  But first, please read
 #pragma warning(pop)
 #endif
 
+class AbstractSettingsWrapper;
+
 class Freelan_gui
 	: public QMainWindow
 	, private Ui::Freelan_gui
@@ -719,47 +721,19 @@ protected:
 
 private:
 
-	// This class is used to hold the right function pointers for each setting
-	class SettingsWrapper
-	{
-public:
-
-		typedef QVariant ( Freelan_gui::* READ_FUNCTION_POINTER )() const;
-		typedef void ( Freelan_gui::* WRITE_FUNCTION_POINTER )( const QVariant& );
-
-		SettingsWrapper( READ_FUNCTION_POINTER read = NULL
-		                 , WRITE_FUNCTION_POINTER write = NULL
-		                 , const bool is_required = false
-		                 , const QVariant& default_value = QVariant()
-		                 , const QVariant& applied_value = QVariant() )
-			: m_read( read )
-			, m_write( write )
-			, m_is_required( is_required )
-			, m_default_value( default_value )
-			, m_applied_value( applied_value )
-		{}
-
-		// get, set, and reset function pointers
-		READ_FUNCTION_POINTER m_read;
-		WRITE_FUNCTION_POINTER m_write;
-
-		bool m_is_required : 1;
-
-		QVariant m_default_value;
-		QVariant m_applied_value;
-	};
+	friend class LineEditArrayWrapper;
 
 	QString m_settings_filepath;
 
 	// Hash that contains the applied value, default value, and  read, write, and reset function pointer to manipulate the GUI
-	QHash< const char*, QHash< const char*, SettingsWrapper > > m_settings_wrappers;
+	QHash< const char*, QHash< const char*, AbstractSettingsWrapper* > > m_settings_wrappers;
 
 	int m_update_timer_id;
 
 	bool m_are_required_settings_saved;
 
-	QSignalMapper m_layout_deleter;
-	QSignalMapper m_server_ca_info_files_chooser;
+	QSignalMapper m_remove_mapper;
+	QSignalMapper m_choose_server_ca_info_files_mapper;
 
 	// Build about page
 	void setup_about_ui();
@@ -772,61 +746,10 @@ public:
 	// Called to set the correct state on settings buttonbox
 	void update_settings_buttonbox();
 
-	// Create an endpoint and append it to server_public_endpoints_verticallayout
-	QLineEdit* append_server_public_endpoints_lineedit();
-
-	// Create a ca_info_file and append it to server_ca_info_files_verticallayout
-	QLineEdit* append_server_ca_info_files_lineedit();
-
-	// Create a contact lineedit and append it to fscp_contacts_verticallayout
-	QLineEdit* append_fscp_contacts_lineedit();
+	// Create a lineedit, a remove toolbutton, eventually a "choose" toolbutton and add them to the given parent
+	QLineEdit* append_lineedit( QWidget* const parent_widget, QVBoxLayout* const parent_layout, QSignalMapper* const chooser_mapper = NULL );
 
 	// Property accessors
-	// Server page
-	QVariant server_enabled_read() const { return server_groupbox->isChecked(); }
-	void server_enabled_write( const QVariant& variant ) { server_groupbox->setChecked( variant.toBool() ); }
-
-	QVariant server_host_read() const { const QString& text = server_host_lineedit->text().trimmed(); return text.isEmpty() ? QVariant() : QVariant( text ); }
-	void server_host_write( const QVariant& variant ) { server_host_lineedit->setText( variant.toString() ); }
-
-	QVariant server_username_read() const { const QString& text = server_username_lineedit->text().trimmed(); return text.isEmpty() ? QVariant() : QVariant( text ); }
-	void server_username_write( const QVariant& variant ) { server_username_lineedit->setText( variant.toString() ); }
-
-	QVariant server_password_read() const { const QString& text = server_password_lineedit->text(); return text.isEmpty() ? QVariant() : QVariant( text ); }
-	void server_password_write( const QVariant& variant ) { server_password_lineedit->setText( variant.toString() ); }
-
-	QVariant server_https_proxy_read() const;
-	void server_https_proxy_write( const QVariant& variant );
-
-	QVariant server_network_read() const { const QString& text = server_network_lineedit->text(); return text.isEmpty() ? QVariant() : QVariant( text ); }
-	void server_network_write( const QVariant& variant ) { server_network_lineedit->setText( variant.toString() ); }
-
-	QVariant server_public_endpoints_read() const;
-	void server_public_endpoints_write( const QVariant& variant );
-
-	QVariant server_user_agent_read() const { const QString& text = server_user_agent_lineedit->text(); return text.isEmpty() ? QVariant() : QVariant( text ); }
-	void server_user_agent_write( const QVariant& variant ) { server_user_agent_lineedit->setText( variant.toString() ); }
-
-	QVariant server_ca_info_files_read() const;
-	void server_ca_info_files_write( const QVariant& variant );
-
-	QVariant server_protocol_read() const { return server_protocol_combobox->currentText(); }
-	void server_protocol_write( const QVariant& variant ) { server_protocol_combobox->setCurrentText( variant.toString() ); }
-
-	QVariant server_disable_peer_verification_read() const { return server_disable_peer_verification_checkbox->isChecked(); }
-	void server_disable_peer_verification_write( const QVariant& variant ) { server_disable_peer_verification_checkbox->setChecked( variant.toBool() ); }
-
-	QVariant server_disable_host_verification_read() const { return server_disable_host_verification_checkbox->isChecked(); }
-	void server_disable_host_verification_write( const QVariant& variant ) { server_disable_host_verification_checkbox->setChecked( variant.toBool() ); }
-
-	QVariant fscp_hostname_resolution_protocol_read() const { return fscp_hostname_resolution_protocol_combobox->currentText(); }
-	void fscp_hostname_resolution_protocol_write( const QVariant& variant ) { fscp_hostname_resolution_protocol_combobox->setCurrentText( variant.toString() ); }
-
-	QVariant fscp_listen_on_read() const { const QString& text = fscp_listen_on_lineedit->text(); return text.isEmpty() ? QVariant() : QVariant( text ); }
-	void fscp_listen_on_write( const QVariant& variant ) { fscp_listen_on_lineedit->setText( variant.toString() ); }
-
-	QVariant fscp_hello_timeout_read() const { return fscp_hello_timeout_spinbox->value(); }
-	void fscp_hello_timeout_write( const QVariant& variant ) { fscp_hello_timeout_spinbox->setValue( variant.toInt() ); }
 
 	QVariant fscp_contacts_read() const;
 	void fscp_contacts_write( const QVariant& variant );
@@ -849,21 +772,21 @@ private Q_SLOTS:
 	void on_settings_buttonbox_clicked( QAbstractButton* button );
 
 	// Server proxy url switch
-	void on_server_proxy_url_radiobutton_toggled( bool toggled );
+	void on_server_proxy_url_radiobutton_toggled( bool toggled ) { server_proxy_url_lineedit->setEnabled( toggled ); }
 
 	// Public endpoints add
-	void on_server_public_endpoints_add_toolbutton_clicked();
+	void on_server_public_endpoints_add_toolbutton_clicked() { append_lineedit( server_public_endpoints_groupbox, server_public_endpoints_verticallayout )->setFocus(); }
 
 	// ca_info_files add
-	void on_server_ca_info_files_add_toolbutton_clicked();
+	void on_server_ca_info_files_add_toolbutton_clicked() { append_lineedit( server_ca_info_files_groupbox, server_ca_info_files_verticallayout, &m_choose_server_ca_info_files_mapper )->setFocus(); }
 
 	// contacts add
-	void on_fscp_contacts_add_toolbutton_clicked();
+	void on_fscp_contacts_add_toolbutton_clicked() { append_lineedit( fscp_contacts_groupbox, fscp_contacts_verticallayout )->setFocus(); }
 
 	// Used to show a file chooser dialog
-	void on_m_ca_info_file_chooser_mapped( QWidget* widget );
+	void on_m_choose_server_ca_info_files_mapper_mapped( QWidget* widget );
 
 	// Used to remove rows from layout
-	void on_m_layout_deleter_mapped( QObject* object );
+	void on_m_remove_mapper_mapped( QObject* object );
 };
 #endif // FREELAN_GUI_HPP
