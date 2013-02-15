@@ -195,9 +195,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>1155</width>
-                 <height>1305</height>
+                 <y>-707</y>
+                 <width>1069</width>
+                 <height>1319</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -643,7 +643,7 @@
                         <item>
                          <widget class="QLabel" name="label_3">
                           <property name="text">
-                           <string>Certificate authority:</string>
+                           <string>Authority certificates:</string>
                           </property>
                          </widget>
                         </item>
@@ -846,8 +846,8 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>1155</width>
+                 <y>-121</y>
+                 <width>1069</width>
                  <height>733</height>
                 </rect>
                </property>
@@ -1171,7 +1171,7 @@
                         <item>
                          <widget class="QLabel" name="label_37">
                           <property name="text">
-                           <string>Dynamic contact files:</string>
+                           <string>Dynamic contacts:</string>
                           </property>
                          </widget>
                         </item>
@@ -1349,9 +1349,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>1155</width>
-                 <height>700</height>
+                 <y>-116</y>
+                 <width>1069</width>
+                 <height>728</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1603,7 +1603,7 @@
                       <item row="1" column="0">
                        <widget class="QLabel" name="label_48">
                         <property name="text">
-                         <string>Up script file:</string>
+                         <string>Up script:</string>
                         </property>
                        </widget>
                       </item>
@@ -1613,7 +1613,7 @@
                       <item row="2" column="0">
                        <widget class="QLabel" name="label_49">
                         <property name="text">
-                         <string>Down script file:</string>
+                         <string>Down script:</string>
                         </property>
                        </widget>
                       </item>
@@ -1699,8 +1699,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>1172</width>
-                 <height>602</height>
+                 <width>1086</width>
+                 <height>612</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -1831,8 +1831,8 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>0</y>
-                 <width>1155</width>
+                 <y>-139</y>
+                 <width>1069</width>
                  <height>751</height>
                 </rect>
                </property>
@@ -1862,7 +1862,7 @@
                    <item row="1" column="0">
                     <widget class="QLabel" name="label_54">
                      <property name="text">
-                      <string>X509 certificate file:</string>
+                      <string>X509 certificate:</string>
                      </property>
                     </widget>
                    </item>
@@ -1879,7 +1879,7 @@
                    <item row="2" column="0">
                     <widget class="QLabel" name="label_56">
                      <property name="text">
-                      <string>Private key file:</string>
+                      <string>Private key:</string>
                      </property>
                     </widget>
                    </item>
@@ -1918,7 +1918,7 @@
                    <item row="1" column="0">
                     <widget class="QLabel" name="label_55">
                      <property name="text">
-                      <string>X509 certificate file:</string>
+                      <string>X509 certificate:</string>
                      </property>
                     </widget>
                    </item>
@@ -1935,7 +1935,7 @@
                    <item row="2" column="0">
                     <widget class="QLabel" name="label_57">
                      <property name="text">
-                      <string>Private key file:</string>
+                      <string>Private key:</string>
                      </property>
                     </widget>
                    </item>
@@ -2030,7 +2030,7 @@
                    <item row="1" column="0">
                     <widget class="QLabel" name="label_62">
                      <property name="text">
-                      <string>Validation script file:</string>
+                      <string>Validation script:</string>
                      </property>
                     </widget>
                    </item>
@@ -2050,7 +2050,7 @@
                 <item>
                  <widget class="QGroupBox" name="groupBox_34">
                   <property name="title">
-                   <string>The certificate authority file</string>
+                   <string>The authority certificates file</string>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_32">
                    <property name="sizeConstraint">
@@ -2069,7 +2069,7 @@
                    <item row="1" column="0">
                     <widget class="QLabel" name="label_65">
                      <property name="text">
-                      <string>Certificate authority file:</string>
+                      <string>Authority certificates:</string>
                      </property>
                     </widget>
                    </item>
@@ -2149,7 +2149,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QGroupBox" name="security_certificate_revocation_list_file_groupbox">
+                 <widget class="QGroupBox" name="security_certificate_revocation_list_files_groupbox">
                   <property name="title">
                    <string>The certificate revocation file</string>
                   </property>
@@ -2172,7 +2172,7 @@
                      <item>
                       <widget class="QLabel" name="label_69">
                        <property name="text">
-                        <string>Revocated certificate file:</string>
+                        <string>Revocated certificates:</string>
                        </property>
                       </widget>
                      </item>
@@ -2196,17 +2196,17 @@
                      <item>
                       <layout class="QHBoxLayout" name="security_certificate_revocation_list_file_horizontallayout">
                        <item>
-                        <widget class="QLineEdit" name="security_certificate_revocation_list_file_lineedit"/>
+                        <widget class="QLineEdit" name="security_certificate_revocation_list_files_lineedit"/>
                        </item>
                        <item>
-                        <widget class="QToolButton" name="security_certificate_revocation_list_file_choose_toolbutton">
+                        <widget class="QToolButton" name="security_certificate_revocation_list_files_choose_toolbutton">
                          <property name="text">
                           <string>...</string>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QToolButton" name="security_certificate_revocation_list_file_add_toolbutton">
+                        <widget class="QToolButton" name="security_certificate_revocation_list_files_add_toolbutton">
                          <property name="text">
                           <string>+</string>
                          </property>

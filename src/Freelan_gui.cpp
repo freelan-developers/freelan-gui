@@ -1135,9 +1135,10 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	, m_settings_wrappers()
 	, m_update_timer_id()
 	, m_are_required_settings_saved( false )
-	, m_remove_mapper()
-	, m_choose_server_ca_info_files_mapper()
-	, m_choose_fscp_dynamic_contact_files_mapper()
+	, m_remover()
+	, m_server_ca_info_files_chooser()
+	, m_fscp_dynamic_contact_files_chooser()
+	, m_security_certificate_revocation_list_files_chooser()
 {
 	setupUi( this );
 
@@ -1145,13 +1146,12 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	setup_about_ui();
 
 	// Connect the row remover mapper
-	connect( &m_remove_mapper, SIGNAL( mapped( QObject* ) ), this, SLOT( on_m_remove_mapper_mapped( QObject* ) ) );
+	connect( &m_remover, SIGNAL( mapped( QObject* ) ), this, SLOT( on_m_remove_mapper_mapped( QObject* ) ) );
 
 	// Connect the file chooser mapper
-	connect( &m_choose_server_ca_info_files_mapper, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_choose_server_ca_info_files_mapper_mapped( QWidget* ) ) );
-
-	// Connect the file chooser mapper
-	connect( &m_choose_fscp_dynamic_contact_files_mapper, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_choose_fscp_dynamic_contact_files_mapper( QWidget* ) ) );
+	connect( &m_server_ca_info_files_chooser, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_server_ca_info_files_chooser_mapped( QWidget* ) ) );
+	connect( &m_fscp_dynamic_contact_files_chooser, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_fscp_dynamic_contact_files_chooser_mapped( QWidget* ) ) );
+	connect( &m_security_certificate_revocation_list_files_chooser, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_security_certificate_revocation_list_files_chooser_mapped( QWidget* ) ) );
 
 	// Build settings hash
 	register_settings();
@@ -1233,7 +1233,7 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_NETWORK ] = new LineEditWrapper( server_network_lineedit, this );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PUBLIC_ENDPOINTS ] = new LineEditArrayWrapper( server_public_endpoints_lineedit, server_public_endpoints_verticallayout, this );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USER_AGENT ] = new LineEditWrapper( server_user_agent_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_CA_INFO_FILE ] = new LineEditArrayWrapper( server_ca_info_files_lineedit, server_ca_info_files_verticallayout, this, server_ca_info_files_choose_toolbutton, &m_choose_server_ca_info_files_mapper );
+	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_CA_INFO_FILE ] = new LineEditArrayWrapper( server_ca_info_files_lineedit, server_ca_info_files_verticallayout, this, server_ca_info_files_choose_toolbutton, &m_server_ca_info_files_chooser );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PROTOCOL ] = new ComboBoxWrapper( server_protocol_combobox, this, false, "https" );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_PEER_VERIFICATION ] = new CheckBoxWrapper( server_disable_peer_verification_checkbox, this, false, VARIANT_NO );
 	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_HOST_VERIFICATION ] = new CheckBoxWrapper( server_disable_host_verification_checkbox, this, false, VARIANT_NO );
@@ -1245,7 +1245,7 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_CONTACT ] = new LineEditArrayWrapper( fscp_contacts_lineedit, fscp_contacts_verticallayout, this );
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_ACCEPT_CONTACT_REQUESTS ] = new CheckBoxWrapper( fscp_accept_contact_requests_checkbox, this, true, VARIANT_YES );
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_ACCEPT_CONTACTS ] = new GroupBoxWrapper( fscp_accept_contacts_groupbox, this, false, VARIANT_YES );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_DYNAMIC_CONTACT_FILES ] = new LineEditArrayWrapper( fscp_dynamic_contact_files_lineedit, fscp_dynamic_contact_files_verticallayout, this, fscp_dynamic_contact_files_choose_toolbutton, &m_choose_fscp_dynamic_contact_files_mapper );
+	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_DYNAMIC_CONTACT_FILES ] = new LineEditArrayWrapper( fscp_dynamic_contact_files_lineedit, fscp_dynamic_contact_files_verticallayout, this, fscp_dynamic_contact_files_choose_toolbutton, &m_fscp_dynamic_contact_files_chooser );
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_NEVER_CONTACTS ] = new LineEditArrayWrapper( fscp_never_contacts_lineedit, fscp_never_contacts_verticallayout, this );
 
 	// TAP Adapter page
@@ -1474,8 +1474,8 @@ QLineEdit* Freelan_gui::append_lineedit( QWidget* const parent_widget, QVBoxLayo
 	parent_layout->addLayout( new_hboxlayout );
 
 	// Remove SignalMapper connection
-	m_remove_mapper.setMapping( new_remove_toolbutton, new_hboxlayout );
-	connect( new_remove_toolbutton, SIGNAL( clicked() ), &m_remove_mapper, SLOT( map() ) );
+	m_remover.setMapping( new_remove_toolbutton, new_hboxlayout );
+	connect( new_remove_toolbutton, SIGNAL( clicked() ), &m_remover, SLOT( map() ) );
 
 	// Lineedit update
 	connect( new_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );

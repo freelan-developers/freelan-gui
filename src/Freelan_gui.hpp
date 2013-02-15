@@ -732,9 +732,10 @@ private:
 
 	bool m_are_required_settings_saved;
 
-	QSignalMapper m_remove_mapper;
-	QSignalMapper m_choose_server_ca_info_files_mapper;
-	QSignalMapper m_choose_fscp_dynamic_contact_files_mapper;
+	QSignalMapper m_remover;
+	QSignalMapper m_server_ca_info_files_chooser;
+	QSignalMapper m_fscp_dynamic_contact_files_chooser;
+	QSignalMapper m_security_certificate_revocation_list_files_chooser;
 
 	// Build about page
 	void setup_about_ui();
@@ -774,20 +775,28 @@ private Q_SLOTS:
 	void on_server_public_endpoints_add_toolbutton_clicked() { append_lineedit( server_public_endpoints_groupbox, server_public_endpoints_verticallayout )->setFocus(); }
 
 	// ca_info_files add
-	void on_server_ca_info_files_add_toolbutton_clicked() { append_lineedit( server_ca_info_files_groupbox, server_ca_info_files_verticallayout, &m_choose_server_ca_info_files_mapper )->setFocus(); }
+	void on_server_ca_info_files_add_toolbutton_clicked() { append_lineedit( server_ca_info_files_groupbox, server_ca_info_files_verticallayout, &m_server_ca_info_files_chooser )->setFocus(); }
 
 	// Contacts add
 	void on_fscp_contacts_add_toolbutton_clicked() { append_lineedit( fscp_contacts_groupbox, fscp_contacts_verticallayout )->setFocus(); }
 
 	// Dynamic contact add
-	void on_fscp_dynamic_contact_files_add_toolbutton_clicked() { append_lineedit( fscp_accept_contacts_groupbox, fscp_dynamic_contact_files_verticallayout, &m_choose_fscp_dynamic_contact_files_mapper )->setFocus(); }
+	void on_fscp_dynamic_contact_files_add_toolbutton_clicked() { append_lineedit( fscp_accept_contacts_groupbox, fscp_dynamic_contact_files_verticallayout, &m_fscp_dynamic_contact_files_chooser )->setFocus(); }
 
 	// Never contact add
 	void on_fscp_never_contacts_add_toolbutton_clicked() { append_lineedit( fscp_never_contacts_groupbox, fscp_never_contacts_verticallayout )->setFocus(); }
 
 	// Used to show a file chooser dialog
-	void on_m_choose_server_ca_info_files_mapper_mapped( QWidget* widget ) { show_file_choose_dialog( widget, trUtf8( "Open server certificate authority list" ), trUtf8( "Certificate authority list files (*.lst);;All files (*.*)" ) ); }
-	void on_m_choose_fscp_dynamic_contact_files_mapper( QWidget* widget ) { show_file_choose_dialog( widget, trUtf8( "Open dynamic contact list" ), trUtf8( "Dynamic contact list files (*.lst);;All files (*.*)" ) ); }
+	void on_m_server_ca_info_files_chooser_mapped( QWidget* widget ) { show_file_choose_dialog( widget, trUtf8( "Open authority certificate list" ), trUtf8( "Authority certificate list (*.lst);;All files (*.*)" ) ); }
+	void on_m_fscp_dynamic_contact_files_chooser_mapped( QWidget* widget ) { show_file_choose_dialog( widget, trUtf8( "Open dynamic contact list" ), trUtf8( "Dynamic contact list (*.lst);;All files (*.*)" ) ); }
+	void on_m_security_certificate_revocation_list_files_chooser_mapped( QWidget* widget ) { show_file_choose_dialog( widget, trUtf8( "Open certificate revocation list" ), trUtf8( "Certificate revocation list (*.lst);;All files (*.*)" ) ); }
+
+	void on_security_signature_certificate_file_toolbutton_clicked() { show_file_choose_dialog( security_signature_certificate_file_lineedit, trUtf8( "Open signature certificate" ), trUtf8( "Certificate files (*.cert);;All files (*.*)" ) ); }
+	void on_security_signature_private_key_file_toolbutton_clicked() { show_file_choose_dialog( security_signature_private_key_file_lineedit, trUtf8( "Open signature private key" ), trUtf8( "Private key files (*.key);;All files (*.*)" ) ); }
+	void on_security_encryption_certificate_file_toolbutton_clicked() { show_file_choose_dialog( security_encryption_certificate_file_lineedit, trUtf8( "Open encryption certificate" ), trUtf8( "Certificate files (*.cert);;All files (*.*)" ) ); }
+	void on_security_encryption_private_key_file_toolbutton_clicked() { show_file_choose_dialog( security_encryption_private_key_file_lineedit, trUtf8( "Open encryption private key" ), trUtf8( "Private key files (*.key);;All files (*.*)" ) ); }
+	void on_security_certificate_validation_script_toolbutton_clicked() { show_file_choose_dialog( security_certificate_validation_script_lineedit, trUtf8( "Open certificate validation script" ), trUtf8( "Script files (*.sh);;All files (*.*)" ) ); }
+	void on_security_authority_certificate_file_toolbutton_clicked() { show_file_choose_dialog( security_authority_certificate_file_lineedit, trUtf8( "Open authority certificate list" ), trUtf8( "Authority certificate list (*.lst);;All files (*.*)" ) ); }
 
 	// Used to remove rows from layout
 	void on_m_remove_mapper_mapped( QObject* object );
