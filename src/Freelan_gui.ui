@@ -195,9 +195,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-704</y>
-                 <width>517</width>
-                 <height>1599</height>
+                 <y>0</y>
+                 <width>1155</width>
+                 <height>1305</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -847,8 +847,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>960</width>
-                 <height>747</height>
+                 <width>1155</width>
+                 <height>733</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1350,13 +1350,13 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>960</width>
-                 <height>756</height>
+                 <width>1155</width>
+                 <height>700</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_8">
                 <item>
-                 <widget class="QGroupBox" name="groupBox_3">
+                 <widget class="QGroupBox" name="tap_adapter_enabled_groupbox">
                   <property name="title">
                    <string>Eanble</string>
                   </property>
@@ -1409,14 +1409,14 @@
                        </spacer>
                       </item>
                       <item row="1" column="1">
-                       <widget class="QLineEdit" name="lineEdit_9">
+                       <widget class="QLineEdit" name="tap_adapter_ipv4_address_prefix_length_lineedit">
                         <property name="text">
                          <string>9.0.0.1/24</string>
                         </property>
                        </widget>
                       </item>
                       <item row="2" column="1">
-                       <widget class="QLineEdit" name="lineEdit_10">
+                       <widget class="QLineEdit" name="tap_adapter_ipv6_address_prefix_length_lineedit">
                         <property name="text">
                          <string>2aa1::1/8</string>
                         </property>
@@ -1452,7 +1452,7 @@
                        <enum>QLayout::SetMinAndMaxSize</enum>
                       </property>
                       <item row="1" column="0">
-                       <widget class="QGroupBox" name="groupBox_28">
+                       <widget class="QGroupBox" name="tap_adapter_arp_proxy_enabled_groupbox">
                         <property name="title">
                          <string>Enable ARP proxy</string>
                         </property>
@@ -1461,6 +1461,9 @@
                         </property>
                         <property name="checkable">
                          <bool>true</bool>
+                        </property>
+                        <property name="checked">
+                         <bool>false</bool>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_23">
                          <item row="0" column="0">
@@ -1471,7 +1474,7 @@
                           </widget>
                          </item>
                          <item row="0" column="1">
-                          <widget class="QLineEdit" name="lineEdit_11">
+                          <widget class="QLineEdit" name="tap_adapter_arp_proxy_fake_ethernet_address_lineedit">
                            <property name="text">
                             <string>00:aa:bb:cc:dd:ee</string>
                            </property>
@@ -1507,7 +1510,7 @@
                     </widget>
                    </item>
                    <item>
-                    <widget class="QGroupBox" name="groupBox_29">
+                    <widget class="QGroupBox" name="tap_adapter_dhcp_proxy_enabled_groupbox">
                      <property name="title">
                       <string>Enable DHCP proxy</string>
                      </property>
@@ -1552,7 +1555,7 @@
                           </widget>
                          </item>
                          <item row="1" column="1">
-                          <widget class="QLineEdit" name="lineEdit_12">
+                          <widget class="QLineEdit" name="tap_adapter_dhcp_server_ipv4_address_prefix_length_lineedit">
                            <property name="text">
                             <string>9.0.0.0/24</string>
                            </property>
@@ -1579,7 +1582,7 @@
                           </widget>
                          </item>
                          <item row="2" column="1">
-                          <widget class="QLineEdit" name="lineEdit_13">
+                          <widget class="QLineEdit" name="tap_adapter_dhcp_server_ipv6_address_prefix_length_lineedit">
                            <property name="text">
                             <string>2aa1::/8</string>
                            </property>
@@ -1605,7 +1608,7 @@
                        </widget>
                       </item>
                       <item row="2" column="1">
-                       <widget class="QLineEdit" name="lineEdit_15"/>
+                       <widget class="QLineEdit" name="tap_adapter_down_script_lineedit"/>
                       </item>
                       <item row="2" column="0">
                        <widget class="QLabel" name="label_49">
@@ -1622,7 +1625,7 @@
                        </widget>
                       </item>
                       <item row="1" column="1">
-                       <widget class="QLineEdit" name="lineEdit_14"/>
+                       <widget class="QLineEdit" name="tap_adapter_up_script_lineedit"/>
                       </item>
                       <item row="1" column="2">
                        <widget class="QToolButton" name="toolButton">
@@ -1696,8 +1699,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>977</width>
-                 <height>629</height>
+                 <width>1172</width>
+                 <height>602</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -1725,7 +1728,7 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QComboBox" name="comboBox_3">
+                    <widget class="QComboBox" name="switch_routing_method_combobox">
                      <item>
                       <property name="text">
                        <string>switch</string>
@@ -1771,7 +1774,7 @@
                     </widget>
                    </item>
                    <item row="1" column="0">
-                    <widget class="QCheckBox" name="checkBox_2">
+                    <widget class="QCheckBox" name="switch_relay_mode_enabled_checkbox">
                      <property name="text">
                       <string>Enable relay mode</string>
                      </property>
@@ -1829,8 +1832,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>960</width>
-                 <height>747</height>
+                 <width>1155</width>
+                 <height>751</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1864,10 +1867,10 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QLineEdit" name="lineEdit_16"/>
+                    <widget class="QLineEdit" name="security_signature_certificate_file_lineedit"/>
                    </item>
                    <item row="1" column="2">
-                    <widget class="QToolButton" name="toolButton_4">
+                    <widget class="QToolButton" name="security_signature_certificate_file_toolbutton">
                      <property name="text">
                       <string>...</string>
                      </property>
@@ -1881,10 +1884,10 @@
                     </widget>
                    </item>
                    <item row="2" column="1">
-                    <widget class="QLineEdit" name="lineEdit_18"/>
+                    <widget class="QLineEdit" name="security_signature_private_key_file_lineedit"/>
                    </item>
                    <item row="2" column="2">
-                    <widget class="QToolButton" name="toolButton_6">
+                    <widget class="QToolButton" name="security_signature_private_key_file_toolbutton">
                      <property name="text">
                       <string>...</string>
                      </property>
@@ -1920,10 +1923,10 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QLineEdit" name="lineEdit_17"/>
+                    <widget class="QLineEdit" name="security_encryption_certificate_file_lineedit"/>
                    </item>
                    <item row="1" column="2">
-                    <widget class="QToolButton" name="toolButton_5">
+                    <widget class="QToolButton" name="security_encryption_certificate_file_toolbutton">
                      <property name="text">
                       <string>...</string>
                      </property>
@@ -1937,10 +1940,10 @@
                     </widget>
                    </item>
                    <item row="2" column="1">
-                    <widget class="QLineEdit" name="lineEdit_19"/>
+                    <widget class="QLineEdit" name="security_encryption_private_key_file_lineedit"/>
                    </item>
                    <item row="2" column="2">
-                    <widget class="QToolButton" name="toolButton_7">
+                    <widget class="QToolButton" name="security_encryption_private_key_file_toolbutton">
                      <property name="text">
                       <string>...</string>
                      </property>
@@ -1976,7 +1979,7 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QComboBox" name="comboBox_4">
+                    <widget class="QComboBox" name="security_certificate_validation_method_combobox">
                      <item>
                       <property name="text">
                        <string>default</string>
@@ -2032,10 +2035,10 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QLineEdit" name="lineEdit_20"/>
+                    <widget class="QLineEdit" name="security_certificate_validation_script_lineedit"/>
                    </item>
                    <item row="1" column="2">
-                    <widget class="QToolButton" name="toolButton_8">
+                    <widget class="QToolButton" name="security_certificate_validation_script_toolbutton">
                      <property name="text">
                       <string>...</string>
                      </property>
@@ -2071,10 +2074,10 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QLineEdit" name="lineEdit_21"/>
+                    <widget class="QLineEdit" name="security_authority_certificate_file_lineedit"/>
                    </item>
                    <item row="1" column="2">
-                    <widget class="QToolButton" name="toolButton_9">
+                    <widget class="QToolButton" name="security_authority_certificate_file_toolbutton">
                      <property name="text">
                       <string>...</string>
                      </property>
@@ -2084,7 +2087,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QGroupBox" name="groupBox_38">
+                 <widget class="QGroupBox" name="security_certificate_revocation_validation_method_groupbox">
                   <property name="title">
                    <string>Check certificate revocation</string>
                   </property>
@@ -2109,7 +2112,7 @@
                     </widget>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QComboBox" name="comboBox_5">
+                    <widget class="QComboBox" name="security_certificate_revocation_validation_method_combobox">
                      <item>
                       <property name="text">
                        <string>last</string>
@@ -2146,15 +2149,12 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QGroupBox" name="groupBox_37">
+                 <widget class="QGroupBox" name="security_certificate_revocation_list_file_groupbox">
                   <property name="title">
                    <string>The certificate revocation file</string>
                   </property>
-                  <layout class="QGridLayout" name="gridLayout_34">
-                   <property name="sizeConstraint">
-                    <enum>QLayout::SetMinAndMaxSize</enum>
-                   </property>
-                   <item row="0" column="0" colspan="4">
+                  <layout class="QGridLayout" name="gridLayout_16">
+                   <item row="0" column="0" colspan="2">
                     <widget class="QLabel" name="label_68">
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;If set, specifies a file holding one or more certificates to reject.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -2165,21 +2165,56 @@
                     </widget>
                    </item>
                    <item row="1" column="0">
-                    <widget class="QLabel" name="label_69">
-                     <property name="text">
-                      <string>Revocated certificate file:</string>
+                    <layout class="QVBoxLayout" name="verticalLayout_18">
+                     <property name="topMargin">
+                      <number>6</number>
                      </property>
-                    </widget>
+                     <item>
+                      <widget class="QLabel" name="label_69">
+                       <property name="text">
+                        <string>Revocated certificate file:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <spacer name="verticalSpacer_13">
+                       <property name="orientation">
+                        <enum>Qt::Vertical</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
+                      </spacer>
+                     </item>
+                    </layout>
                    </item>
                    <item row="1" column="1">
-                    <widget class="QLineEdit" name="lineEdit_22"/>
-                   </item>
-                   <item row="1" column="2">
-                    <widget class="QToolButton" name="toolButton_10">
-                     <property name="text">
-                      <string>...</string>
-                     </property>
-                    </widget>
+                    <layout class="QVBoxLayout" name="security_certificate_revocation_list_file_verticallayout">
+                     <item>
+                      <layout class="QHBoxLayout" name="security_certificate_revocation_list_file_horizontallayout">
+                       <item>
+                        <widget class="QLineEdit" name="security_certificate_revocation_list_file_lineedit"/>
+                       </item>
+                       <item>
+                        <widget class="QToolButton" name="security_certificate_revocation_list_file_choose_toolbutton">
+                         <property name="text">
+                          <string>...</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QToolButton" name="security_certificate_revocation_list_file_add_toolbutton">
+                         <property name="text">
+                          <string>+</string>
+                         </property>
+                        </widget>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
                    </item>
                   </layout>
                  </widget>

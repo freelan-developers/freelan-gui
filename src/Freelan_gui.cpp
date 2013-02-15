@@ -1247,6 +1247,24 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_ACCEPT_CONTACTS ] = new GroupBoxWrapper( fscp_accept_contacts_groupbox, this, false, VARIANT_YES );
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_DYNAMIC_CONTACT_FILES ] = new LineEditArrayWrapper( fscp_dynamic_contact_files_lineedit, fscp_dynamic_contact_files_verticallayout, this, fscp_dynamic_contact_files_choose_toolbutton, &m_choose_fscp_dynamic_contact_files_mapper );
 	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_NEVER_CONTACTS ] = new LineEditArrayWrapper( fscp_never_contacts_lineedit, fscp_never_contacts_verticallayout, this );
+
+	// TAP Adapter page
+	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_ENABLED ] = new GroupBoxWrapper( tap_adapter_enabled_groupbox, this, true, VARIANT_YES );
+	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_IPV4_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_ipv4_address_prefix_length_lineedit, this, true, "9.0.0.1/24" );
+	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_IPV6_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_ipv6_address_prefix_length_lineedit, this, true, "2aa1::1/8" );
+	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_ARP_PROXY_ENABLED ] = new GroupBoxWrapper( tap_adapter_arp_proxy_enabled_groupbox, this, true, VARIANT_NO );
+	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_ARP_PROXY_FAKE_ETHERNET_ADDRESS ] = new LineEditWrapper( tap_adapter_arp_proxy_fake_ethernet_address_lineedit, this, true, "00:aa:bb:cc:dd:ee" );
+	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_DHCP_PROXY_ENABLED ] = new GroupBoxWrapper( tap_adapter_dhcp_proxy_enabled_groupbox, this, true, VARIANT_YES );
+	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_DHCP_SERVER_IPV4_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_dhcp_server_ipv4_address_prefix_length_lineedit, this, true, "9.0.0.0/24" );
+	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_DHCP_SERVER_IPV6_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_dhcp_server_ipv6_address_prefix_length_lineedit, this, true, "2aa1::/8" );
+	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_UP_SCRIPT ] = new LineEditWrapper( tap_adapter_up_script_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_DOWN_SCRIPT ] = new LineEditWrapper( tap_adapter_down_script_lineedit, this );
+
+	// Switch page
+	m_settings_wrappers[ SETTINGS_GROUP_SWITCH ][ SETTINGS_KEY_ROUTING_METHOD ] = new ComboBoxWrapper( switch_routing_method_combobox, this, true, "switch" );
+	m_settings_wrappers[ SETTINGS_GROUP_SWITCH ][ SETTINGS_KEY_RELAY_MODE_ENABLED ] = new CheckBoxWrapper( switch_relay_mode_enabled_checkbox, this, true, VARIANT_NO );
+
+	// Security
 } // register_settings
 
 void Freelan_gui::read_settings_from_file()
