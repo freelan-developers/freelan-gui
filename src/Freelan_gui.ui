@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>647</width>
-    <height>216</height>
+    <width>503</width>
+    <height>232</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,8 +34,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>87</width>
-         <height>202</height>
+         <width>93</width>
+         <height>212</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -161,7 +161,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_2">
           <property name="currentIndex">
-           <number>0</number>
+           <number>4</number>
           </property>
           <widget class="QWidget" name="server_tab">
            <attribute name="title">
@@ -195,9 +195,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-707</y>
-                 <width>1069</width>
-                 <height>1319</height>
+                 <y>0</y>
+                 <width>361</width>
+                 <height>1596</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -846,9 +846,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-121</y>
-                 <width>1069</width>
-                 <height>733</height>
+                 <y>0</y>
+                 <width>663</width>
+                 <height>749</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_13">
@@ -1349,9 +1349,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-116</y>
-                 <width>1069</width>
-                 <height>728</height>
+                 <y>0</y>
+                 <width>663</width>
+                 <height>741</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_8">
@@ -1699,8 +1699,8 @@
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>1086</width>
-                 <height>612</height>
+                 <width>361</width>
+                 <height>349</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -1831,9 +1831,9 @@
                <property name="geometry">
                 <rect>
                  <x>0</x>
-                 <y>-139</y>
-                 <width>1069</width>
-                 <height>751</height>
+                 <y>-686</y>
+                 <width>361</width>
+                 <height>851</height>
                 </rect>
                </property>
                <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -2089,25 +2089,26 @@
                 <item>
                  <widget class="QGroupBox" name="security_certificate_revocation_validation_method_groupbox">
                   <property name="title">
-                   <string>Check certificate revocation</string>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
+                   <string>The certificate revocation validation method to use</string>
                   </property>
                   <property name="checked">
-                   <bool>true</bool>
+                   <bool>false</bool>
                   </property>
-                  <layout class="QGridLayout" name="gridLayout_33">
-                   <property name="sizeConstraint">
-                    <enum>QLayout::SetMinAndMaxSize</enum>
-                   </property>
+                  <layout class="QGridLayout" name="gridLayout_20">
                    <item row="0" column="0" colspan="3">
                     <widget class="QLabel" name="label_67">
                      <property name="text">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Two methods are available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#00aaff;&quot;&gt;- last:&lt;/span&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt; Only the last certificate of the certification chain is checked for revocation.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#00aaff;&quot;&gt;- all:&lt;/span&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt; All certificates from the certification chain are checked for revocation.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;Three methods are available:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#00aaff;&quot;&gt;- last:&lt;/span&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt; Only the last certificate of the certification chain is checked for revocation.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600; color:#00aaff;&quot;&gt;- all:&lt;/span&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt; All certificates from the certification chain are checked for revocation.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;- &lt;/span&gt;&lt;span style=&quot; font-weight:600; color:#00aaff;&quot;&gt;none&lt;/span&gt;&lt;span style=&quot; color:#00aaff;&quot;&gt;: Certificates are not checked for revocation. &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                      <property name="wordWrap">
                       <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="0">
+                    <widget class="QLabel" name="label_66">
+                     <property name="text">
+                      <string>Validation method:</string>
                      </property>
                     </widget>
                    </item>
@@ -2123,13 +2124,11 @@
                        <string>all</string>
                       </property>
                      </item>
-                    </widget>
-                   </item>
-                   <item row="1" column="0">
-                    <widget class="QLabel" name="label_66">
-                     <property name="text">
-                      <string>Validation method:</string>
-                     </property>
+                     <item>
+                      <property name="text">
+                       <string>none</string>
+                      </property>
+                     </item>
                     </widget>
                    </item>
                    <item row="1" column="2">
@@ -2192,9 +2191,9 @@
                     </layout>
                    </item>
                    <item row="1" column="1">
-                    <layout class="QVBoxLayout" name="security_certificate_revocation_list_file_verticallayout">
+                    <layout class="QVBoxLayout" name="security_certificate_revocation_list_files_verticallayout">
                      <item>
-                      <layout class="QHBoxLayout" name="security_certificate_revocation_list_file_horizontallayout">
+                      <layout class="QHBoxLayout" name="security_certificate_revocation_list_files_horizontallayout">
                        <item>
                         <widget class="QLineEdit" name="security_certificate_revocation_list_files_lineedit"/>
                        </item>
@@ -2279,8 +2278,8 @@
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
              </widget>
             </item>
@@ -2300,8 +2299,8 @@ p, li { white-space: pre-wrap; }
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
              </widget>
             </item>
@@ -2321,8 +2320,8 @@ p, li { white-space: pre-wrap; }
                <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:15px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'MS Shell Dlg 2'; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:15px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
              </widget>
             </item>

@@ -956,7 +956,7 @@ public:
 
 	virtual QVariant read() const
 	{
-		return m_server_proxy_no_radiobutton->isChecked() ? QVariant() : m_server_proxy_system_radiobutton->isChecked() ? QVariant( "" ) : QVariant( m_server_proxy_url_radiobutton->text() );
+		return m_server_proxy_no_radiobutton->isChecked() ? QVariant() : m_server_proxy_system_radiobutton->isChecked() ? QVariant( "" ) : QVariant( m_server_proxy_url_lineedit->text() );
 	}
 
 	virtual void write( const QVariant& value )
@@ -1265,6 +1265,15 @@ void Freelan_gui::register_settings()
 	m_settings_wrappers[ SETTINGS_GROUP_SWITCH ][ SETTINGS_KEY_RELAY_MODE_ENABLED ] = new CheckBoxWrapper( switch_relay_mode_enabled_checkbox, this, true, VARIANT_NO );
 
 	// Security
+	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_SIGNATURE_CERTIFICATE_FILE ] = new LineEditWrapper( security_signature_certificate_file_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_SIGNATURE_PRIVATE_KEY_FILE ] = new LineEditWrapper( security_signature_private_key_file_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_ENCRYPTION_CERTIFICATE_FILE ] = new LineEditWrapper( security_encryption_certificate_file_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_ENCRYPTION_PRIVATE_KEY_FILE ] = new LineEditWrapper( security_encryption_private_key_file_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_CERTIFICATE_VALIDATION_METHOD ] = new ComboBoxWrapper( security_certificate_validation_method_combobox, this, true, "default" );
+	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_CERTIFICATE_VALIDATION_SCRIPT ] = new LineEditWrapper( security_certificate_validation_script_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_AUTHORITY_CERTIFICATE_FILE ] = new LineEditWrapper( security_authority_certificate_file_lineedit, this );
+	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_CERTIFICATE_REVOCATION_VALIDATION_METHOD ] = new ComboBoxWrapper( security_certificate_revocation_validation_method_combobox, this, true, "none" );
+	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_CERTIFICATE_REVOCATION_LIST_FILE ] = new LineEditArrayWrapper( security_certificate_revocation_list_files_lineedit, security_certificate_revocation_list_files_verticallayout, this, security_certificate_revocation_list_files_choose_toolbutton, &m_security_certificate_revocation_list_files_chooser );
 } // register_settings
 
 void Freelan_gui::read_settings_from_file()
@@ -1586,9 +1595,30 @@ void Freelan_gui::on_m_remove_mapper_mapped( QObject* object )
 		for ( int i = layout->count() ; --i >= 0 ; )
 		{
 			QLayoutItem* const layout_item = layout->takeAt( i );
-			delete layout_item->widget();
-			delete layout_item->layout();
-			delete layout_item->spacerItem();
+
+			QWidget* const widget = layout_item->widget();
+
+			if ( widget != NULL )
+			{
+				// Don't delete the widget immediatly with "delete" operator, otherwise it could lead to a crash in paint event
+				widget->deleteLater();
+			}
+
+			QLayout* const layout = layout_item->layout();
+
+			if ( layout != NULL )
+			{
+				layout->deleteLater();
+			}
+
+			QSpacerItem* spacer_item = layout_item->spacerItem();
+
+			if ( spacer_item != NULL )
+			{
+				delete spacer_item;
+				spacer_item = NULL;
+			}
+
 			delete layout_item;
 		}
 
@@ -1597,4 +1627,4 @@ void Freelan_gui::on_m_remove_mapper_mapped( QObject* object )
 
 		schedule_settings_buttonbox_update();
 	}
-}
+} // on_m_remove_mapper_mapped

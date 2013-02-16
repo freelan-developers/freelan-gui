@@ -786,6 +786,9 @@ private Q_SLOTS:
 	// Never contact add
 	void on_fscp_never_contacts_add_toolbutton_clicked() { append_lineedit( fscp_never_contacts_groupbox, fscp_never_contacts_verticallayout )->setFocus(); }
 
+	// Certificate revocation add
+	void on_security_certificate_revocation_list_files_add_toolbutton_clicked() { append_lineedit( security_certificate_revocation_list_files_groupbox, security_certificate_revocation_list_files_verticallayout )->setFocus(); }
+
 	// Used to show a file chooser dialog
 	void on_m_server_ca_info_files_chooser_mapped( QWidget* widget ) { show_file_choose_dialog( widget, trUtf8( "Open authority certificate list" ), trUtf8( "Authority certificate list (*.lst);;All files (*.*)" ) ); }
 	void on_m_fscp_dynamic_contact_files_chooser_mapped( QWidget* widget ) { show_file_choose_dialog( widget, trUtf8( "Open dynamic contact list" ), trUtf8( "Dynamic contact list (*.lst);;All files (*.*)" ) ); }
