@@ -802,6 +802,6 @@ private Q_SLOTS:
 	void on_security_authority_certificate_file_toolbutton_clicked() { show_file_choose_dialog( security_authority_certificate_file_lineedit, trUtf8( "Open authority certificate list" ), trUtf8( "Authority certificate list (*.lst);;All files (*.*)" ) ); }
 
 	// Used to remove rows from layout
-	void on_m_remove_mapper_mapped( QObject* object );
+	void on_m_remover_mapped( QObject* object );
 };
 #endif // FREELAN_GUI_HPP
