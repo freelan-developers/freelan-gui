@@ -1116,7 +1116,7 @@ public:
 
 			if ( layout != NULL )
 			{
-				m_freelan_gui->on_m_remove_mapper_mapped( layout );
+				m_freelan_gui->on_m_remover_mapped( layout );
 			}
 		}
 	} // write
@@ -1146,7 +1146,7 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	setup_about_ui();
 
 	// Connect the row remover mapper
-	connect( &m_remover, SIGNAL( mapped( QObject* ) ), this, SLOT( on_m_remove_mapper_mapped( QObject* ) ) );
+	connect( &m_remover, SIGNAL( mapped( QObject* ) ), this, SLOT( on_m_remover_mapped( QObject* ) ) );
 
 	// Connect the file chooser mapper
 	connect( &m_server_ca_info_files_chooser, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_server_ca_info_files_chooser_mapped( QWidget* ) ) );
@@ -1584,7 +1584,7 @@ void Freelan_gui::on_settings_buttonbox_clicked( QAbstractButton* button )
 	}
 } // on_settings_buttonbox_clicked
 
-void Freelan_gui::on_m_remove_mapper_mapped( QObject* object )
+void Freelan_gui::on_m_remover_mapped( QObject* object )
 {
 	// Use Qt kinda dynamic cast...
 	QLayout* const layout = qobject_cast< QLayout* >( object );
@@ -1609,7 +1609,7 @@ void Freelan_gui::on_m_remove_mapper_mapped( QObject* object )
 			if ( layout != NULL )
 			{
 				// Remove child layout recursively
-				on_m_remove_mapper_mapped( layout );
+				on_m_remover_mapped( layout );
 			}
 
 			QSpacerItem* spacer_item = layout_item->spacerItem();
@@ -1628,4 +1628,4 @@ void Freelan_gui::on_m_remove_mapper_mapped( QObject* object )
 
 		schedule_settings_buttonbox_update();
 	}
-} // on_m_remove_mapper_mapped
+} // on_m_remover_mapped
