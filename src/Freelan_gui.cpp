@@ -1608,7 +1608,8 @@ void Freelan_gui::on_m_remove_mapper_mapped( QObject* object )
 
 			if ( layout != NULL )
 			{
-				layout->deleteLater();
+				// Remove child layout recursively
+				on_m_remove_mapper_mapped( layout );
 			}
 
 			QSpacerItem* spacer_item = layout_item->spacerItem();
