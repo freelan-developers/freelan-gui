@@ -714,12 +714,13 @@ public:
 
 	virtual ~Freelan_gui();
 
-	void set_configuration_filepath( const QString& filepath ) { m_configuration_filepath = filepath; read_configuration_from_file(); }
+	void set_configuration_filepath( const QString& filepath );
 
 protected:
 
-	void changeEvent( QEvent* event );
-	void timerEvent( QTimerEvent* event );
+	virtual void changeEvent( QEvent* event );
+	virtual void timerEvent( QTimerEvent* event );
+	virtual void closeEvent( QCloseEvent* );
 
 private:
 
@@ -730,7 +731,8 @@ private:
 	// Hash that contains the applied value, default value, and  read, write, and reset function pointer to manipulate the GUI
 	QHash< const char*, QHash< const char*, AbstractConfigurationKeyWrapper* > > m_configuration_key_wrappers;
 
-	int m_update_timer_id;
+	int m_configuration_filepath_timer_id;
+	int m_buttonbox_update_timer_id;
 
 	bool m_are_required_configuration_keys_saved;
 
@@ -750,6 +752,9 @@ private:
 	void read_configuration_from_file();
 	void write_configuration_to_file();
 
+	// Called to set the correct path to the configuration file
+	void update_configuration_filepath();
+
 	// Called to set the correct state on configuration buttonbox
 	void update_configuration_buttonbox();
 
@@ -762,6 +767,7 @@ private:
 private Q_SLOTS:
 
 	// Schedule update on a timeout to avoid redondant call
+	void schedule_configuration_filepath_update();
 	void schedule_configuration_buttonbox_update();
 
 	// stacked widget management
@@ -769,6 +775,9 @@ private Q_SLOTS:
 	void on_configuration_pushbutton_toggled( bool toggled );
 	void on_help_pushbutton_toggled( bool toggled );
 	void on_about_pushbutton_toggled( bool toggled );
+
+	// Set the configuration filepath
+	void on_configuration_lineedit_textEdited( const QString& ) { schedule_configuration_filepath_update(); }
 
 	// Configuration buttonbox (reset to default, save, ...)
 	void on_configuration_buttonbox_clicked( QAbstractButton* button );
@@ -799,6 +808,7 @@ private Q_SLOTS:
 	void on_m_fscp_dynamic_contact_files_chooser_mapped( QWidget* widget ) { show_file_choose_dialog( widget, trUtf8( "Open dynamic contact list" ), trUtf8( "Dynamic contact list (*.lst);;All files (*.*)" ) ); }
 	void on_m_security_certificate_revocation_list_files_chooser_mapped( QWidget* widget ) { show_file_choose_dialog( widget, trUtf8( "Open certificate revocation list" ), trUtf8( "Certificate revocation list (*.lst);;All files (*.*)" ) ); }
 
+	void on_configuration_toolbutton_clicked() { show_file_choose_dialog( configuration_lineedit, trUtf8( "Open freelan configuration" ), trUtf8( "Configuration files (*.conf);;All files (*.*)" ) ); }
 	void on_security_signature_certificate_file_toolbutton_clicked() { show_file_choose_dialog( security_signature_certificate_file_lineedit, trUtf8( "Open signature certificate" ), trUtf8( "Certificate files (*.cert);;All files (*.*)" ) ); }
 	void on_security_signature_private_key_file_toolbutton_clicked() { show_file_choose_dialog( security_signature_private_key_file_lineedit, trUtf8( "Open signature private key" ), trUtf8( "Private key files (*.key);;All files (*.*)" ) ); }
 	void on_security_encryption_certificate_file_toolbutton_clicked() { show_file_choose_dialog( security_encryption_certificate_file_lineedit, trUtf8( "Open encryption certificate" ), trUtf8( "Certificate files (*.cert);;All files (*.*)" ) ); }

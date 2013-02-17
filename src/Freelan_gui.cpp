@@ -769,7 +769,7 @@ public:
 		                                   , applied_value )
 		, m_lineedit( lineedit )
 	{
-		QObject::connect( lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
+		QObject::connect( lineedit, SIGNAL( textEdited( const QString & ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 	}
 
 	virtual ~LineEditWrapper() {}
@@ -784,7 +784,7 @@ public:
 
 private:
 
-	QLineEdit* const m_lineedit;
+	QLineEdit* m_lineedit;
 };
 
 class CheckBoxWrapper
@@ -819,7 +819,7 @@ public:
 
 private:
 
-	QCheckBox* const m_checkbox;
+	QCheckBox* m_checkbox;
 };
 
 class ComboBoxWrapper
@@ -854,7 +854,7 @@ public:
 
 private:
 
-	QComboBox* const m_combobox;
+	QComboBox* m_combobox;
 };
 
 class SpinBoxWrapper
@@ -889,7 +889,7 @@ public:
 
 private:
 
-	QSpinBox* const m_spinbox;
+	QSpinBox* m_spinbox;
 };
 
 class GroupBoxWrapper
@@ -924,7 +924,7 @@ public:
 
 private:
 
-	QGroupBox* const m_groupbox;
+	QGroupBox* m_groupbox;
 };
 
 class ProxyWrapper
@@ -951,7 +951,7 @@ public:
 		QObject::connect( m_server_proxy_no_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 		QObject::connect( m_server_proxy_system_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 		QObject::connect( m_server_proxy_url_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
-		QObject::connect( m_server_proxy_url_lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
+		QObject::connect( m_server_proxy_url_lineedit, SIGNAL( textEdited( const QString & ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 	}
 
 	virtual ~ProxyWrapper() {}
@@ -985,10 +985,10 @@ public:
 
 private:
 
-	QRadioButton* const m_server_proxy_no_radiobutton;
-	QRadioButton* const m_server_proxy_system_radiobutton;
-	QRadioButton* const m_server_proxy_url_radiobutton;
-	QLineEdit* const m_server_proxy_url_lineedit;
+	QRadioButton* m_server_proxy_no_radiobutton;
+	QRadioButton* m_server_proxy_system_radiobutton;
+	QRadioButton* m_server_proxy_url_radiobutton;
+	QLineEdit* m_server_proxy_url_lineedit;
 };
 
 class LineEditArrayWrapper
@@ -1012,7 +1012,7 @@ public:
 		, m_freelan_gui( freelan_gui )
 		, m_choose_mapper( choose_mapper )
 	{
-		QObject::connect( lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
+		QObject::connect( lineedit, SIGNAL( textEdited( const QString & ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 
 		// Connect and map the first "choose" toolbutton
 		if ( ( choose_toolbutton != NULL ) && ( choose_mapper != NULL ) )
@@ -1125,17 +1125,18 @@ public:
 
 private:
 
-	QLineEdit* const m_lineedit;
-	QVBoxLayout* const m_vboxlayout;
-	Freelan_gui* const m_freelan_gui;
-	QSignalMapper* const m_choose_mapper;
+	QLineEdit* m_lineedit;
+	QVBoxLayout* m_vboxlayout;
+	Freelan_gui* m_freelan_gui;
+	QSignalMapper* m_choose_mapper;
 };
 
 Freelan_gui::Freelan_gui( QWidget* parent )
 	: QMainWindow( parent )
 	, m_configuration_filepath()
 	, m_configuration_key_wrappers()
-	, m_update_timer_id()
+	, m_configuration_filepath_timer_id()
+	, m_buttonbox_update_timer_id()
 	, m_are_required_configuration_keys_saved( false )
 	, m_remover()
 	, m_server_ca_info_files_chooser()
@@ -1176,6 +1177,14 @@ Freelan_gui::~Freelan_gui()
 	}
 }
 
+void Freelan_gui::set_configuration_filepath( const QString& filepath )
+{
+	// TODO DW: check the file access right
+	m_configuration_filepath = filepath;
+	configuration_lineedit->setText( filepath );
+	read_configuration_from_file();
+}
+
 void Freelan_gui::changeEvent( QEvent* event )
 {
 	QMainWindow::changeEvent( event );
@@ -1193,16 +1202,36 @@ void Freelan_gui::changeEvent( QEvent* event )
 
 void Freelan_gui::timerEvent( QTimerEvent* event )
 {
-	if ( event->timerId() == m_update_timer_id )
+	const int timerId = event->timerId();
+
+	if ( timerId == m_buttonbox_update_timer_id )
 	{
-		killTimer( m_update_timer_id );
-		m_update_timer_id = 0;
+		killTimer( m_buttonbox_update_timer_id );
+		m_buttonbox_update_timer_id = 0;
 
 		update_configuration_buttonbox();
+	}
+	else if ( timerId == m_configuration_filepath_timer_id )
+	{
+		killTimer( m_configuration_filepath_timer_id );
+		m_configuration_filepath_timer_id = 0;
+
+		update_configuration_filepath();
 	}
 	else
 	{
 		QMainWindow::timerEvent( event );
+	}
+}
+
+void Freelan_gui::closeEvent( QCloseEvent* )
+{
+	// Called just before closing the windows, to save the GUI settings
+	QSettings settings;
+
+	if ( !m_configuration_filepath.isEmpty() )
+	{
+		settings.setValue( SETTINGS_KEY_CONFIGURATION_FILE, m_configuration_filepath );
 	}
 }
 
@@ -1398,17 +1427,35 @@ void Freelan_gui::write_configuration_to_file()
 	schedule_configuration_buttonbox_update();
 } // write_configuration_to_file
 
-void Freelan_gui::schedule_configuration_buttonbox_update()
+void Freelan_gui::schedule_configuration_filepath_update()
 {
 	// If the timer is already started
-	if ( m_update_timer_id != 0 )
+	if ( m_configuration_filepath_timer_id != 0 )
 	{
 		// Kill it
-		killTimer( m_update_timer_id );
+		killTimer( m_configuration_filepath_timer_id );
 	}
 
 	// Start the timer again
-	m_update_timer_id = startTimer( 0 );
+	m_configuration_filepath_timer_id = startTimer( 0 );
+}
+
+void Freelan_gui::schedule_configuration_buttonbox_update()
+{
+	// If the timer is already started
+	if ( m_buttonbox_update_timer_id != 0 )
+	{
+		// Kill it
+		killTimer( m_buttonbox_update_timer_id );
+	}
+
+	// Start the timer again
+	m_buttonbox_update_timer_id = startTimer( 0 );
+}
+
+void Freelan_gui::update_configuration_filepath()
+{
+	set_configuration_filepath( configuration_lineedit->text() );
 }
 
 void Freelan_gui::update_configuration_buttonbox()
@@ -1517,7 +1564,9 @@ void Freelan_gui::show_file_choose_dialog( QWidget* const widget, const QString&
 
 		if ( !fileName.isNull() )
 		{
+			connect( lineedit, SIGNAL( textChanged( const QString & ) ), lineedit, SIGNAL( textEdited( const QString & ) ) );
 			lineedit->setText( fileName );
+			disconnect( lineedit, SIGNAL( textChanged( const QString & ) ), lineedit, SIGNAL( textEdited( const QString & ) ) );
 		}
 	}
 }
