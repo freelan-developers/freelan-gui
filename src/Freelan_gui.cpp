@@ -678,71 +678,73 @@ Public License instead of this License.  But first, please read
 #include "Freelan_gui.hpp"
 
 // Group string constants
-static const char* const SETTINGS_GROUP_SERVER = "server";
-static const char* const SETTINGS_GROUP_FSCP = "fscp";
-static const char* const SETTINGS_GROUP_TAP_ADAPTER = "tap_adapter";
-static const char* const SETTINGS_GROUP_SWITCH = "switch";
-static const char* const SETTINGS_GROUP_SECURITY = "security";
+static const char* const CONFIGURATION_GROUP_SERVER = "server";
+static const char* const CONFIGURATION_GROUP_FSCP = "fscp";
+static const char* const CONFIGURATION_GROUP_TAP_ADAPTER = "tap_adapter";
+static const char* const CONFIGURATION_GROUP_SWITCH = "switch";
+static const char* const CONFIGURATION_GROUP_SECURITY = "security";
 
 // Key string constants
-static const char* const SETTINGS_KEY_ENABLED = "enabled";
-static const char* const SETTINGS_KEY_HOST = "host";
-static const char* const SETTINGS_KEY_HTTPS_PROXY = "https_proxy";
-static const char* const SETTINGS_KEY_USERNAME = "username";
-static const char* const SETTINGS_KEY_PASSWORD = "password";
-static const char* const SETTINGS_KEY_NETWORK = "network";
-static const char* const SETTINGS_KEY_PUBLIC_ENDPOINTS = "public_endpoints";
-static const char* const SETTINGS_KEY_USER_AGENT = "user_agent";
-static const char* const SETTINGS_KEY_PROTOCOL = "protocol";
-static const char* const SETTINGS_KEY_CA_INFO_FILE = "ca_info_file";
-static const char* const SETTINGS_KEY_DISABLE_PEER_VERIFICATION = "disable_peer_verification";
-static const char* const SETTINGS_KEY_DISABLE_HOST_VERIFICATION = "disable_host_verification";
-static const char* const SETTINGS_KEY_HOSTNAME_RESOLUTION_PROTOCOL = "hostname_resolution_protocol";
-static const char* const SETTINGS_KEY_LISTEN_ON = "listen_on";
-static const char* const SETTINGS_KEY_HELLO_TIMEOUT = "hello_timeout";
-static const char* const SETTINGS_KEY_CONTACT = "contact";
-static const char* const SETTINGS_KEY_ACCEPT_CONTACT_REQUESTS = "accept_contact_requests";
-static const char* const SETTINGS_KEY_ACCEPT_CONTACTS = "accept_contacts";
-static const char* const SETTINGS_KEY_DYNAMIC_CONTACT_FILES = "dynamic_contact_files";
-static const char* const SETTINGS_KEY_NEVER_CONTACTS = "never_contacts";
-static const char* const SETTINGS_KEY_IPV4_ADDRESS_PREFIX_LENGTH = "ipv4_address_prefix_length";
-static const char* const SETTINGS_KEY_IPV6_ADDRESS_PREFIX_LENGTH = "ipv6_address_prefix_length";
-static const char* const SETTINGS_KEY_ARP_PROXY_ENABLED = "arp_proxy_enabled";
-static const char* const SETTINGS_KEY_ARP_PROXY_FAKE_ETHERNET_ADDRESS = "arp_proxy_fake_ethernet_address";
-static const char* const SETTINGS_KEY_DHCP_PROXY_ENABLED = "dhcp_proxy_enabled";
-static const char* const SETTINGS_KEY_DHCP_SERVER_IPV4_ADDRESS_PREFIX_LENGTH = "dhcp_server_ipv4_address_prefix_length";
-static const char* const SETTINGS_KEY_DHCP_SERVER_IPV6_ADDRESS_PREFIX_LENGTH = "dhcp_server_ipv6_address_prefix_length";
-static const char* const SETTINGS_KEY_UP_SCRIPT = "up_script";
-static const char* const SETTINGS_KEY_DOWN_SCRIPT = "down_script";
-static const char* const SETTINGS_KEY_ROUTING_METHOD = "routing_method";
-static const char* const SETTINGS_KEY_RELAY_MODE_ENABLED = "relay_mode_enabled";
-static const char* const SETTINGS_KEY_SIGNATURE_CERTIFICATE_FILE = "signature_certificate_file";
-static const char* const SETTINGS_KEY_SIGNATURE_PRIVATE_KEY_FILE = "signature_private_key_file";
-static const char* const SETTINGS_KEY_ENCRYPTION_CERTIFICATE_FILE = "encryption_certificate_file";
-static const char* const SETTINGS_KEY_ENCRYPTION_PRIVATE_KEY_FILE = "encryption_private_key_file";
-static const char* const SETTINGS_KEY_CERTIFICATE_VALIDATION_METHOD = "certificate_validation_method";
-static const char* const SETTINGS_KEY_CERTIFICATE_VALIDATION_SCRIPT = "certificate_validation_script";
-static const char* const SETTINGS_KEY_AUTHORITY_CERTIFICATE_FILE = "authority_certificate_file";
-static const char* const SETTINGS_KEY_CERTIFICATE_REVOCATION_VALIDATION_METHOD = "certificate_revocation_validation_method";
-static const char* const SETTINGS_KEY_CERTIFICATE_REVOCATION_LIST_FILE = "certificate_revocation_list_file";
+static const char* const CONFIGURATION_KEY_ENABLED = "enabled";
+static const char* const CONFIGURATION_KEY_HOST = "host";
+static const char* const CONFIGURATION_KEY_HTTPS_PROXY = "https_proxy";
+static const char* const CONFIGURATION_KEY_USERNAME = "username";
+static const char* const CONFIGURATION_KEY_PASSWORD = "password";
+static const char* const CONFIGURATION_KEY_NETWORK = "network";
+static const char* const CONFIGURATION_KEY_PUBLIC_ENDPOINTS = "public_endpoints";
+static const char* const CONFIGURATION_KEY_USER_AGENT = "user_agent";
+static const char* const CONFIGURATION_KEY_PROTOCOL = "protocol";
+static const char* const CONFIGURATION_KEY_CA_INFO_FILE = "ca_info_file";
+static const char* const CONFIGURATION_KEY_DISABLE_PEER_VERIFICATION = "disable_peer_verification";
+static const char* const CONFIGURATION_KEY_DISABLE_HOST_VERIFICATION = "disable_host_verification";
+static const char* const CONFIGURATION_KEY_HOSTNAME_RESOLUTION_PROTOCOL = "hostname_resolution_protocol";
+static const char* const CONFIGURATION_KEY_LISTEN_ON = "listen_on";
+static const char* const CONFIGURATION_KEY_HELLO_TIMEOUT = "hello_timeout";
+static const char* const CONFIGURATION_KEY_CONTACT = "contact";
+static const char* const CONFIGURATION_KEY_ACCEPT_CONTACT_REQUESTS = "accept_contact_requests";
+static const char* const CONFIGURATION_KEY_ACCEPT_CONTACTS = "accept_contacts";
+static const char* const CONFIGURATION_KEY_DYNAMIC_CONTACT_FILES = "dynamic_contact_files";
+static const char* const CONFIGURATION_KEY_NEVER_CONTACTS = "never_contacts";
+static const char* const CONFIGURATION_KEY_IPV4_ADDRESS_PREFIX_LENGTH = "ipv4_address_prefix_length";
+static const char* const CONFIGURATION_KEY_IPV6_ADDRESS_PREFIX_LENGTH = "ipv6_address_prefix_length";
+static const char* const CONFIGURATION_KEY_ARP_PROXY_ENABLED = "arp_proxy_enabled";
+static const char* const CONFIGURATION_KEY_ARP_PROXY_FAKE_ETHERNET_ADDRESS = "arp_proxy_fake_ethernet_address";
+static const char* const CONFIGURATION_KEY_DHCP_PROXY_ENABLED = "dhcp_proxy_enabled";
+static const char* const CONFIGURATION_KEY_DHCP_SERVER_IPV4_ADDRESS_PREFIX_LENGTH = "dhcp_server_ipv4_address_prefix_length";
+static const char* const CONFIGURATION_KEY_DHCP_SERVER_IPV6_ADDRESS_PREFIX_LENGTH = "dhcp_server_ipv6_address_prefix_length";
+static const char* const CONFIGURATION_KEY_UP_SCRIPT = "up_script";
+static const char* const CONFIGURATION_KEY_DOWN_SCRIPT = "down_script";
+static const char* const CONFIGURATION_KEY_ROUTING_METHOD = "routing_method";
+static const char* const CONFIGURATION_KEY_RELAY_MODE_ENABLED = "relay_mode_enabled";
+static const char* const CONFIGURATION_KEY_SIGNATURE_CERTIFICATE_FILE = "signature_certificate_file";
+static const char* const CONFIGURATION_KEY_SIGNATURE_PRIVATE_KEY_FILE = "signature_private_key_file";
+static const char* const CONFIGURATION_KEY_ENCRYPTION_CERTIFICATE_FILE = "encryption_certificate_file";
+static const char* const CONFIGURATION_KEY_ENCRYPTION_PRIVATE_KEY_FILE = "encryption_private_key_file";
+static const char* const CONFIGURATION_KEY_CERTIFICATE_VALIDATION_METHOD = "certificate_validation_method";
+static const char* const CONFIGURATION_KEY_CERTIFICATE_VALIDATION_SCRIPT = "certificate_validation_script";
+static const char* const CONFIGURATION_KEY_AUTHORITY_CERTIFICATE_FILE = "authority_certificate_file";
+static const char* const CONFIGURATION_KEY_CERTIFICATE_REVOCATION_VALIDATION_METHOD = "certificate_revocation_validation_method";
+static const char* const CONFIGURATION_KEY_CERTIFICATE_REVOCATION_LIST_FILE = "certificate_revocation_list_file";
+
+static const char* const SETTINGS_KEY_CONFIGURATION_FILE = "configuration_file";
 
 static const QVariant VARIANT_YES( "yes" );
 static const QVariant VARIANT_NO( "no" );
 
 // This class is used to hold the right function pointers for each setting
-class AbstractSettingsWrapper
+class AbstractConfigurationKeyWrapper
 {
 public:
 
-	AbstractSettingsWrapper( const bool is_required = false
-	                         , const QVariant& default_value = QVariant()
-	                         , const QVariant& applied_value = QVariant() )
+	AbstractConfigurationKeyWrapper( const bool is_required = false
+	                                 , const QVariant& default_value = QVariant()
+	                                 , const QVariant& applied_value = QVariant() )
 		: m_is_required( is_required )
 		, m_default_value( default_value )
 		, m_applied_value( applied_value )
 	{}
 
-	virtual ~AbstractSettingsWrapper() {}
+	virtual ~AbstractConfigurationKeyWrapper() {}
 
 	bool m_is_required : 1;
 	QVariant m_default_value;
@@ -753,7 +755,7 @@ public:
 };
 
 class LineEditWrapper
-	: public AbstractSettingsWrapper
+	: public AbstractConfigurationKeyWrapper
 {
 public:
 
@@ -762,12 +764,12 @@ public:
 	                 , const bool is_required = false
 	                 , const QVariant& default_value = QVariant()
 	                 , const QVariant& applied_value = QVariant() )
-		: AbstractSettingsWrapper( is_required
-		                           , default_value
-		                           , applied_value )
+		: AbstractConfigurationKeyWrapper( is_required
+		                                   , default_value
+		                                   , applied_value )
 		, m_lineedit( lineedit )
 	{
-		QObject::connect( lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+		QObject::connect( lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 	}
 
 	virtual ~LineEditWrapper() {}
@@ -786,7 +788,7 @@ private:
 };
 
 class CheckBoxWrapper
-	: public AbstractSettingsWrapper
+	: public AbstractConfigurationKeyWrapper
 {
 public:
 
@@ -795,12 +797,12 @@ public:
 	                 , const bool is_required = false
 	                 , const QVariant& default_value = QVariant()
 	                 , const QVariant& applied_value = QVariant() )
-		: AbstractSettingsWrapper( is_required
-		                           , default_value
-		                           , applied_value )
+		: AbstractConfigurationKeyWrapper( is_required
+		                                   , default_value
+		                                   , applied_value )
 		, m_checkbox( checkbox )
 	{
-		QObject::connect( checkbox, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+		QObject::connect( checkbox, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 	}
 
 	virtual ~CheckBoxWrapper() {}
@@ -821,7 +823,7 @@ private:
 };
 
 class ComboBoxWrapper
-	: public AbstractSettingsWrapper
+	: public AbstractConfigurationKeyWrapper
 {
 public:
 
@@ -830,12 +832,12 @@ public:
 	                 , const bool is_required = false
 	                 , const QVariant& default_value = QVariant()
 	                 , const QVariant& applied_value = QVariant() )
-		: AbstractSettingsWrapper( is_required
-		                           , default_value
-		                           , applied_value )
+		: AbstractConfigurationKeyWrapper( is_required
+		                                   , default_value
+		                                   , applied_value )
 		, m_combobox( combobox )
 	{
-		QObject::connect( combobox, SIGNAL( currentIndexChanged( int ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+		QObject::connect( combobox, SIGNAL( currentIndexChanged( int ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 	}
 
 	virtual ~ComboBoxWrapper() {}
@@ -856,7 +858,7 @@ private:
 };
 
 class SpinBoxWrapper
-	: public AbstractSettingsWrapper
+	: public AbstractConfigurationKeyWrapper
 {
 public:
 
@@ -865,12 +867,12 @@ public:
 	                , const bool is_required = false
 	                , const QVariant& default_value = QVariant()
 	                , const QVariant& applied_value = QVariant() )
-		: AbstractSettingsWrapper( is_required
-		                           , default_value
-		                           , applied_value )
+		: AbstractConfigurationKeyWrapper( is_required
+		                                   , default_value
+		                                   , applied_value )
 		, m_spinbox( spinbox )
 	{
-		QObject::connect( spinbox, SIGNAL( valueChanged( int ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+		QObject::connect( spinbox, SIGNAL( valueChanged( int ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 	}
 
 	virtual ~SpinBoxWrapper() {}
@@ -891,7 +893,7 @@ private:
 };
 
 class GroupBoxWrapper
-	: public AbstractSettingsWrapper
+	: public AbstractConfigurationKeyWrapper
 {
 public:
 
@@ -900,12 +902,12 @@ public:
 	                 , const bool is_required = false
 	                 , const QVariant& default_value = QVariant()
 	                 , const QVariant& applied_value = QVariant() )
-		: AbstractSettingsWrapper( is_required
-		                           , default_value
-		                           , applied_value )
+		: AbstractConfigurationKeyWrapper( is_required
+		                                   , default_value
+		                                   , applied_value )
 		, m_groupbox( groupbox )
 	{
-		QObject::connect( groupbox, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+		QObject::connect( groupbox, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 	}
 
 	virtual ~GroupBoxWrapper() {}
@@ -926,7 +928,7 @@ private:
 };
 
 class ProxyWrapper
-	: public AbstractSettingsWrapper
+	: public AbstractConfigurationKeyWrapper
 {
 public:
 
@@ -938,18 +940,18 @@ public:
 	              , const bool is_required = false
 	              , const QVariant& default_value = QVariant()
 	              , const QVariant& applied_value = QVariant() )
-		: AbstractSettingsWrapper( is_required
-		                           , default_value
-		                           , applied_value )
+		: AbstractConfigurationKeyWrapper( is_required
+		                                   , default_value
+		                                   , applied_value )
 		, m_server_proxy_no_radiobutton( server_proxy_no_radiobutton )
 		, m_server_proxy_system_radiobutton( server_proxy_system_radiobutton )
 		, m_server_proxy_url_radiobutton( server_proxy_url_radiobutton )
 		, m_server_proxy_url_lineedit( server_proxy_url_lineedit )
 	{
-		QObject::connect( m_server_proxy_no_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
-		QObject::connect( m_server_proxy_system_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
-		QObject::connect( m_server_proxy_url_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
-		QObject::connect( m_server_proxy_url_lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+		QObject::connect( m_server_proxy_no_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
+		QObject::connect( m_server_proxy_system_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
+		QObject::connect( m_server_proxy_url_radiobutton, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
+		QObject::connect( m_server_proxy_url_lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 	}
 
 	virtual ~ProxyWrapper() {}
@@ -990,7 +992,7 @@ private:
 };
 
 class LineEditArrayWrapper
-	: public AbstractSettingsWrapper
+	: public AbstractConfigurationKeyWrapper
 {
 public:
 
@@ -1002,15 +1004,15 @@ public:
 	                      , const bool is_required = false
 	                      , const QVariant& default_value = QVariant()
 	                      , const QVariant& applied_value = QVariant() )
-		: AbstractSettingsWrapper( is_required
-		                           , default_value
-		                           , applied_value )
+		: AbstractConfigurationKeyWrapper( is_required
+		                                   , default_value
+		                                   , applied_value )
 		, m_lineedit( lineedit )
 		, m_vboxlayout( vboxlayout )
 		, m_freelan_gui( freelan_gui )
 		, m_choose_mapper( choose_mapper )
 	{
-		QObject::connect( lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_settings_buttonbox_update() ) );
+		QObject::connect( lineedit, SIGNAL( textEdited( QString ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
 
 		// Connect and map the first "choose" toolbutton
 		if ( ( choose_toolbutton != NULL ) && ( choose_mapper != NULL ) )
@@ -1129,12 +1131,12 @@ private:
 	QSignalMapper* const m_choose_mapper;
 };
 
-Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
+Freelan_gui::Freelan_gui( QWidget* parent )
 	: QMainWindow( parent )
-	, m_settings_filepath( settings_filepath )
-	, m_settings_wrappers()
+	, m_configuration_filepath()
+	, m_configuration_key_wrappers()
 	, m_update_timer_id()
-	, m_are_required_settings_saved( false )
+	, m_are_required_configuration_keys_saved( false )
 	, m_remover()
 	, m_server_ca_info_files_chooser()
 	, m_fscp_dynamic_contact_files_chooser()
@@ -1153,21 +1155,21 @@ Freelan_gui::Freelan_gui( const QString& settings_filepath, QWidget* parent )
 	connect( &m_fscp_dynamic_contact_files_chooser, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_fscp_dynamic_contact_files_chooser_mapped( QWidget* ) ) );
 	connect( &m_security_certificate_revocation_list_files_chooser, SIGNAL( mapped( QWidget* ) ), this, SLOT( on_m_security_certificate_revocation_list_files_chooser_mapped( QWidget* ) ) );
 
-	// Build settings hash
-	register_settings();
+	// Build configuration hash
+	register_configuration_keys();
 
-	// Read stored settings
-	read_settings_from_file();
+	// Read gui preferences
+	read_preferences();
 }
 
 Freelan_gui::~Freelan_gui()
 {
 	// Cleanup
-	for ( QHash< const char*, QHash< const char*, AbstractSettingsWrapper* > >::const_iterator i = m_settings_wrappers.constBegin(), end_i = m_settings_wrappers.constEnd() ; i != end_i ; ++i )
+	for ( QHash< const char*, QHash< const char*, AbstractConfigurationKeyWrapper* > >::const_iterator i = m_configuration_key_wrappers.constBegin(), end_i = m_configuration_key_wrappers.constEnd() ; i != end_i ; ++i )
 	{
-		const QHash< const char*, AbstractSettingsWrapper* >& settings_wrappers = i.value();
+		const QHash< const char*, AbstractConfigurationKeyWrapper* >& configuration_wrappers = i.value();
 
-		for ( QHash< const char*, AbstractSettingsWrapper* >::const_iterator j = settings_wrappers.constBegin(), end_j = settings_wrappers.constEnd() ; j != end_j ; ++j )
+		for ( QHash< const char*, AbstractConfigurationKeyWrapper* >::const_iterator j = configuration_wrappers.constBegin(), end_j = configuration_wrappers.constEnd() ; j != end_j ; ++j )
 		{
 			delete j.value();
 		}
@@ -1196,7 +1198,7 @@ void Freelan_gui::timerEvent( QTimerEvent* event )
 		killTimer( m_update_timer_id );
 		m_update_timer_id = 0;
 
-		update_settings_buttonbox();
+		update_configuration_buttonbox();
 	}
 	else
 	{
@@ -1221,84 +1223,92 @@ void Freelan_gui::setup_about_ui()
 	organisation_domain_label->setText( FREELAN_LINK );
 }
 
-void Freelan_gui::register_settings()
+void Freelan_gui::read_preferences()
 {
-	// Each "registered" settings will be saved and restored by calling the given "read" and "write" function.
+	QSettings preferences;
+
+	// Read freelan configuration
+	set_configuration_filepath( preferences.value( SETTINGS_KEY_CONFIGURATION_FILE, QFileInfo( "freelan.conf" ).canonicalFilePath() ).toString() );
+}
+
+void Freelan_gui::register_configuration_keys()
+{
+	// Each "registered" configuration keys will be saved and restored by calling the given "read" and "write" function.
 	// Server page
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_ENABLED ] = new GroupBoxWrapper( server_groupbox, this, true, VARIANT_NO );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HOST ] = new LineEditWrapper( server_host_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USERNAME ] = new LineEditWrapper( server_username_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PASSWORD ] = new LineEditWrapper( server_password_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_HTTPS_PROXY ] = new ProxyWrapper( server_proxy_no_radiobutton, server_proxy_system_radiobutton, server_proxy_url_radiobutton, server_proxy_url_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_NETWORK ] = new LineEditWrapper( server_network_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PUBLIC_ENDPOINTS ] = new LineEditArrayWrapper( server_public_endpoints_lineedit, server_public_endpoints_verticallayout, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_USER_AGENT ] = new LineEditWrapper( server_user_agent_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_CA_INFO_FILE ] = new LineEditArrayWrapper( server_ca_info_files_lineedit, server_ca_info_files_verticallayout, this, server_ca_info_files_choose_toolbutton, &m_server_ca_info_files_chooser );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_PROTOCOL ] = new ComboBoxWrapper( server_protocol_combobox, this, false, "https" );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_PEER_VERIFICATION ] = new CheckBoxWrapper( server_disable_peer_verification_checkbox, this, false, VARIANT_NO );
-	m_settings_wrappers[ SETTINGS_GROUP_SERVER ][ SETTINGS_KEY_DISABLE_HOST_VERIFICATION ] = new CheckBoxWrapper( server_disable_host_verification_checkbox, this, false, VARIANT_NO );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_ENABLED ] = new GroupBoxWrapper( server_groupbox, this, true, VARIANT_NO );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_HOST ] = new LineEditWrapper( server_host_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_USERNAME ] = new LineEditWrapper( server_username_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_PASSWORD ] = new LineEditWrapper( server_password_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_HTTPS_PROXY ] = new ProxyWrapper( server_proxy_no_radiobutton, server_proxy_system_radiobutton, server_proxy_url_radiobutton, server_proxy_url_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_NETWORK ] = new LineEditWrapper( server_network_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_PUBLIC_ENDPOINTS ] = new LineEditArrayWrapper( server_public_endpoints_lineedit, server_public_endpoints_verticallayout, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_USER_AGENT ] = new LineEditWrapper( server_user_agent_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_CA_INFO_FILE ] = new LineEditArrayWrapper( server_ca_info_files_lineedit, server_ca_info_files_verticallayout, this, server_ca_info_files_choose_toolbutton, &m_server_ca_info_files_chooser );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_PROTOCOL ] = new ComboBoxWrapper( server_protocol_combobox, this, false, "https" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_DISABLE_PEER_VERIFICATION ] = new CheckBoxWrapper( server_disable_peer_verification_checkbox, this, false, VARIANT_NO );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_DISABLE_HOST_VERIFICATION ] = new CheckBoxWrapper( server_disable_host_verification_checkbox, this, false, VARIANT_NO );
 
 	// FSCP page
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HOSTNAME_RESOLUTION_PROTOCOL ] = new ComboBoxWrapper( fscp_hostname_resolution_protocol_combobox, this, true, "IPv4" );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_LISTEN_ON ] = new LineEditWrapper( fscp_listen_on_lineedit, this, true, "0.0.0.0:12000" );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_HELLO_TIMEOUT ] = new SpinBoxWrapper( fscp_hello_timeout_spinbox, this, true, 3000 );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_CONTACT ] = new LineEditArrayWrapper( fscp_contacts_lineedit, fscp_contacts_verticallayout, this );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_ACCEPT_CONTACT_REQUESTS ] = new CheckBoxWrapper( fscp_accept_contact_requests_checkbox, this, true, VARIANT_YES );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_ACCEPT_CONTACTS ] = new GroupBoxWrapper( fscp_accept_contacts_groupbox, this, false, VARIANT_YES );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_DYNAMIC_CONTACT_FILES ] = new LineEditArrayWrapper( fscp_dynamic_contact_files_lineedit, fscp_dynamic_contact_files_verticallayout, this, fscp_dynamic_contact_files_choose_toolbutton, &m_fscp_dynamic_contact_files_chooser );
-	m_settings_wrappers[ SETTINGS_GROUP_FSCP ][ SETTINGS_KEY_NEVER_CONTACTS ] = new LineEditArrayWrapper( fscp_never_contacts_lineedit, fscp_never_contacts_verticallayout, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_HOSTNAME_RESOLUTION_PROTOCOL ] = new ComboBoxWrapper( fscp_hostname_resolution_protocol_combobox, this, true, "IPv4" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_LISTEN_ON ] = new LineEditWrapper( fscp_listen_on_lineedit, this, true, "0.0.0.0:12000" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_HELLO_TIMEOUT ] = new SpinBoxWrapper( fscp_hello_timeout_spinbox, this, true, 3000 );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_CONTACT ] = new LineEditArrayWrapper( fscp_contacts_lineedit, fscp_contacts_verticallayout, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_ACCEPT_CONTACT_REQUESTS ] = new CheckBoxWrapper( fscp_accept_contact_requests_checkbox, this, true, VARIANT_YES );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_ACCEPT_CONTACTS ] = new GroupBoxWrapper( fscp_accept_contacts_groupbox, this, false, VARIANT_YES );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_DYNAMIC_CONTACT_FILES ] = new LineEditArrayWrapper( fscp_dynamic_contact_files_lineedit, fscp_dynamic_contact_files_verticallayout, this, fscp_dynamic_contact_files_choose_toolbutton, &m_fscp_dynamic_contact_files_chooser );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_NEVER_CONTACTS ] = new LineEditArrayWrapper( fscp_never_contacts_lineedit, fscp_never_contacts_verticallayout, this );
 
 	// TAP Adapter page
-	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_ENABLED ] = new GroupBoxWrapper( tap_adapter_enabled_groupbox, this, true, VARIANT_YES );
-	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_IPV4_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_ipv4_address_prefix_length_lineedit, this, true, "9.0.0.1/24" );
-	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_IPV6_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_ipv6_address_prefix_length_lineedit, this, true, "2aa1::1/8" );
-	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_ARP_PROXY_ENABLED ] = new GroupBoxWrapper( tap_adapter_arp_proxy_enabled_groupbox, this, true, VARIANT_NO );
-	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_ARP_PROXY_FAKE_ETHERNET_ADDRESS ] = new LineEditWrapper( tap_adapter_arp_proxy_fake_ethernet_address_lineedit, this, true, "00:aa:bb:cc:dd:ee" );
-	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_DHCP_PROXY_ENABLED ] = new GroupBoxWrapper( tap_adapter_dhcp_proxy_enabled_groupbox, this, true, VARIANT_YES );
-	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_DHCP_SERVER_IPV4_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_dhcp_server_ipv4_address_prefix_length_lineedit, this, true, "9.0.0.0/24" );
-	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_DHCP_SERVER_IPV6_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_dhcp_server_ipv6_address_prefix_length_lineedit, this, true, "2aa1::/8" );
-	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_UP_SCRIPT ] = new LineEditWrapper( tap_adapter_up_script_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_TAP_ADAPTER ][ SETTINGS_KEY_DOWN_SCRIPT ] = new LineEditWrapper( tap_adapter_down_script_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_ENABLED ] = new GroupBoxWrapper( tap_adapter_enabled_groupbox, this, true, VARIANT_YES );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_IPV4_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_ipv4_address_prefix_length_lineedit, this, true, "9.0.0.1/24" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_IPV6_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_ipv6_address_prefix_length_lineedit, this, true, "2aa1::1/8" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_ARP_PROXY_ENABLED ] = new GroupBoxWrapper( tap_adapter_arp_proxy_enabled_groupbox, this, true, VARIANT_NO );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_ARP_PROXY_FAKE_ETHERNET_ADDRESS ] = new LineEditWrapper( tap_adapter_arp_proxy_fake_ethernet_address_lineedit, this, true, "00:aa:bb:cc:dd:ee" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_DHCP_PROXY_ENABLED ] = new GroupBoxWrapper( tap_adapter_dhcp_proxy_enabled_groupbox, this, true, VARIANT_YES );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_DHCP_SERVER_IPV4_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_dhcp_server_ipv4_address_prefix_length_lineedit, this, true, "9.0.0.0/24" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_DHCP_SERVER_IPV6_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_dhcp_server_ipv6_address_prefix_length_lineedit, this, true, "2aa1::/8" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_UP_SCRIPT ] = new LineEditWrapper( tap_adapter_up_script_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_DOWN_SCRIPT ] = new LineEditWrapper( tap_adapter_down_script_lineedit, this );
 
 	// Switch page
-	m_settings_wrappers[ SETTINGS_GROUP_SWITCH ][ SETTINGS_KEY_ROUTING_METHOD ] = new ComboBoxWrapper( switch_routing_method_combobox, this, true, "switch" );
-	m_settings_wrappers[ SETTINGS_GROUP_SWITCH ][ SETTINGS_KEY_RELAY_MODE_ENABLED ] = new CheckBoxWrapper( switch_relay_mode_enabled_checkbox, this, true, VARIANT_NO );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SWITCH ][ CONFIGURATION_KEY_ROUTING_METHOD ] = new ComboBoxWrapper( switch_routing_method_combobox, this, true, "switch" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SWITCH ][ CONFIGURATION_KEY_RELAY_MODE_ENABLED ] = new CheckBoxWrapper( switch_relay_mode_enabled_checkbox, this, true, VARIANT_NO );
 
 	// Security
-	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_SIGNATURE_CERTIFICATE_FILE ] = new LineEditWrapper( security_signature_certificate_file_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_SIGNATURE_PRIVATE_KEY_FILE ] = new LineEditWrapper( security_signature_private_key_file_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_ENCRYPTION_CERTIFICATE_FILE ] = new LineEditWrapper( security_encryption_certificate_file_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_ENCRYPTION_PRIVATE_KEY_FILE ] = new LineEditWrapper( security_encryption_private_key_file_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_CERTIFICATE_VALIDATION_METHOD ] = new ComboBoxWrapper( security_certificate_validation_method_combobox, this, true, "default" );
-	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_CERTIFICATE_VALIDATION_SCRIPT ] = new LineEditWrapper( security_certificate_validation_script_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_AUTHORITY_CERTIFICATE_FILE ] = new LineEditWrapper( security_authority_certificate_file_lineedit, this );
-	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_CERTIFICATE_REVOCATION_VALIDATION_METHOD ] = new ComboBoxWrapper( security_certificate_revocation_validation_method_combobox, this, true, "none" );
-	m_settings_wrappers[ SETTINGS_GROUP_SECURITY ][ SETTINGS_KEY_CERTIFICATE_REVOCATION_LIST_FILE ] = new LineEditArrayWrapper( security_certificate_revocation_list_files_lineedit, security_certificate_revocation_list_files_verticallayout, this, security_certificate_revocation_list_files_choose_toolbutton, &m_security_certificate_revocation_list_files_chooser );
-} // register_settings
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_SIGNATURE_CERTIFICATE_FILE ] = new LineEditWrapper( security_signature_certificate_file_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_SIGNATURE_PRIVATE_KEY_FILE ] = new LineEditWrapper( security_signature_private_key_file_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_ENCRYPTION_CERTIFICATE_FILE ] = new LineEditWrapper( security_encryption_certificate_file_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_ENCRYPTION_PRIVATE_KEY_FILE ] = new LineEditWrapper( security_encryption_private_key_file_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_CERTIFICATE_VALIDATION_METHOD ] = new ComboBoxWrapper( security_certificate_validation_method_combobox, this, true, "default" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_CERTIFICATE_VALIDATION_SCRIPT ] = new LineEditWrapper( security_certificate_validation_script_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_AUTHORITY_CERTIFICATE_FILE ] = new LineEditWrapper( security_authority_certificate_file_lineedit, this );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_CERTIFICATE_REVOCATION_VALIDATION_METHOD ] = new ComboBoxWrapper( security_certificate_revocation_validation_method_combobox, this, true, "none" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_CERTIFICATE_REVOCATION_LIST_FILE ] = new LineEditArrayWrapper( security_certificate_revocation_list_files_lineedit, security_certificate_revocation_list_files_verticallayout, this, security_certificate_revocation_list_files_choose_toolbutton, &m_security_certificate_revocation_list_files_chooser );
+} // register_configuration_keys
 
-void Freelan_gui::read_settings_from_file()
+void Freelan_gui::read_configuration_from_file()
 {
-	m_are_required_settings_saved = true;
+	m_are_required_configuration_keys_saved = true;
 
-	// Initialize the QSettings object to read "m_settings_filepath" as a ini file
-	QSettings settings_file( m_settings_filepath, QSettings::IniFormat );
+	// Initialize the QSettings object to read "m_configuration_filepath" as a ini file
+	QSettings configuration_file( m_configuration_filepath, QSettings::IniFormat );
 
 	// For each "group"
-	const QList< const char* >& groups = m_settings_wrappers.keys();
+	const QList< const char* >& groups = m_configuration_key_wrappers.keys();
 
 	for ( int i = groups.count() ; --i >= 0 ; )
 	{
 		// Get the current group name
 		const char* const group = groups.at( i );
 
-		// Set the "group" marker on the settings file
-		settings_file.beginGroup( group );
+		// Set the "group" marker on the configuration file
+		configuration_file.beginGroup( group );
 
-		// Get the settings "hash"
-		QHash< const char*, AbstractSettingsWrapper* >& grouped_settings_wrappers = m_settings_wrappers[ group ];
+		// Get the configuration "hash"
+		QHash< const char*, AbstractConfigurationKeyWrapper* >& grouped_configuration_key_wrappers = m_configuration_key_wrappers[ group ];
 
 		// For each "key"
-		const QList< const char* >& keys = grouped_settings_wrappers.keys();
+		const QList< const char* >& keys = grouped_configuration_key_wrappers.keys();
 
 		for ( int j = keys.count() ; --j >= 0 ; )
 		{
@@ -1306,42 +1316,42 @@ void Freelan_gui::read_settings_from_file()
 			const char* const key = keys.at( j );
 
 			// Get the settings wrapper object so we can call the "write" function
-			AbstractSettingsWrapper* const settings_wrapper = grouped_settings_wrappers[ key ];
+			AbstractConfigurationKeyWrapper* const configuration_key_wrapper = grouped_configuration_key_wrappers[ key ];
 
-			// Read the settings value from file
-			const QVariant& value_from_file = settings_file.value( key );
+			// Read the configuration value from file
+			const QVariant& value_from_file = configuration_file.value( key );
 
-			if ( m_are_required_settings_saved && settings_wrapper->m_is_required && value_from_file.isNull() )
+			if ( m_are_required_configuration_keys_saved && configuration_key_wrapper->m_is_required && value_from_file.isNull() )
 			{
-				m_are_required_settings_saved = false;
+				m_are_required_configuration_keys_saved = false;
 			}
 
 			// Use default value if no value found in file
-			const QVariant& value_to_write = value_from_file.isNull() ? settings_wrapper->m_default_value : value_from_file;
+			const QVariant& value_to_write = value_from_file.isNull() ? configuration_key_wrapper->m_default_value : value_from_file;
 
 			// Write the value to the GUI
-			settings_wrapper->write( value_to_write );
+			configuration_key_wrapper->write( value_to_write );
 
 			// Store the value so we can do "revert" when editing the setting in the GUI
-			settings_wrapper->m_applied_value = value_to_write;
+			configuration_key_wrapper->m_applied_value = value_to_write;
 		}
 
-		// End the group on the settings file
-		settings_file.endGroup();
+		// End the group on the configuration file
+		configuration_file.endGroup();
 	}
 
-	schedule_settings_buttonbox_update();
+	schedule_configuration_buttonbox_update();
 } // readSettingsFromFile
 
-void Freelan_gui::write_settings_to_file()
+void Freelan_gui::write_configuration_to_file()
 {
-	QSettings settings_file( m_settings_filepath, QSettings::IniFormat );
+	QSettings configuration_file( m_configuration_filepath, QSettings::IniFormat );
 
 	// We start from scratch
-	settings_file.clear();
+	configuration_file.clear();
 
 	// For each "group"
-	const QList< const char* >& groups = m_settings_wrappers.keys();
+	const QList< const char* >& groups = m_configuration_key_wrappers.keys();
 
 	for ( int i = groups.count() ; --i >= 0 ; )
 	{
@@ -1349,13 +1359,13 @@ void Freelan_gui::write_settings_to_file()
 		const char* const group = groups.at( i );
 
 		// Set the "group" marker on the settings file
-		settings_file.beginGroup( group );
+		configuration_file.beginGroup( group );
 
 		// Get the settings "hash"
-		QHash< const char*, AbstractSettingsWrapper* >& grouped_settings_wrappers = m_settings_wrappers[ group ];
+		QHash< const char*, AbstractConfigurationKeyWrapper* >& grouped_configuration_key_wrappers = m_configuration_key_wrappers[ group ];
 
 		// For each "key"
-		const QList< const char* >& keys = grouped_settings_wrappers.keys();
+		const QList< const char* >& keys = grouped_configuration_key_wrappers.keys();
 
 		for ( int j = keys.count() ; --j >= 0 ; )
 		{
@@ -1363,32 +1373,32 @@ void Freelan_gui::write_settings_to_file()
 			const char* const key = keys.at( j );
 
 			// Get the settings wrapper object so we can call the "write" function
-			AbstractSettingsWrapper* const settings_wrapper = grouped_settings_wrappers[ key ];
+			AbstractConfigurationKeyWrapper* const configuration_key_wrapper = grouped_configuration_key_wrappers[ key ];
 
-			// Read settings from gui
-			const QVariant& value = settings_wrapper->read();
+			// Read configuration from gui
+			const QVariant& value = configuration_key_wrapper->read();
 
 			// Do not write default value or null value (not set)
-			if ( settings_wrapper->m_is_required || ( ( settings_wrapper->m_default_value != value ) && !value.isNull() ) )
+			if ( configuration_key_wrapper->m_is_required || ( ( configuration_key_wrapper->m_default_value != value ) && !value.isNull() ) )
 			{
 				// Write value to file
-				settings_file.setValue( key, value );
+				configuration_file.setValue( key, value );
 			}
 
 			// Set the applied value
-			settings_wrapper->m_applied_value = value;
+			configuration_key_wrapper->m_applied_value = value;
 		}
 
-		// End the group on the settings file
-		settings_file.endGroup();
+		// End the group on the configuration file
+		configuration_file.endGroup();
 	}
 
-	m_are_required_settings_saved = true;
+	m_are_required_configuration_keys_saved = true;
 
-	schedule_settings_buttonbox_update();
-} // write_settings_to_file
+	schedule_configuration_buttonbox_update();
+} // write_configuration_to_file
 
-void Freelan_gui::schedule_settings_buttonbox_update()
+void Freelan_gui::schedule_configuration_buttonbox_update()
 {
 	// If the timer is already started
 	if ( m_update_timer_id != 0 )
@@ -1401,53 +1411,53 @@ void Freelan_gui::schedule_settings_buttonbox_update()
 	m_update_timer_id = startTimer( 0 );
 }
 
-void Freelan_gui::update_settings_buttonbox()
+void Freelan_gui::update_configuration_buttonbox()
 {
 	// Reset
-	bool are_settings_modified = false;
-	bool are_settings_tainted = false;
+	bool are_configuration_modified = false;
+	bool are_configuration_tainted = false;
 
 	// For each "group"
-	const QList< const char* >& groups = m_settings_wrappers.keys();
+	const QList< const char* >& groups = m_configuration_key_wrappers.keys();
 
-	for ( int i = groups.count() ; ( !are_settings_modified || !are_settings_tainted ) && --i >= 0 ; )
+	for ( int i = groups.count() ; ( !are_configuration_modified || !are_configuration_tainted ) && --i >= 0 ; )
 	{
 		// Get the current group name
 		const char* const group = groups.at( i );
 
-		// Get the settings "hash"
-		const QHash< const char*, AbstractSettingsWrapper* >& grouped_settings_wrappers = m_settings_wrappers[ group ];
+		// Get the configuration "hash"
+		const QHash< const char*, AbstractConfigurationKeyWrapper* >& grouped_configuration_key_wrappers = m_configuration_key_wrappers[ group ];
 
 		// For each "key"
-		const QList< const char* >& keys = grouped_settings_wrappers.keys();
+		const QList< const char* >& keys = grouped_configuration_key_wrappers.keys();
 
-		for ( int j = keys.count() ; ( !are_settings_modified || !are_settings_tainted ) && --j >= 0 ; )
+		for ( int j = keys.count() ; ( !are_configuration_modified || !are_configuration_tainted ) && --j >= 0 ; )
 		{
 			// Get the current key name
 			const char* const key = keys.at( j );
 
-			// Get the settings wrapper object so we can call the "write" function
-			const AbstractSettingsWrapper* const settings_wrapper = grouped_settings_wrappers[ key ];
+			// Get the configuration wrapper object so we can call the "write" function
+			const AbstractConfigurationKeyWrapper* const configuration_key_wrapper = grouped_configuration_key_wrappers[ key ];
 
 			// Read the value from the GUI
-			const QVariant& value = settings_wrapper->read();
+			const QVariant& value = configuration_key_wrapper->read();
 
-			if ( !are_settings_modified )
+			if ( !are_configuration_modified )
 			{
-				are_settings_modified = value != settings_wrapper->m_applied_value;
+				are_configuration_modified = value != configuration_key_wrapper->m_applied_value;
 			}
 
-			if ( !are_settings_tainted )
+			if ( !are_configuration_tainted )
 			{
-				are_settings_tainted = value != settings_wrapper->m_default_value;
+				are_configuration_tainted = value != configuration_key_wrapper->m_default_value;
 			}
 		}
 	}
 
 	// Put the correct button state
-	settings_buttonbox->button( QDialogButtonBox::Save )->setEnabled( !m_are_required_settings_saved || are_settings_modified );
-	settings_buttonbox->button( QDialogButtonBox::Discard )->setEnabled( are_settings_modified );
-	settings_buttonbox->button( QDialogButtonBox::RestoreDefaults )->setEnabled( are_settings_tainted );
+	configuration_buttonbox->button( QDialogButtonBox::Save )->setEnabled( !m_are_required_configuration_keys_saved || are_configuration_modified );
+	configuration_buttonbox->button( QDialogButtonBox::Discard )->setEnabled( are_configuration_modified );
+	configuration_buttonbox->button( QDialogButtonBox::RestoreDefaults )->setEnabled( are_configuration_tainted );
 } // update_settings_buttonbox
 
 QLineEdit* Freelan_gui::append_lineedit( QWidget* const parent_widget, QVBoxLayout* const parent_layout, QSignalMapper* const chooser_mapper )
@@ -1487,7 +1497,7 @@ QLineEdit* Freelan_gui::append_lineedit( QWidget* const parent_widget, QVBoxLayo
 	connect( new_remove_toolbutton, SIGNAL( clicked() ), &m_remover, SLOT( map() ) );
 
 	// Lineedit update
-	connect( new_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_settings_buttonbox_update() ) );
+	connect( new_lineedit, SIGNAL( textEdited( const QString & ) ), this, SLOT( schedule_configuration_buttonbox_update() ) );
 
 	return new_lineedit;
 } // append_lineedit
@@ -1520,11 +1530,11 @@ void Freelan_gui::on_status_pushbutton_toggled( bool toggled )
 	}
 }
 
-void Freelan_gui::on_settings_pushbutton_toggled( bool toggled )
+void Freelan_gui::on_configuration_pushbutton_toggled( bool toggled )
 {
 	if ( toggled )
 	{
-		stacked_widget->setCurrentWidget( settings_page );
+		stacked_widget->setCurrentWidget( configuration_page );
 	}
 }
 
@@ -1544,29 +1554,29 @@ void Freelan_gui::on_about_pushbutton_toggled( bool toggled )
 	}
 }
 
-void Freelan_gui::on_settings_buttonbox_clicked( QAbstractButton* button )
+void Freelan_gui::on_configuration_buttonbox_clicked( QAbstractButton* button )
 {
-	if ( button == settings_buttonbox->button( QDialogButtonBox::Save ) )
+	if ( button == configuration_buttonbox->button( QDialogButtonBox::Save ) )
 	{
-		write_settings_to_file();
+		write_configuration_to_file();
 	}
 	else
 	{
-		const bool must_restore_defaults = button == settings_buttonbox->button( QDialogButtonBox::RestoreDefaults );
+		const bool must_restore_defaults = button == configuration_buttonbox->button( QDialogButtonBox::RestoreDefaults );
 
 		// For each "group"
-		const QList< const char* >& groups = m_settings_wrappers.keys();
+		const QList< const char* >& groups = m_configuration_key_wrappers.keys();
 
 		for ( int i = groups.count() ; --i >= 0 ; )
 		{
 			// Get the current group name
 			const char* const group = groups.at( i );
 
-			// Get the settings "hash"
-			QHash< const char*, AbstractSettingsWrapper* >& grouped_settings_wrappers = m_settings_wrappers[ group ];
+			// Get the configuration "hash"
+			QHash< const char*, AbstractConfigurationKeyWrapper* >& grouped_configuration_wrappers = m_configuration_key_wrappers[ group ];
 
 			// For each "key"
-			const QList< const char* >& keys = grouped_settings_wrappers.keys();
+			const QList< const char* >& keys = grouped_configuration_wrappers.keys();
 
 			for ( int j = keys.count() ; --j >= 0 ; )
 			{
@@ -1574,15 +1584,15 @@ void Freelan_gui::on_settings_buttonbox_clicked( QAbstractButton* button )
 				const char* const key = keys.at( j );
 
 				// Get the settings wrapper object so we can call the "write" function
-				AbstractSettingsWrapper* const settings_wrapper = grouped_settings_wrappers[ key ];
+				AbstractConfigurationKeyWrapper* const configuration_wrapper = grouped_configuration_wrappers[ key ];
 
-				settings_wrapper->write( must_restore_defaults ? settings_wrapper->m_default_value : settings_wrapper->m_applied_value );
+				configuration_wrapper->write( must_restore_defaults ? configuration_wrapper->m_default_value : configuration_wrapper->m_applied_value );
 			}
 		}
 
-		schedule_settings_buttonbox_update();
+		schedule_configuration_buttonbox_update();
 	}
-} // on_settings_buttonbox_clicked
+} // on_configuration_buttonbox_clicked
 
 void Freelan_gui::on_m_remover_mapped( QObject* object )
 {
@@ -1626,6 +1636,6 @@ void Freelan_gui::on_m_remover_mapped( QObject* object )
 		// Delete later to be on the safe side..
 		layout->deleteLater();
 
-		schedule_settings_buttonbox_update();
+		schedule_configuration_buttonbox_update();
 	}
 } // on_m_remover_mapped

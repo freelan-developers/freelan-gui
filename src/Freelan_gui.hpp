@@ -700,7 +700,7 @@ Public License instead of this License.  But first, please read
 #pragma warning(pop)
 #endif
 
-class AbstractSettingsWrapper;
+class AbstractConfigurationKeyWrapper;
 
 class Freelan_gui
 	: public QMainWindow
@@ -710,9 +710,11 @@ class Freelan_gui
 
 public:
 
-	explicit Freelan_gui( const QString& settings_filepath, QWidget* parent = 0 );
+	explicit Freelan_gui( QWidget* parent = 0 );
 
 	virtual ~Freelan_gui();
+
+	void set_configuration_filepath( const QString& filepath ) { m_configuration_filepath = filepath; read_configuration_from_file(); }
 
 protected:
 
@@ -723,14 +725,14 @@ private:
 
 	friend class LineEditArrayWrapper;
 
-	QString m_settings_filepath;
+	QString m_configuration_filepath;
 
 	// Hash that contains the applied value, default value, and  read, write, and reset function pointer to manipulate the GUI
-	QHash< const char*, QHash< const char*, AbstractSettingsWrapper* > > m_settings_wrappers;
+	QHash< const char*, QHash< const char*, AbstractConfigurationKeyWrapper* > > m_configuration_key_wrappers;
 
 	int m_update_timer_id;
 
-	bool m_are_required_settings_saved;
+	bool m_are_required_configuration_keys_saved;
 
 	QSignalMapper m_remover;
 	QSignalMapper m_server_ca_info_files_chooser;
@@ -740,13 +742,16 @@ private:
 	// Build about page
 	void setup_about_ui();
 
-	// Settings serialization
-	void register_settings();
-	void read_settings_from_file();
-	void write_settings_to_file();
+	// Read GUI preferences such setings filepath, installation path...
+	void read_preferences();
 
-	// Called to set the correct state on settings buttonbox
-	void update_settings_buttonbox();
+	// Configuration serialization
+	void register_configuration_keys();
+	void read_configuration_from_file();
+	void write_configuration_to_file();
+
+	// Called to set the correct state on configuration buttonbox
+	void update_configuration_buttonbox();
 
 	// Create a lineedit, a remove toolbutton, eventually a "choose" toolbutton and add them to the given parent
 	QLineEdit* append_lineedit( QWidget* const parent_widget, QVBoxLayout* const parent_layout, QSignalMapper* const chooser_mapper = NULL );
@@ -757,16 +762,16 @@ private:
 private Q_SLOTS:
 
 	// Schedule update on a timeout to avoid redondant call
-	void schedule_settings_buttonbox_update();
+	void schedule_configuration_buttonbox_update();
 
 	// stacked widget management
 	void on_status_pushbutton_toggled( bool toggled );
-	void on_settings_pushbutton_toggled( bool toggled );
+	void on_configuration_pushbutton_toggled( bool toggled );
 	void on_help_pushbutton_toggled( bool toggled );
 	void on_about_pushbutton_toggled( bool toggled );
 
-	// Settings buttonbox (reset to default, save, ...)
-	void on_settings_buttonbox_clicked( QAbstractButton* button );
+	// Configuration buttonbox (reset to default, save, ...)
+	void on_configuration_buttonbox_clicked( QAbstractButton* button );
 
 	// Server proxy url switch
 	void on_server_proxy_url_radiobutton_toggled( bool toggled ) { server_proxy_url_lineedit->setEnabled( toggled ); }

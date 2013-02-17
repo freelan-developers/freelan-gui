@@ -691,6 +691,8 @@ Public License instead of this License.  But first, please read
 
 #include "Freelan_gui.hpp"
 
+static const char* const SETTINGS_KEY_CONFIGURATION_FILE = "configuration_file";
+
 int main( int argc, char* argv[] )
 {
 	QApplication application( argc, argv );
@@ -700,7 +702,7 @@ int main( int argc, char* argv[] )
 	application.setOrganizationDomain( ORGANISATION_DOMAIN );
 	application.setApplicationName( TARGET );
 
-	Freelan_gui freelan( "freelan.conf" );
+	Freelan_gui freelan;
 	freelan.show();
 
 	return application.exec();
