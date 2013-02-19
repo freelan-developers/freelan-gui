@@ -773,7 +773,6 @@ private Q_SLOTS:
 	// stacked widget management
 	void on_status_pushbutton_toggled( bool toggled );
 	void on_configuration_pushbutton_toggled( bool toggled );
-	void on_help_pushbutton_toggled( bool toggled );
 	void on_about_pushbutton_toggled( bool toggled );
 
 	// Set the configuration filepath

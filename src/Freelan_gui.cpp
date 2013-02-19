@@ -1257,7 +1257,7 @@ void Freelan_gui::read_preferences()
 	QSettings preferences;
 
 	// Read freelan configuration
-	set_configuration_filepath( preferences.value( SETTINGS_KEY_CONFIGURATION_FILE, QFileInfo( "freelan.conf" ).canonicalFilePath() ).toString() );
+	set_configuration_filepath( preferences.value( SETTINGS_KEY_CONFIGURATION_FILE, QFileInfo( "freelan.conf" ).absoluteFilePath() ).toString() );
 }
 
 void Freelan_gui::register_configuration_keys()
@@ -1584,14 +1584,6 @@ void Freelan_gui::on_configuration_pushbutton_toggled( bool toggled )
 	if ( toggled )
 	{
 		stacked_widget->setCurrentWidget( configuration_page );
-	}
-}
-
-void Freelan_gui::on_help_pushbutton_toggled( bool toggled )
-{
-	if ( toggled )
-	{
-		stacked_widget->setCurrentWidget( help_page );
 	}
 }
 
