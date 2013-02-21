@@ -44,11 +44,13 @@ OTHER_FILES += \
 
 SOURCES += \
   src/main.cpp \
-  src/Freelan_gui.cpp
+  src/Freelan_gui.cpp \
+  src/Freelan_gui_settings.cpp
 
 HEADERS += \
   src/Freelan_gui.hpp \
-  src/Freelan_gui_pch.hpp
+  src/Freelan_gui_pch.hpp \
+  src/Freelan_gui_settings.hpp
 
 FORMS += \
   src/Freelan_gui.ui

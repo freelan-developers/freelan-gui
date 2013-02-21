@@ -676,6 +676,7 @@ Public License instead of this License.  But first, please read
 **************************************************************************/
 
 #include "Freelan_gui.hpp"
+#include "Freelan_gui_settings.hpp"
 
 // Group string constants
 static const char* const CONFIGURATION_GROUP_SERVER = "server";
@@ -737,21 +738,21 @@ class AbstractConfigurationKeyWrapper
 public:
 
 	AbstractConfigurationKeyWrapper( const bool is_required = false
-	                                 , const QVariant& default_value = QVariant()
-	                                 , const QVariant& applied_value = QVariant() )
+	                                 , const QList< QVariant >& default_values = QList< QVariant >( )
+	                                 , const QList< QVariant >& applied_values = QList< QVariant >( ) )
 		: m_is_required( is_required )
-		, m_default_value( default_value )
-		, m_applied_value( applied_value )
+		, m_default_values( default_values )
+		, m_applied_values( applied_values )
 	{}
 
 	virtual ~AbstractConfigurationKeyWrapper() {}
 
 	bool m_is_required : 1;
-	QVariant m_default_value;
-	QVariant m_applied_value;
+	QList< QVariant > m_default_values;
+	QList< QVariant > m_applied_values;
 
-	virtual QVariant read() const = 0;
-	virtual void write( const QVariant& ) = 0;
+	virtual QList< QVariant > read() const = 0;
+	virtual void write( const QList< QVariant >& ) = 0;
 };
 
 class LineEditWrapper
@@ -762,11 +763,11 @@ public:
 	LineEditWrapper( QLineEdit* const lineedit
 	                 , Freelan_gui* const freelan_gui
 	                 , const bool is_required = false
-	                 , const QVariant& default_value = QVariant()
-	                 , const QVariant& applied_value = QVariant() )
+	                 , const QList< QVariant >& default_values = QList< QVariant >( )
+	                 , const QList< QVariant >& applied_values = QList< QVariant >( ) )
 		: AbstractConfigurationKeyWrapper( is_required
-		                                   , default_value
-		                                   , applied_value )
+		                                   , default_values
+		                                   , applied_values )
 		, m_lineedit( lineedit )
 	{
 		QObject::connect( lineedit, SIGNAL( textEdited( const QString & ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
@@ -774,13 +775,23 @@ public:
 
 	virtual ~LineEditWrapper() {}
 
-	virtual QVariant read() const
+	virtual QList< QVariant > read() const
 	{
+		QList< QVariant > values;
 		const QString& text = m_lineedit->text();
-		return text.isEmpty() ? QVariant() : QVariant( text );
+
+		if ( !text.isEmpty() )
+		{
+			values.append( text );
+		}
+
+		return values;
 	}
 
-	virtual void write( const QVariant& value ) { m_lineedit->setText( value.toString() ); }
+	virtual void write( const QList< QVariant >& values )
+	{
+		m_lineedit->setText( values.isEmpty() ? QString::null : values.first().toString() );
+	}
 
 private:
 
@@ -795,11 +806,11 @@ public:
 	CheckBoxWrapper( QCheckBox* const checkbox
 	                 , Freelan_gui* const freelan_gui
 	                 , const bool is_required = false
-	                 , const QVariant& default_value = QVariant()
-	                 , const QVariant& applied_value = QVariant() )
+	                 , const QList< QVariant >& default_values = QList< QVariant >( )
+	                 , const QList< QVariant >& applied_values = QList< QVariant >( ) )
 		: AbstractConfigurationKeyWrapper( is_required
-		                                   , default_value
-		                                   , applied_value )
+		                                   , default_values
+		                                   , applied_values )
 		, m_checkbox( checkbox )
 	{
 		QObject::connect( checkbox, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
@@ -807,14 +818,18 @@ public:
 
 	virtual ~CheckBoxWrapper() {}
 
-	virtual QVariant read() const
+	virtual QList< QVariant > read() const
 	{
-		return m_checkbox->isChecked() ? VARIANT_YES : VARIANT_NO;
+		QList< QVariant > values;
+
+		values.append( m_checkbox->isChecked() ? VARIANT_YES : VARIANT_NO );
+
+		return values;
 	}
 
-	virtual void write( const QVariant& value )
+	virtual void write( const QList< QVariant >& values )
 	{
-		m_checkbox->setChecked( value == VARIANT_YES );
+		m_checkbox->setChecked( !values.isEmpty() && values.first() == VARIANT_YES );
 	}
 
 private:
@@ -830,11 +845,11 @@ public:
 	ComboBoxWrapper( QComboBox* const combobox
 	                 , Freelan_gui* const freelan_gui
 	                 , const bool is_required = false
-	                 , const QVariant& default_value = QVariant()
-	                 , const QVariant& applied_value = QVariant() )
+	                 , const QList< QVariant >& default_values = QList< QVariant >( )
+	                 , const QList< QVariant >& applied_values = QList< QVariant >( ) )
 		: AbstractConfigurationKeyWrapper( is_required
-		                                   , default_value
-		                                   , applied_value )
+		                                   , default_values
+		                                   , applied_values )
 		, m_combobox( combobox )
 	{
 		QObject::connect( combobox, SIGNAL( currentIndexChanged( int ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
@@ -842,14 +857,18 @@ public:
 
 	virtual ~ComboBoxWrapper() {}
 
-	virtual QVariant read() const
+	virtual QList< QVariant > read() const
 	{
-		return m_combobox->currentText();
+		QList< QVariant > values;
+
+		values.append( m_combobox->currentText() );
+
+		return values;
 	}
 
-	virtual void write( const QVariant& value )
+	virtual void write( const QList< QVariant >& values )
 	{
-		m_combobox->setCurrentIndex( m_combobox->findText( value.toString() ) );
+		m_combobox->setCurrentIndex( m_combobox->findText( values.isEmpty() ? QString::null : values.first().toString() ) );
 	}
 
 private:
@@ -865,11 +884,11 @@ public:
 	SpinBoxWrapper( QSpinBox* const spinbox
 	                , Freelan_gui* const freelan_gui
 	                , const bool is_required = false
-	                , const QVariant& default_value = QVariant()
-	                , const QVariant& applied_value = QVariant() )
+	                , const QList< QVariant >& default_values = QList< QVariant >( )
+	                , const QList< QVariant >& applied_values = QList< QVariant >( ) )
 		: AbstractConfigurationKeyWrapper( is_required
-		                                   , default_value
-		                                   , applied_value )
+		                                   , default_values
+		                                   , applied_values )
 		, m_spinbox( spinbox )
 	{
 		QObject::connect( spinbox, SIGNAL( valueChanged( int ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
@@ -877,14 +896,18 @@ public:
 
 	virtual ~SpinBoxWrapper() {}
 
-	virtual QVariant read() const
+	virtual QList< QVariant > read() const
 	{
-		return m_spinbox->value();
+		QList< QVariant > values;
+
+		values.append( m_spinbox->value() );
+
+		return values;
 	}
 
-	virtual void write( const QVariant& value )
+	virtual void write( const QList< QVariant >& values )
 	{
-		m_spinbox->setValue( value.toInt() );
+		m_spinbox->setValue( values.isEmpty() ? 0 : values.first().toInt() );
 	}
 
 private:
@@ -900,11 +923,11 @@ public:
 	GroupBoxWrapper( QGroupBox* const groupbox
 	                 , Freelan_gui* const freelan_gui
 	                 , const bool is_required = false
-	                 , const QVariant& default_value = QVariant()
-	                 , const QVariant& applied_value = QVariant() )
+	                 , const QList< QVariant >& default_values = QList< QVariant >( )
+	                 , const QList< QVariant >& applied_values = QList< QVariant >( ) )
 		: AbstractConfigurationKeyWrapper( is_required
-		                                   , default_value
-		                                   , applied_value )
+		                                   , default_values
+		                                   , applied_values )
 		, m_groupbox( groupbox )
 	{
 		QObject::connect( groupbox, SIGNAL( toggled( bool ) ), freelan_gui, SLOT( schedule_configuration_buttonbox_update() ) );
@@ -912,14 +935,18 @@ public:
 
 	virtual ~GroupBoxWrapper() {}
 
-	virtual QVariant read() const
+	virtual QList< QVariant > read() const
 	{
-		return m_groupbox->isChecked() ? VARIANT_YES : VARIANT_NO;
+		QList< QVariant > values;
+
+		values.append( m_groupbox->isChecked() ? VARIANT_YES : VARIANT_NO );
+
+		return values;
 	}
 
-	virtual void write( const QVariant& value )
+	virtual void write( const QList< QVariant >& values )
 	{
-		m_groupbox->setChecked( value == VARIANT_YES );
+		m_groupbox->setChecked( !values.isEmpty() && values.first() == VARIANT_YES );
 	}
 
 private:
@@ -938,11 +965,11 @@ public:
 	              , QLineEdit* const server_proxy_url_lineedit
 	              , Freelan_gui* const freelan_gui
 	              , const bool is_required = false
-	              , const QVariant& default_value = QVariant()
-	              , const QVariant& applied_value = QVariant() )
+	              , const QList< QVariant >& default_values = QList< QVariant >( )
+	              , const QList< QVariant >& applied_values = QList< QVariant >( ) )
 		: AbstractConfigurationKeyWrapper( is_required
-		                                   , default_value
-		                                   , applied_value )
+		                                   , default_values
+		                                   , applied_values )
 		, m_server_proxy_no_radiobutton( server_proxy_no_radiobutton )
 		, m_server_proxy_system_radiobutton( server_proxy_system_radiobutton )
 		, m_server_proxy_url_radiobutton( server_proxy_url_radiobutton )
@@ -956,20 +983,27 @@ public:
 
 	virtual ~ProxyWrapper() {}
 
-	virtual QVariant read() const
+	virtual QList< QVariant > read() const
 	{
-		return m_server_proxy_no_radiobutton->isChecked() ? QVariant() : m_server_proxy_system_radiobutton->isChecked() ? QVariant( "" ) : QVariant( m_server_proxy_url_lineedit->text() );
+		QList< QVariant > values;
+
+		if ( !m_server_proxy_no_radiobutton->isChecked() )
+		{
+			values.append( m_server_proxy_system_radiobutton->isChecked() ? QVariant( QString::null ) : QVariant( m_server_proxy_url_lineedit->text() ) );
+		}
+
+		return values;
 	}
 
-	virtual void write( const QVariant& value )
+	virtual void write( const QList< QVariant >& values )
 	{
-		if ( value.isNull() )
+		if ( values.isEmpty() )
 		{
 			m_server_proxy_no_radiobutton->toggle();
 		}
 		else
 		{
-			const QString& proxy_string = value.toString().trimmed();
+			const QString& proxy_string = values.first().toString().trimmed();
 
 			if ( proxy_string.isEmpty() )
 			{
@@ -1002,11 +1036,11 @@ public:
 	                      , QToolButton* const choose_toolbutton = NULL
 	                      , QSignalMapper* const choose_mapper = NULL
 	                      , const bool is_required = false
-	                      , const QVariant& default_value = QVariant()
-	                      , const QVariant& applied_value = QVariant() )
+	                      , const QList< QVariant >& default_values = QList< QVariant >( )
+	                      , const QList< QVariant >& applied_values = QList< QVariant >( ) )
 		: AbstractConfigurationKeyWrapper( is_required
-		                                   , default_value
-		                                   , applied_value )
+		                                   , default_values
+		                                   , applied_values )
 		, m_lineedit( lineedit )
 		, m_vboxlayout( vboxlayout )
 		, m_freelan_gui( freelan_gui )
@@ -1024,13 +1058,12 @@ public:
 
 	virtual ~LineEditArrayWrapper() {}
 
-	virtual QVariant read() const
+	virtual QList< QVariant > read() const
 	{
-		// First lineedit
-		QString text = m_lineedit->text().trimmed();
+		QList< QVariant > values;
 
 		// Loop accross all remaining lineedit
-		for ( int i = 1, end = m_vboxlayout->count() ; i < end ; ++i )
+		for ( int i = 0, end = m_vboxlayout->count() ; i < end ; ++i )
 		{
 			const QLayout* const child_layout = m_vboxlayout->itemAt( i )->layout();
 
@@ -1047,8 +1080,7 @@ public:
 
 						if ( !fragment.isEmpty() )
 						{
-							text.append( ',' );
-							text.append( fragment );
+							values.append( fragment );
 						}
 
 						// Stop loop
@@ -1058,22 +1090,20 @@ public:
 			}
 		}
 
-		return text.isEmpty() ? QVariant() : QVariant( text );
+		return values;
 	} // read
 
-	virtual void write( const QVariant& value )
+	virtual void write( const QList< QVariant >& values )
 	{
-		const QStringList& strings = value.toString().split( ',', QString::SkipEmptyParts );
-
 		// First lineedit
-		m_lineedit->setText( strings.isEmpty() ? QString::null : strings.first().trimmed() );
+		m_lineedit->setText( values.isEmpty() ? QString::null : values.first().toString().trimmed() );
 
 		int i = 1;
 
 		// Reuse existing endpoint lineedits
-		for ( int j = 1, end_i = strings.count(), end_j = m_vboxlayout->count() ; i < end_i && j < end_j ; ++i )
+		for ( int j = 1, end_i = values.count(), end_j = m_vboxlayout->count() ; i < end_i && j < end_j ; ++i )
 		{
-			const QString& string = strings.at( i ).trimmed();
+			const QString& string = values.at( i ).toString().trimmed();
 
 			if ( !string.isEmpty() )
 			{
@@ -1100,9 +1130,9 @@ public:
 		}
 
 		// New lineedit
-		for ( int end = strings.count() ; i < end ; ++i )
+		for ( int end_i = values.count() ; i < end_i ; ++i )
 		{
-			const QString& string = strings.at( i ).trimmed();
+			const QString& string = values.at( i ).toString().trimmed();
 
 			if ( !string.isEmpty() )
 			{
@@ -1112,7 +1142,7 @@ public:
 		}
 
 		// Delete unneeded endpoint lineedits
-		for ( int j = qMax( 1, strings.count() ), end = m_vboxlayout->count() ; j < end ; ++j )
+		for ( int j = qMax( 1, values.count() ), end = m_vboxlayout->count() ; j < end ; ++j )
 		{
 			QLayout* const layout = m_vboxlayout->takeAt( j )->layout();
 
@@ -1179,10 +1209,16 @@ Freelan_gui::~Freelan_gui()
 
 void Freelan_gui::set_configuration_filepath( const QString& filepath )
 {
-	// TODO DW: check the file access right
 	m_configuration_filepath = filepath;
 	configuration_lineedit->setText( filepath );
-	read_configuration_from_file();
+
+	// TODO DW: check the file access right
+	QFileInfo fileInfo( filepath );
+
+	if ( fileInfo.exists() && fileInfo.isFile() && fileInfo.isReadable() )
+	{
+		read_configuration_from_file();
+	}
 }
 
 void Freelan_gui::changeEvent( QEvent* event )
@@ -1264,7 +1300,7 @@ void Freelan_gui::register_configuration_keys()
 {
 	// Each "registered" configuration keys will be saved and restored by calling the given "read" and "write" function.
 	// Server page
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_ENABLED ] = new GroupBoxWrapper( server_groupbox, this, true, VARIANT_NO );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_ENABLED ] = new GroupBoxWrapper( server_groupbox, this, true, QList< QVariant >() << VARIANT_NO );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_HOST ] = new LineEditWrapper( server_host_lineedit, this );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_USERNAME ] = new LineEditWrapper( server_username_lineedit, this );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_PASSWORD ] = new LineEditWrapper( server_password_lineedit, this );
@@ -1273,45 +1309,45 @@ void Freelan_gui::register_configuration_keys()
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_PUBLIC_ENDPOINTS ] = new LineEditArrayWrapper( server_public_endpoints_lineedit, server_public_endpoints_verticallayout, this );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_USER_AGENT ] = new LineEditWrapper( server_user_agent_lineedit, this );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_CA_INFO_FILE ] = new LineEditArrayWrapper( server_ca_info_files_lineedit, server_ca_info_files_verticallayout, this, server_ca_info_files_choose_toolbutton, &m_server_ca_info_files_chooser );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_PROTOCOL ] = new ComboBoxWrapper( server_protocol_combobox, this, false, "https" );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_DISABLE_PEER_VERIFICATION ] = new CheckBoxWrapper( server_disable_peer_verification_checkbox, this, false, VARIANT_NO );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_DISABLE_HOST_VERIFICATION ] = new CheckBoxWrapper( server_disable_host_verification_checkbox, this, false, VARIANT_NO );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_PROTOCOL ] = new ComboBoxWrapper( server_protocol_combobox, this, false, QList< QVariant >() << "https" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_DISABLE_PEER_VERIFICATION ] = new CheckBoxWrapper( server_disable_peer_verification_checkbox, this, false, QList< QVariant >() << VARIANT_NO );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SERVER ][ CONFIGURATION_KEY_DISABLE_HOST_VERIFICATION ] = new CheckBoxWrapper( server_disable_host_verification_checkbox, this, false, QList< QVariant >() << VARIANT_NO );
 
 	// FSCP page
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_HOSTNAME_RESOLUTION_PROTOCOL ] = new ComboBoxWrapper( fscp_hostname_resolution_protocol_combobox, this, true, "IPv4" );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_LISTEN_ON ] = new LineEditWrapper( fscp_listen_on_lineedit, this, true, "0.0.0.0:12000" );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_HELLO_TIMEOUT ] = new SpinBoxWrapper( fscp_hello_timeout_spinbox, this, true, 3000 );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_HOSTNAME_RESOLUTION_PROTOCOL ] = new ComboBoxWrapper( fscp_hostname_resolution_protocol_combobox, this, true, QList< QVariant >() << "IPv4" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_LISTEN_ON ] = new LineEditWrapper( fscp_listen_on_lineedit, this, true, QList< QVariant >() << "0.0.0.0:12000" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_HELLO_TIMEOUT ] = new SpinBoxWrapper( fscp_hello_timeout_spinbox, this, true, QList< QVariant >() << 3000 );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_CONTACT ] = new LineEditArrayWrapper( fscp_contacts_lineedit, fscp_contacts_verticallayout, this );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_ACCEPT_CONTACT_REQUESTS ] = new CheckBoxWrapper( fscp_accept_contact_requests_checkbox, this, true, VARIANT_YES );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_ACCEPT_CONTACTS ] = new GroupBoxWrapper( fscp_accept_contacts_groupbox, this, false, VARIANT_YES );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_ACCEPT_CONTACT_REQUESTS ] = new CheckBoxWrapper( fscp_accept_contact_requests_checkbox, this, true, QList< QVariant >() << VARIANT_YES );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_ACCEPT_CONTACTS ] = new GroupBoxWrapper( fscp_accept_contacts_groupbox, this, false, QList< QVariant >() << VARIANT_YES );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_DYNAMIC_CONTACT_FILES ] = new LineEditArrayWrapper( fscp_dynamic_contact_files_lineedit, fscp_dynamic_contact_files_verticallayout, this, fscp_dynamic_contact_files_choose_toolbutton, &m_fscp_dynamic_contact_files_chooser );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_FSCP ][ CONFIGURATION_KEY_NEVER_CONTACTS ] = new LineEditArrayWrapper( fscp_never_contacts_lineedit, fscp_never_contacts_verticallayout, this );
 
 	// TAP Adapter page
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_ENABLED ] = new GroupBoxWrapper( tap_adapter_enabled_groupbox, this, true, VARIANT_YES );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_IPV4_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_ipv4_address_prefix_length_lineedit, this, true, "9.0.0.1/24" );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_IPV6_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_ipv6_address_prefix_length_lineedit, this, true, "2aa1::1/8" );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_ARP_PROXY_ENABLED ] = new GroupBoxWrapper( tap_adapter_arp_proxy_enabled_groupbox, this, true, VARIANT_NO );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_ARP_PROXY_FAKE_ETHERNET_ADDRESS ] = new LineEditWrapper( tap_adapter_arp_proxy_fake_ethernet_address_lineedit, this, true, "00:aa:bb:cc:dd:ee" );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_DHCP_PROXY_ENABLED ] = new GroupBoxWrapper( tap_adapter_dhcp_proxy_enabled_groupbox, this, true, VARIANT_YES );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_DHCP_SERVER_IPV4_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_dhcp_server_ipv4_address_prefix_length_lineedit, this, true, "9.0.0.0/24" );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_DHCP_SERVER_IPV6_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_dhcp_server_ipv6_address_prefix_length_lineedit, this, true, "2aa1::/8" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_ENABLED ] = new GroupBoxWrapper( tap_adapter_enabled_groupbox, this, true, QList< QVariant >() << VARIANT_YES );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_IPV4_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_ipv4_address_prefix_length_lineedit, this, true, QList< QVariant >() << "9.0.0.1/24" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_IPV6_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_ipv6_address_prefix_length_lineedit, this, true, QList< QVariant >() << "2aa1::1/8" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_ARP_PROXY_ENABLED ] = new GroupBoxWrapper( tap_adapter_arp_proxy_enabled_groupbox, this, true, QList< QVariant >() << VARIANT_NO );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_ARP_PROXY_FAKE_ETHERNET_ADDRESS ] = new LineEditWrapper( tap_adapter_arp_proxy_fake_ethernet_address_lineedit, this, true, QList< QVariant >() << "00:aa:bb:cc:dd:ee" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_DHCP_PROXY_ENABLED ] = new GroupBoxWrapper( tap_adapter_dhcp_proxy_enabled_groupbox, this, true, QList< QVariant >() << VARIANT_YES );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_DHCP_SERVER_IPV4_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_dhcp_server_ipv4_address_prefix_length_lineedit, this, true, QList< QVariant >() << "9.0.0.0/24" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_DHCP_SERVER_IPV6_ADDRESS_PREFIX_LENGTH ] = new LineEditWrapper( tap_adapter_dhcp_server_ipv6_address_prefix_length_lineedit, this, true, QList< QVariant >() << "2aa1::/8" );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_UP_SCRIPT ] = new LineEditWrapper( tap_adapter_up_script_lineedit, this );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_TAP_ADAPTER ][ CONFIGURATION_KEY_DOWN_SCRIPT ] = new LineEditWrapper( tap_adapter_down_script_lineedit, this );
 
 	// Switch page
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SWITCH ][ CONFIGURATION_KEY_ROUTING_METHOD ] = new ComboBoxWrapper( switch_routing_method_combobox, this, true, "switch" );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SWITCH ][ CONFIGURATION_KEY_RELAY_MODE_ENABLED ] = new CheckBoxWrapper( switch_relay_mode_enabled_checkbox, this, true, VARIANT_NO );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SWITCH ][ CONFIGURATION_KEY_ROUTING_METHOD ] = new ComboBoxWrapper( switch_routing_method_combobox, this, true, QList< QVariant >() << "switch" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SWITCH ][ CONFIGURATION_KEY_RELAY_MODE_ENABLED ] = new CheckBoxWrapper( switch_relay_mode_enabled_checkbox, this, true, QList< QVariant >() << VARIANT_NO );
 
 	// Security
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_SIGNATURE_CERTIFICATE_FILE ] = new LineEditWrapper( security_signature_certificate_file_lineedit, this );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_SIGNATURE_PRIVATE_KEY_FILE ] = new LineEditWrapper( security_signature_private_key_file_lineedit, this );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_ENCRYPTION_CERTIFICATE_FILE ] = new LineEditWrapper( security_encryption_certificate_file_lineedit, this );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_ENCRYPTION_PRIVATE_KEY_FILE ] = new LineEditWrapper( security_encryption_private_key_file_lineedit, this );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_CERTIFICATE_VALIDATION_METHOD ] = new ComboBoxWrapper( security_certificate_validation_method_combobox, this, true, "default" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_CERTIFICATE_VALIDATION_METHOD ] = new ComboBoxWrapper( security_certificate_validation_method_combobox, this, true, QList< QVariant >() << "default" );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_CERTIFICATE_VALIDATION_SCRIPT ] = new LineEditWrapper( security_certificate_validation_script_lineedit, this );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_AUTHORITY_CERTIFICATE_FILE ] = new LineEditWrapper( security_authority_certificate_file_lineedit, this );
-	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_CERTIFICATE_REVOCATION_VALIDATION_METHOD ] = new ComboBoxWrapper( security_certificate_revocation_validation_method_combobox, this, true, "none" );
+	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_CERTIFICATE_REVOCATION_VALIDATION_METHOD ] = new ComboBoxWrapper( security_certificate_revocation_validation_method_combobox, this, true, QList< QVariant >() << "none" );
 	m_configuration_key_wrappers[ CONFIGURATION_GROUP_SECURITY ][ CONFIGURATION_KEY_CERTIFICATE_REVOCATION_LIST_FILE ] = new LineEditArrayWrapper( security_certificate_revocation_list_files_lineedit, security_certificate_revocation_list_files_verticallayout, this, security_certificate_revocation_list_files_choose_toolbutton, &m_security_certificate_revocation_list_files_chooser );
 } // register_configuration_keys
 
@@ -1320,18 +1356,16 @@ void Freelan_gui::read_configuration_from_file()
 	m_are_required_configuration_keys_saved = true;
 
 	// Initialize the QSettings object to read "m_configuration_filepath" as a ini file
-	QSettings configuration_file( m_configuration_filepath, QSettings::IniFormat );
+	Freelan_gui_settings configuration_file;
+	configuration_file.open( m_configuration_filepath );
 
 	// For each "group"
 	const QList< const char* >& groups = m_configuration_key_wrappers.keys();
 
-	for ( int i = groups.count() ; --i >= 0 ; )
+	for ( int i = 0, end_i = groups.count() ; i < end_i ; ++i )
 	{
 		// Get the current group name
 		const char* const group = groups.at( i );
-
-		// Set the "group" marker on the configuration file
-		configuration_file.beginGroup( group );
 
 		// Get the configuration "hash"
 		QHash< const char*, AbstractConfigurationKeyWrapper* >& grouped_configuration_key_wrappers = m_configuration_key_wrappers[ group ];
@@ -1339,7 +1373,7 @@ void Freelan_gui::read_configuration_from_file()
 		// For each "key"
 		const QList< const char* >& keys = grouped_configuration_key_wrappers.keys();
 
-		for ( int j = keys.count() ; --j >= 0 ; )
+		for ( int j = 0, end_j = keys.count() ; j < end_j ; ++j )
 		{
 			// Get the current key name
 			const char* const key = keys.at( j );
@@ -1348,25 +1382,22 @@ void Freelan_gui::read_configuration_from_file()
 			AbstractConfigurationKeyWrapper* const configuration_key_wrapper = grouped_configuration_key_wrappers[ key ];
 
 			// Read the configuration value from file
-			const QVariant& value_from_file = configuration_file.value( key );
+			const QList< QVariant >& values_from_file = configuration_file.get_values( QString::fromLatin1( group ), QString::fromLatin1( key ) );
 
-			if ( m_are_required_configuration_keys_saved && configuration_key_wrapper->m_is_required && value_from_file.isNull() )
+			if ( m_are_required_configuration_keys_saved && configuration_key_wrapper->m_is_required && values_from_file.isEmpty() )
 			{
 				m_are_required_configuration_keys_saved = false;
 			}
 
 			// Use default value if no value found in file
-			const QVariant& value_to_write = value_from_file.isNull() ? configuration_key_wrapper->m_default_value : value_from_file;
+			const QList< QVariant >& value_to_write = values_from_file.isEmpty() ? configuration_key_wrapper->m_default_values : values_from_file;
 
 			// Write the value to the GUI
 			configuration_key_wrapper->write( value_to_write );
 
 			// Store the value so we can do "revert" when editing the setting in the GUI
-			configuration_key_wrapper->m_applied_value = value_to_write;
+			configuration_key_wrapper->m_applied_values = value_to_write;
 		}
-
-		// End the group on the configuration file
-		configuration_file.endGroup();
 	}
 
 	schedule_configuration_buttonbox_update();
@@ -1374,7 +1405,8 @@ void Freelan_gui::read_configuration_from_file()
 
 void Freelan_gui::write_configuration_to_file()
 {
-	QSettings configuration_file( m_configuration_filepath, QSettings::IniFormat );
+	Freelan_gui_settings configuration_file;
+	configuration_file.open( m_configuration_filepath );
 
 	// We start from scratch
 	configuration_file.clear();
@@ -1382,13 +1414,10 @@ void Freelan_gui::write_configuration_to_file()
 	// For each "group"
 	const QList< const char* >& groups = m_configuration_key_wrappers.keys();
 
-	for ( int i = groups.count() ; --i >= 0 ; )
+	for ( int i = 0, end_i = groups.count() ; i < end_i ; ++i )
 	{
 		// Get the current group name
 		const char* const group = groups.at( i );
-
-		// Set the "group" marker on the settings file
-		configuration_file.beginGroup( group );
 
 		// Get the settings "hash"
 		QHash< const char*, AbstractConfigurationKeyWrapper* >& grouped_configuration_key_wrappers = m_configuration_key_wrappers[ group ];
@@ -1396,30 +1425,27 @@ void Freelan_gui::write_configuration_to_file()
 		// For each "key"
 		const QList< const char* >& keys = grouped_configuration_key_wrappers.keys();
 
-		for ( int j = keys.count() ; --j >= 0 ; )
+		for ( int j = 0, end_j = keys.count() ; j < end_j ; ++j )
 		{
 			// Get the current key name
 			const char* const key = keys.at( j );
 
-			// Get the settings wrapper object so we can call the "write" function
+			// Get the settings wrapper object so we can call the "read" function
 			AbstractConfigurationKeyWrapper* const configuration_key_wrapper = grouped_configuration_key_wrappers[ key ];
 
 			// Read configuration from gui
-			const QVariant& value = configuration_key_wrapper->read();
+			const QList< QVariant >& values = configuration_key_wrapper->read();
 
 			// Do not write default value or null value (not set)
-			if ( configuration_key_wrapper->m_is_required || ( ( configuration_key_wrapper->m_default_value != value ) && !value.isNull() ) )
+			if ( configuration_key_wrapper->m_is_required || ( ( configuration_key_wrapper->m_default_values != values ) && !values.isEmpty() ) )
 			{
 				// Write value to file
-				configuration_file.setValue( key, value );
+				configuration_file.append_values( QString::fromLatin1( group ), QString::fromLatin1( key ), values );
 			}
 
 			// Set the applied value
-			configuration_key_wrapper->m_applied_value = value;
+			configuration_key_wrapper->m_applied_values = values;
 		}
-
-		// End the group on the configuration file
-		configuration_file.endGroup();
 	}
 
 	m_are_required_configuration_keys_saved = true;
@@ -1437,7 +1463,7 @@ void Freelan_gui::schedule_configuration_filepath_update()
 	}
 
 	// Start the timer again
-	m_configuration_filepath_timer_id = startTimer( 0 );
+	m_configuration_filepath_timer_id = startTimer( 100 );
 }
 
 void Freelan_gui::schedule_configuration_buttonbox_update()
@@ -1450,7 +1476,7 @@ void Freelan_gui::schedule_configuration_buttonbox_update()
 	}
 
 	// Start the timer again
-	m_buttonbox_update_timer_id = startTimer( 0 );
+	m_buttonbox_update_timer_id = startTimer( 100 );
 }
 
 void Freelan_gui::update_configuration_filepath()
@@ -1487,16 +1513,16 @@ void Freelan_gui::update_configuration_buttonbox()
 			const AbstractConfigurationKeyWrapper* const configuration_key_wrapper = grouped_configuration_key_wrappers[ key ];
 
 			// Read the value from the GUI
-			const QVariant& value = configuration_key_wrapper->read();
+			const QList< QVariant >& value = configuration_key_wrapper->read();
 
 			if ( !are_configuration_modified )
 			{
-				are_configuration_modified = value != configuration_key_wrapper->m_applied_value;
+				are_configuration_modified = value != configuration_key_wrapper->m_applied_values;
 			}
 
 			if ( !are_configuration_tainted )
 			{
-				are_configuration_tainted = value != configuration_key_wrapper->m_default_value;
+				are_configuration_tainted = value != configuration_key_wrapper->m_default_values;
 			}
 		}
 	}
@@ -1627,7 +1653,7 @@ void Freelan_gui::on_configuration_buttonbox_clicked( QAbstractButton* button )
 				// Get the settings wrapper object so we can call the "write" function
 				AbstractConfigurationKeyWrapper* const configuration_wrapper = grouped_configuration_wrappers[ key ];
 
-				configuration_wrapper->write( must_restore_defaults ? configuration_wrapper->m_default_value : configuration_wrapper->m_applied_value );
+				configuration_wrapper->write( must_restore_defaults ? configuration_wrapper->m_default_values : configuration_wrapper->m_applied_values );
 			}
 		}
 
